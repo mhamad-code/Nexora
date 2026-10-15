@@ -86,7 +86,6 @@ jobs:
           echo "${{ secrets.SIGNING_CONFIG }}" > local.properties
 
           # 写入Google Services配置
-          echo "${{ secrets.GOOGLE_SERVICES_B64 }}" | base64 -d > app/google-services.json
 
       - name: Validate google-services
         run: |
