@@ -1,0 +1,88 @@
+package com.mhamad.nexora.ui.pages.extensions
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.LargeFlexibleTopAppBar
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import me.rerere.hugeicons.HugeIcons
+import com.mhamad.nexora.R
+import me.rerere.hugeicons.stroke.Book03
+import me.rerere.hugeicons.stroke.File02
+import me.rerere.hugeicons.stroke.Folder01
+import me.rerere.hugeicons.stroke.Puzzle
+import me.rerere.hugeicons.stroke.Zap
+import com.mhamad.nexora.Screen
+import com.mhamad.nexora.ui.components.nav.BackButton
+import com.mhamad.nexora.ui.components.ui.CardGroup
+import com.mhamad.nexora.ui.components.ui.CardGroupIcon
+import com.mhamad.nexora.ui.context.LocalNavController
+import com.mhamad.nexora.ui.theme.CustomColors
+import com.mhamad.nexora.utils.plus
+
+@Composable
+fun ExtensionsPage() {
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val navController = LocalNavController.current
+
+    Scaffold(
+        topBar = {
+            LargeFlexibleTopAppBar(
+                title = { Text(stringResource(R.string.extensions_page_title)) },
+                navigationIcon = { BackButton() },
+                scrollBehavior = scrollBehavior,
+                colors = CustomColors.topBarColors
+            )
+        },
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        containerColor = CustomColors.topBarColors.containerColor
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = innerPadding + PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            item {
+                val containerColor = MaterialTheme.colorScheme.primaryContainer
+                val contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                CardGroup(
+                    title = { Text(stringResource(R.string.extensions_page_section_extensions)) },
+                ) {
+                    item(
+                        onClick = { navController.navigate(Screen.QuickMessages) },
+                        leadingContent = { CardGroupIcon(HugeIcons.Zap, containerColor = containerColor, contentColor = contentColor) },
+                        headlineContent = { Text(stringResource(R.string.assistant_page_quick_messages)) },
+                        supportingContent = { Text(stringResource(R.string.extensions_page_quick_messages_desc)) },
+                    )
+                    item(
+                        onClick = { navController.navigate(Screen.Prompts) },
+                        leadingContent = { CardGroupIcon(HugeIcons.Book03, containerColor = containerColor, contentColor = contentColor) },
+                        headlineContent = { Text(stringResource(R.string.extensions_page_prompts)) },
+                        supportingContent = { Text(stringResource(R.string.extensions_page_prompts_desc)) },
+                    )
+                    item(
+                        onClick = { navController.navigate(Screen.Skills) },
+                        leadingContent = { CardGroupIcon(HugeIcons.Puzzle, containerColor = containerColor, contentColor = contentColor) },
+                        headlineContent = { Text(stringResource(R.string.extensions_page_agent_skills)) },
+                        supportingContent = { Text(stringResource(R.string.extensions_page_agent_skills_desc)) },
+                    )
+                    item(
+                        onClick = { navController.navigate(Screen.Workspaces) },
+                        leadingContent = { CardGroupIcon(HugeIcons.Folder01, containerColor = containerColor, contentColor = contentColor) },
+                        headlineContent = { Text(stringResource(R.string.extensions_page_workspace)) },
+                        supportingContent = { Text(stringResource(R.string.extensions_page_workspace_desc)) },
+                    )
+                }
+            }
+        }
+    }
+}
