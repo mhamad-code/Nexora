@@ -1,0 +1,54 @@
+name: Build libsimple for Android 32-bit
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Nexora
+        uses: actions/checkout@v4
+
+      - name: Install Android SDK and NDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK
+        run: sdkmanager "ndk;27.2.12479018"
+
+      - name: Checkout simple source
+        uses: actions/checkout@v4
+        with:
+          repository: wangfenjin/simple
+          path: simple-src
+
+      - name: Configure 32-bit build
+        run: |
+          cmake -S simple-src -B build-armv7 \
+            -DCMAKE_TOOLCHAIN_FILE="$ANDROID_HOME/ndk/27.2.12479018/build/cmake/android.toolchain.cmake" \
+            -DANDROID_ABI=armeabi-v7a \
+            -DANDROID_PLATFORM=android-21 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/output-armv7" \
+            -DBUILD_TEST_EXAMPLE=OFF \
+            -DBUILD_SHELL=OFF
+
+      - name: Compile library
+        run: cmake --build build-armv7 --config Release --parallel 2
+
+      - name: Install and verify
+        run: |
+          cmake --install build-armv7 --config Release
+          test -f output-armv7/bin/libsimple.so
+          file output-armv7/bin/libsimple.so
+
+      - name: Upload library artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libsimple-armeabi-v7a
+          path: output-armv7/bin/libsimple.so
+          if-no-files-found: error
