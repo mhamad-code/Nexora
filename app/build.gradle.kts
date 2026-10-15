@@ -55,20 +55,29 @@ android {
 
             if (localPropertiesFile.exists()) {
                 localProperties.load(FileInputStream(localPropertiesFile))
+            }
 
-                val storeFilePath = localProperties.getProperty("storeFile")
-                val storePasswordValue = localProperties.getProperty("storePassword")
-                val keyAliasValue = localProperties.getProperty("keyAlias")
-                val keyPasswordValue = localProperties.getProperty("keyPassword")
+            fun prop(key: String): String? {
+                return localProperties.getProperty(key)
+                    ?: (project.findProperty(key) as String?)
+                    ?: System.getenv(key)
+            }
 
-                if (storeFilePath != null && storePasswordValue != null &&
-                    keyAliasValue != null && keyPasswordValue != null
-                ) {
-                    storeFile = file(storeFilePath)
-                    storePassword = storePasswordValue
-                    keyAlias = keyAliasValue
-                    keyPassword = keyPasswordValue
-                }
+            // keys used by CI step or local local.properties
+            val storeFilePath = prop("STORE_FILE") ?: prop("storeFile")
+            val storePasswordValue = prop("STORE_PASSWORD") ?: prop("storePassword")
+            val keyAliasValue = prop("KEY_ALIAS") ?: prop("keyAlias")
+            val keyPasswordValue = prop("KEY_PASSWORD") ?: prop("keyPassword")
+
+            if (storeFilePath != null && storePasswordValue != null &&
+                keyAliasValue != null && keyPasswordValue != null
+            ) {
+                storeFile = file(storeFilePath)
+                storePassword = storePasswordValue
+                keyAlias = keyAliasValue
+                keyPassword = keyPasswordValue
+            } else {
+                logger.warn("Release signing config not fully configured. Provide STORE_FILE/STORE_PASSWORD/KEY_ALIAS/KEY_PASSWORD via gradle.properties, local.properties, or env.")
             }
         }
     }
