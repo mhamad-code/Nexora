@@ -460,7 +460,7 @@ private data class QQGroup(
     val icon: ImageVector = TencentQQIcon,
 )
 
-private val QQ_GROUPS = listOf(
+private val QQ_GROUPS = listOf<QQGroup>(
 )
 
 @Composable
