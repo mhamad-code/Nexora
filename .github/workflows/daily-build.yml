@@ -88,6 +88,11 @@ jobs:
           # 写入Google Services配置
           echo "${{ secrets.GOOGLE_SERVICES_B64 }}" | base64 -d > app/google-services.json
 
+      - name: Validate google-services
+        run: |
+          wc -c app/google-services.json
+          python3 -c "import json; json.load(open('app/google-services.json')); print('JSON OK')"
+
       - name: Gradle Build
         run: |
           chmod +x gradlew
