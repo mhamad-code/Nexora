@@ -57,7 +57,7 @@ fun TTSProviderConfigure(
                         is TTSProviderSetting.Step -> "Step"
                         is TTSProviderSetting.ElevenLabs -> "ElevenLabs"
                         is TTSProviderSetting.FishAudio -> "Fish Audio"
-                        is TTSProviderSetting.Volcengine -> "火山引擎"
+                        is TTSProviderSetting.Volcengine -> "Volcengine"
                     },
                     options = TTSProviderSetting.Types,
                     readOnly = true,
@@ -74,7 +74,7 @@ fun TTSProviderConfigure(
                             TTSProviderSetting.MiMo::class -> "MiMo"
                             TTSProviderSetting.ElevenLabs::class -> "ElevenLabs"
                             TTSProviderSetting.FishAudio::class -> "Fish Audio"
-                            TTSProviderSetting.Volcengine::class -> "火山引擎"
+                            TTSProviderSetting.Volcengine::class -> "Volcengine"
                             TTSProviderSetting.Step::class -> "Step"
                             else -> providerClass.simpleName ?: "Unknown"
                         }
@@ -302,10 +302,10 @@ private fun CardGroupScope.miMoTTSItems(
     // Voice
     val voices = listOf(
         "mimo_default",
-        "冰糖",
-        "茉莉",
-        "苏打",
-        "白桦",
+        "BingTang",
+        "Jasmine",
+        "Soda",
+        "Birch",
         "Mia",
         "Chloe",
         "Milo",
@@ -975,8 +975,8 @@ private fun CardGroupScope.fishAudioTTSItems(
     }
 
     val models = listOf(
-        "s2.1-pro" to "S2.1-Pro (推荐)",
-        "s2.1-pro-free" to "S2.1-Pro Free (免费)",
+        "s2.1-pro" to "S2.1-Pro (موصى به)",
+        "s2.1-pro-free" to "S2.1-Pro Free (مجاني)",
         "s2-pro" to "S2-Pro",
         "s1" to "S1"
     )
@@ -1052,7 +1052,7 @@ private fun CardGroupScope.stepTTSItems(
     // API Key
     formItem(
         headlineContent = { Text(stringResource(R.string.setting_tts_page_api_key)) },
-        supportingContent = { Text("从阶跃星辰官网获取密钥: platform.stepfun.com/interface-key") }
+        supportingContent = { Text("احصل على مفتاح API من موقع StepFun: platform.stepfun.com/interface-key") }
     ) {
         OutlinedTextField(
             value = setting.apiKey,
@@ -1060,7 +1060,7 @@ private fun CardGroupScope.stepTTSItems(
                 onValueChange(setting.copy(apiKey = newApiKey))
             },
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("从阶跃星辰官网获取密钥") },
+            placeholder = { Text("احصل على مفتاح API من موقع StepFun") },
         )
     }
 
@@ -1081,7 +1081,7 @@ private fun CardGroupScope.stepTTSItems(
 
     // Model
     val models = listOf(
-        "step-tts-mini" to "step-tts-mini (轻量, 便宜)",
+        "step-tts-mini" to "step-tts-mini (خفيف واقتصادي)",
         "step-tts-vivid" to "step-tts-vivid (情感丰富)",
         "stepaudio-2.5-tts" to "stepaudio-2.5-tts (语境感知, 支持 instruction)",
         "step-tts-2" to "step-tts-2 (上一代)",

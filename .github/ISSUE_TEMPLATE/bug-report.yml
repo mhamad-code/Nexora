@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        感谢你花时间提交 Bug 报告！请尽量填写完整信息以便我们复现和修复问题。
+        感谢你花时间提交 تقرير خطأ برمجي (Bug Report)！请尽量填写完整信息以便我们复现和修复问题。
         Thanks for taking the time to report a bug! Please fill in as much detail as possible.
 
         > **注意 | Note**
@@ -17,7 +17,7 @@ body:
     id: description
     attributes:
       label: 问题描述 | Problem Description
-      description: 请详细描述你遇到的问题，包括复现步骤。 / Describe the issue in detail, including steps to reproduce.
+      description: 请详细描述你遇到的问题，包括خطوات إعادة تكرار الخطأ。 / Describe the issue in detail, including steps to reproduce.
       placeholder: |
         1. 进入 ...
         2. 点击 ...

@@ -132,19 +132,19 @@ internal class McpOAuthCoordinator(
 
     private suspend fun authorize(config: McpServerConfig, context: Context) = withContext(Dispatchers.IO) {
         val serverUrl = config.serverUrl
-        require(serverUrl.isNotBlank()) { "Server URL 为空，无法授权" }
+        require(serverUrl.isNotBlank()) { "رابط الخادم فارغ، لا يمكن المصادقة" }
 
         val protectedResource = runCatching { discoveryClient.discoverProtectedResource(serverUrl) }
             .onFailure { Log.i(TAG, "Protected resource discovery failed, fallback to server origin: ${it.message}") }
             .getOrNull()
         val issuer = protectedResource?.authorizationServers?.firstOrNull()
             ?: McpOAuthDiscoveryClient.serverOrigin(serverUrl)
-            ?: error("无法确定授权服务器")
+            ?: error("تعذر تحديد خادم المصادقة")
         val metadata = discoveryClient.discoverAuthorizationServer(issuer)
         val authorizationEndpoint = metadata.authorizationEndpoint
-            ?: error("授权服务器缺少 authorization_endpoint")
+            ?: error("خادم المصادقة ينقصه نقطة النهاية authorization_endpoint")
         val tokenEndpoint = metadata.tokenEndpoint
-            ?: error("授权服务器缺少 token_endpoint")
+            ?: error("خادم المصادقة ينقصه نقطة النهاية token_endpoint")
         val scope = config.commonOptions.oauth?.scope
             ?: protectedResource?.scopesSupported?.joinToString(" ")
             ?: metadata.scopesSupported?.joinToString(" ")
@@ -156,7 +156,7 @@ internal class McpOAuthCoordinator(
         try {
             val redirectUri = callbackSession.redirectUri
             check(redirectUri == MCP_OAUTH_REDIRECT_URI) {
-                "OAuth 回调服务器地址不一致: $redirectUri"
+                "عنوان خادم إعادة التوجيه لـ OAuth غير متطابق: $redirectUri"
             }
             val existing = config.commonOptions.oauth
             val canReuseClient = existing?.redirectUri == redirectUri && !existing.clientId.isNullOrBlank()
@@ -170,7 +170,7 @@ internal class McpOAuthCoordinator(
             }
             if (clientId.isNullOrBlank()) {
                 val registrationEndpoint = metadata.registrationEndpoint
-                    ?: error("授权服务器不支持动态注册，且未预配置 client_id")
+                    ?: error("خادم المصادقة لا يدعم التسجيل التلقائي ولا يوجد client_id مسبق")
                 val registration = oauthClient.registerClient(
                     registrationEndpoint = registrationEndpoint,
                     request = OAuthHttpClient.ClientRegistrationRequest(
@@ -213,9 +213,9 @@ internal class McpOAuthCoordinator(
             }
 
             val callback = callbackSession.awaitCallback(OAUTH_CALLBACK_TIMEOUT)
-                ?: error("OAuth 授权超时")
+                ?: error("انتهت مهلة مصادقة OAuth")
             callback.error?.let { error(buildAuthorizationError(it, callback.errorDescription)) }
-            val code = callback.code ?: error("授权失败: 未返回授权码")
+            val code = callback.code ?: error("فشلت المصادقة: لم يتم إرجاع رمز المصادقة")
 
             val token = oauthClient.exchangeAuthorizationCode(
                 OAuthHttpClient.AuthorizationCodeTokenRequest(
@@ -252,7 +252,7 @@ internal class McpOAuthCoordinator(
     }
 
     private fun buildAuthorizationError(error: String, description: String?): String =
-        if (description.isNullOrBlank()) "授权失败: $error" else "授权失败: $error ($description)"
+        if (description.isNullOrBlank()) "فشلت المصادقة: $error" else "فشلت المصادقة: $error ($description)"
 
     private suspend fun persistOAuthState(configId: Uuid, oauth: McpOAuthState?) {
         settingsStore.update { old ->

@@ -187,7 +187,7 @@ class ChatCompletionsAPI(
                 var exception = t
 
                 t?.printStackTrace()
-                println("[onFailure] 发生错误: ${t?.javaClass?.name} ${t?.message} / $response")
+                println("[onFailure] : ${t?.javaClass?.name} ${t?.message} / $response")
 
                 val bodyRaw = response?.body?.stringSafe()
                 try {
@@ -215,7 +215,7 @@ class ChatCompletionsAPI(
         val eventSource = EventSources.createFactory(client).newEventSource(request, listener)
 
         awaitClose {
-            println("[awaitClose] 关闭eventSource ")
+            println("[awaitClose] eventSource ")
             eventSource.cancel()
         }
     }.buffer(Channel.UNLIMITED).flowOn(Dispatchers.IO)

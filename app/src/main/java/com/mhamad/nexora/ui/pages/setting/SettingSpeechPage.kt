@@ -441,7 +441,7 @@ private val TTSProviderSetting.typeName: String
         is TTSProviderSetting.Step -> "Step"
         is TTSProviderSetting.ElevenLabs -> "ElevenLabs"
         is TTSProviderSetting.FishAudio -> "Fish Audio"
-        is TTSProviderSetting.Volcengine -> "火山引擎"
+        is TTSProviderSetting.Volcengine -> "Volcengine"
     }
 
 @Composable

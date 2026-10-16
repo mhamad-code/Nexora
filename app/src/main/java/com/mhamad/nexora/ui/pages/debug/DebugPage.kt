@@ -307,11 +307,11 @@ private fun RecoveryPage(vm: DebugVM) {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            "扫描聊天记录中引用的助手，为设置中缺失的助手创建占位助手，使对应聊天记录重新可见。助手的其他配置无法恢复。",
+            "扫描聊天记录中引用的助手，为الإعدادات中缺失的助手创建占位助手，使对应聊天记录重新可见。助手的其他配置无法恢复。",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Text("设置中的助手数: ${settings.assistants.size}")
+        Text("الإعدادات中的助手数: ${settings.assistants.size}")
         Text("聊天记录中的助手数: ${conversationAssistants?.size?.toString() ?: "..."}")
         Text("缺失的助手数: ${missing?.size?.toString() ?: "..."}")
         missing?.forEach { (id, count) ->
@@ -333,19 +333,19 @@ private fun RecoveryPage(vm: DebugVM) {
                         runCatching { vm.recoverAssistantsFromConversations() }
                             .onSuccess { count ->
                                 when (count) {
-                                    null -> toaster.show("设置尚未加载", type = ToastType.Error)
-                                    0 -> toaster.show("没有需要恢复的助手")
-                                    else -> toaster.show("已恢复 $count 个助手", type = ToastType.Success)
+                                    null -> toaster.show("لم يتم تحميل الإعدادات بعد", type = ToastType.Error)
+                                    0 -> toaster.show("لا يوجد مساعدون للاستعادة")
+                                    else -> toaster.show("تمت استعادة $count مساعد", type = ToastType.Success)
                                 }
                             }
                             .onFailure {
-                                toaster.show("恢复失败: ${it.message}", type = ToastType.Error)
+                                toaster.show("فشلت الاستعادة: ${it.message}", type = ToastType.Error)
                             }
                         recovering = false
                     }
                 }
             ) {
-                Text("恢复")
+                Text("استعادة")
             }
         }
     }

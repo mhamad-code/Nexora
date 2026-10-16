@@ -65,13 +65,13 @@ class BaselineProfileGenerator {
                 input.text = """
                     # Hello RikkaHub
 
-                    这是一段 **Markdown** 文本，包含 *斜体*、`行内代码` 和列表：
+                    هذا نص تجريبي بصيغة **Markdown** يحتوي على *خط مائل* و `رمز برمجي` وقائمة:
 
-                    - 第一项
-                    - 第二项
-                    - [链接](https://github.com)
+                    - العنصر الأول
+                    - العنصر الثاني
+                    - [رابط](https://github.com)
 
-                    > 引用块示例
+                    > اقتباس توضيحي
 
                     ```kotlin
                     fun main() {

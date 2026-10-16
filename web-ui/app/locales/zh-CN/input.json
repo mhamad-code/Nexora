@@ -2,7 +2,7 @@
   "mcp": {
     "title": "MCP",
     "description": "选择当前助手可用的 MCP 服务器",
-    "update_failed": "更新 MCP 设置失败",
+    "update_failed": "更新 MCP الإعدادات失败",
     "unnamed_server": "未命名 MCP 服务器",
     "tools_enabled": "已启用 {{enabled}}/{{total}} 个工具",
     "empty": "暂无可用 MCP 服务器"
@@ -10,7 +10,7 @@
   "injection": {
     "title": "扩展",
     "description": "为当前助手启用快捷消息、模式注入和 Lorebook",
-    "update_failed": "更新扩展设置失败",
+    "update_failed": "更新扩展الإعدادات失败",
     "tab_quickmessages": "快捷消息",
     "tab_mode": "模式注入",
     "tab_lorebook": "Lorebook",
@@ -90,7 +90,7 @@
     "status_disabled": "已关闭",
     "unknown": "未知",
     "empty": "暂无可用搜索服务",
-    "builtin_notice": "当前已启用模型内置搜索，应用搜索服务设置暂不生效。"
+    "builtin_notice": "当前已启用模型内置搜索，应用搜索服务الإعدادات暂不生效。"
   },
   "chat": {
     "attachment_image": "图片",
@@ -102,7 +102,7 @@
     "send_failed": "发送失败",
     "drop_to_upload": "拖拽文件到这里上传",
     "editing_tip": "正在编辑消息，发送后会创建新分支",
-    "cancel_edit": "取消编辑",
+    "cancel_edit": "إلغاء编辑",
     "delete_attachment_failed": "删除附件失败",
     "upload_image": "上传图片",
     "upload_document": "上传文档",

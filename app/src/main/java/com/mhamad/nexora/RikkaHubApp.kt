@@ -71,7 +71,7 @@ class RikkaHubApp : Application() {
             }
         } catch (e: RestoreFailedException) {
             Log.e(TAG, "Backup restore rolled back", e)
-            Toast.makeText(this, "备份恢复失败，已保留原数据。请重新导入备份。", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "فشلت استعادة النسخة الاحتياطية، تم الاحتفاظ بالبيانات الأصلية. يرجى إعادة الاستيراد.", Toast.LENGTH_LONG).show()
         }
         startKoin {
             androidLogger()
