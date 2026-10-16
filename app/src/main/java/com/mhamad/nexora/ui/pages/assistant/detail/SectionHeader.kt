@@ -18,7 +18,6 @@ import me.rerere.hugeicons.HugeIcons
 import me.rerere.hugeicons.stroke.Add01
 import com.mhamad.nexora.R
 
-// 分组上方的小标题，可以带一段说明和右侧的操作
 @Composable
 internal fun SectionHeader(
     title: String,
@@ -54,7 +53,6 @@ internal fun SectionHeader(
     }
 }
 
-// 小标题右侧的添加按钮
 @Composable
 internal fun SectionAddButton(
     onClick: () -> Unit,

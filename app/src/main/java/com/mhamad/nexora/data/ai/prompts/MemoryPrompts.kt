@@ -5,7 +5,6 @@ import com.mhamad.nexora.data.repository.MemoryRepository
 import java.time.Instant
 import java.time.ZoneId
 
-// 写入格式规则，主对话和后台整理共用
 private val MEMORY_FORMAT_PROMPT = """
     <memory_format>
     ## File structure
@@ -137,7 +136,6 @@ private val MEMORY_CONSOLIDATION_WORKFLOW = """
     When done, output a one-line summary (what you wrote, or "none") and nothing else.
 """.trimIndent()
 
-// 用户手动触发时才做：全库重写没有新证据支撑，也没有历史版本可以回退
 private val MEMORY_FULL_REVIEW_PROMPT = """
     ## Full review
 
@@ -150,7 +148,6 @@ private val MEMORY_FULL_REVIEW_PROMPT = """
     Rule 5 of the workflow does not apply to this part. Everything else does: do not drop a fact because it looks unimportant, do not rewrite wording that is already fine, and do not add anything that is not already in the store or in the new turns. Changing nothing is a valid outcome.
 """.trimIndent()
 
-/** 后台记忆整理的 system prompt；[fullReview] 时除了提取新对话，还把整个记忆库清理一遍 */
 internal fun buildMemoryConsolidationPrompt(fullReview: Boolean): String = buildString {
     appendLine(MEMORY_CONSOLIDATION_INTRO)
     appendLine()
@@ -164,7 +161,6 @@ internal fun buildMemoryConsolidationPrompt(fullReview: Boolean): String = build
     }
 }
 
-/** 主对话 system prompt 里的记忆片段：全文注入 profile 和 preferences，其余文件只给清单 */
 internal fun buildMemoryPrompt(files: List<MemoryFile>): String = buildString {
     appendLine("<memory_system>")
     appendLine(MEMORY_SYSTEM_INTRO)
@@ -177,7 +173,6 @@ internal fun buildMemoryPrompt(files: List<MemoryFile>): String = buildString {
     appendLine(MEMORY_FORMAT_PROMPT)
 }
 
-/** 一个对话里交给整理器的部分，消息已经转成文本 */
 internal data class MemoryConsolidationConversation(
     val id: String,
     val title: String,
@@ -185,7 +180,6 @@ internal data class MemoryConsolidationConversation(
     val newTurns: String,
 )
 
-/** 后台整理的输入：当前记忆，以及各个对话里上次整理之后新增的轮次 */
 internal fun buildMemoryConsolidationInput(
     files: List<MemoryFile>,
     conversations: List<MemoryConsolidationConversation>,
@@ -197,7 +191,6 @@ internal fun buildMemoryConsolidationInput(
     }
     conversations.forEach { conversation ->
         appendLine()
-        // 标题来自模型生成或用户输入，去掉会破坏标签的字符
         val title = conversation.title.replace(Regex("[\"<>\\n]"), " ").trim().ifEmpty { "Untitled" }
         appendLine("<conversation id=\"${conversation.id}\" title=\"$title\">")
         appendLine("<recent_context>")

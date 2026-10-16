@@ -49,7 +49,6 @@ object EmojiUtils {
     }
 
     /**
-     * 将Unicode code points转换为emoji字符
      */
     fun codeToEmoji(codes: List<String>): String {
         return codes.joinToString("") { code ->
@@ -59,8 +58,6 @@ object EmojiUtils {
     }
 
     /**
-     * 检查两个emoji是否是同一个基础emoji的不同变体
-     * 通过比较它们的基础code点（忽略肤色修饰符）来判断
      */
     fun areEmojiVariants(emoji1: Emoji, emoji2: Emoji): Boolean {
         val skinToneModifiers = setOf("1F3FB", "1F3FC", "1F3FD", "1F3FE", "1F3FF")
@@ -72,8 +69,6 @@ object EmojiUtils {
     }
 
     /**
-     * 将emoji列表按变体分组
-     * 返回Map，key是基础emoji（通常是第一个变体），value是所有变体的列表
      */
     fun groupEmojisByVariants(emojis: List<Emoji>): Map<Emoji, List<Emoji>> {
         val grouped = mutableMapOf<Emoji, MutableList<Emoji>>()
@@ -84,7 +79,6 @@ object EmojiUtils {
 
             val variants = mutableListOf(emoji)
 
-            // 查找所有变体
             for (otherEmoji in emojis) {
                 if (otherEmoji != emoji && areEmojiVariants(emoji, otherEmoji)) {
                     variants.add(otherEmoji)
@@ -92,7 +86,6 @@ object EmojiUtils {
                 }
             }
 
-            // 按肤色顺序排序（如果有肤色修饰符）
             variants.sortBy { variant ->
                 val skinToneOrder = listOf("1F3FB", "1F3FC", "1F3FD", "1F3FE", "1F3FF")
                 val skinTone = variant.code.find { it in skinToneOrder }
@@ -112,7 +105,6 @@ data class EmojiData(
     val categories: List<EmojiCategory>,
 ) {
     /**
-     * 获取所有emoji的变体分组
      */
     fun getAllEmojiVariants(): Map<Emoji, List<Emoji>> {
         val allEmojis = categories.flatMap { category ->
@@ -129,7 +121,6 @@ data class EmojiCategory(
     val subCategories: List<EmojiSubCategory>,
 ) {
     /**
-     * 获取该分类下所有emoji的变体分组
      */
     fun getEmojiVariants(): Map<Emoji, List<Emoji>> {
         val allEmojis = subCategories.flatMap { it.emojis }

@@ -210,7 +210,6 @@ fun Route.conversationRoutes(
                 modeInjectionIds = request.modeInjectionIds,
                 lorebookIds = request.lorebookIds,
             )
-            // 已开始的会话自己持有注入绑定
             chatService.updateChatAssistant(uuid) {
                 it.copy(modeInjectionIds = modeInjectionIds, lorebookIds = lorebookIds)
             }

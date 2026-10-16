@@ -317,7 +317,6 @@ private fun ModeInjectionCard(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 停用的条目图标褪成中性色
             CardGroupIcon(
                 icon = HugeIcons.MagicWand01,
                 containerColor = if (injection.enabled) {
@@ -722,7 +721,6 @@ private fun LorebookCard(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 停用的条目图标褪成中性色
             CardGroupIcon(
                 icon = HugeIcons.Book01,
                 containerColor = if (book.enabled) {
@@ -889,7 +887,6 @@ private fun LorebookEditSheet(
                     }
                 )
 
-                // 条目列表
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -1074,7 +1071,6 @@ private fun RegexInjectionEditDialog(
                     )
                 }
 
-                // 关键词
                 Text(stringResource(R.string.prompt_page_keywords_label), style = MaterialTheme.typography.titleSmall)
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -1172,7 +1168,6 @@ private fun RegexInjectionEditDialog(
                         InjectionRoleSelector(
                             role = entry.role,
                             onSelect = { onEdit(entry.copy(role = it)) },
-                            // 对话框底色和默认的按钮底色一样，换一个能分开的
                             containerColor = MaterialTheme.colorScheme.surfaceBright,
                         )
                     }

@@ -37,8 +37,6 @@ import com.mhamad.nexora.R
 import com.mhamad.nexora.ui.components.richtext.MarkdownBlock
 
 /**
- * 压缩检查点：分隔线上方的消息仍可查看，但不再发送给模型，由这里的摘要代替。
- * 默认折叠，避免长摘要打断历史消息的阅读。
  */
 @Composable
 fun ChatMessageContextCheckpoint(

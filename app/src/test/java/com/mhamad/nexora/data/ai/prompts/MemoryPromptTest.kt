@@ -62,7 +62,6 @@ class MemoryPromptTest {
 
         assertEquals("- [stated] Name is Lin", input.block("profile"))
         assertTrue(input.block("memory_listing").startsWith("/topics/food.md"))
-        // 标题里的引号和尖括号不能破坏标签
         assertTrue(input.contains("<conversation id=\"c1\" title=\"Moving  to   Hangzhou\">"))
         assertEquals("(none)", input.block("recent_context"))
         assertEquals("[USER #4]: I moved to Hangzhou", input.block("new_turns"))

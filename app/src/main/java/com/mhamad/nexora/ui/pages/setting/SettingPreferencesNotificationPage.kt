@@ -154,7 +154,6 @@ fun SettingPreferencesNotificationPage(vm: SettingVM = koinViewModel()) {
                         options = UPDATE_PAUSE_DAY_OPTIONS,
                         selected = selectedUpdatePauseDays,
                         onSelect = { selectedUpdatePauseDays = it },
-                        // 对话框底色和默认的按钮底色一样，换一个能分开的
                         containerColor = MaterialTheme.colorScheme.surfaceBright,
                     ) { days, selected ->
                         ConnectedChoiceLabel(

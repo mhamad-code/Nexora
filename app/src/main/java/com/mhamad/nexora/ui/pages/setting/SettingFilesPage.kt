@@ -101,7 +101,6 @@ fun SettingFilesPage(
     val toaster = LocalToaster.current
     val folders = remember { listOf(FileFolders.UPLOAD) }
 
-    // 预先获取字符串资源
     val deletedToast = stringResource(R.string.setting_files_page_deleted_toast)
     val deleteFailedToast = stringResource(R.string.setting_files_page_delete_failed_toast)
     val cleanedToast = stringResource(R.string.setting_files_page_cleaned_toast)
@@ -295,7 +294,6 @@ private fun CleanFilesSheet(
                             } ?: stringResource(R.string.setting_files_page_clean_all)
                         )
                     },
-                    // 点整行选中，单选圈自己不接收点击
                     leadingContent = { RadioButton(selected = selected, onClick = null) },
                 )
             }
@@ -382,7 +380,6 @@ private fun FileItem(
                     .fillMaxWidth()
                     .aspectRatio(4f / 3f)
                     .padding(FileItemPreviewInset)
-                    // 预览图内缩一圈，圆角跟着减小，和卡片外沿保持同心
                     .clip(RoundedCornerShape(FileItemCorner - FileItemPreviewInset))
                     .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             ) {
@@ -417,7 +414,6 @@ private fun FileItem(
                     }
                 }
 
-                // 带底色的按钮，叠在图片上也看得清
                 FilledTonalIconButton(
                     onClick = onDelete,
                     modifier = Modifier

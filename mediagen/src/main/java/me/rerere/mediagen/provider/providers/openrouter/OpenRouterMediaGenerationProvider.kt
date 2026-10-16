@@ -15,7 +15,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 /**
- * OpenRouter：图像接口同步返回结果，视频是异步任务。两者都是 OpenRouter 自己的协议，不是 OpenAI 兼容的那一套。
  */
 class OpenRouterMediaGenerationProvider(
     client: OkHttpClient,
@@ -50,13 +49,11 @@ class OpenRouterMediaGenerationProvider(
     }
 }
 
-// X-Title / HTTP-Referer 是 OpenRouter 用来标识来源应用的，和聊天请求保持一致
 internal fun MediaGenerationProviderSetting.OpenRouter.request(path: String): Request.Builder =
     bearerRequest("${baseUrl.trimEnd('/')}$path", apiKey)
         .addHeader("X-Title", "Nexora")
         .addHeader("HTTP-Referer", "https://github.com/mhamad-code/Nexora")
 
-// 像素尺寸（1280x720）走 size，档位（2K、1080p）走 resolution
 internal fun JsonObjectBuilder.putResolution(resolution: String?) {
     if (resolution.isNullOrBlank()) return
     put(if (PIXEL_SIZE.matches(resolution)) "size" else "resolution", resolution)

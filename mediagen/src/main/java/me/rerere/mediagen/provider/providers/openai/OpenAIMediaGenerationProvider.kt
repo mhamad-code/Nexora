@@ -33,7 +33,6 @@ import kotlin.io.encoding.Base64
 import kotlin.uuid.Uuid
 
 /**
- * 目前只实现了图像：接口同步返回结果，[create] 直接得到终态任务。请求里带图片输入时走编辑接口，否则走生成接口。
  */
 class OpenAIMediaGenerationProvider(
     private val client: OkHttpClient,
@@ -104,7 +103,6 @@ class OpenAIMediaGenerationProvider(
         val defaultFormat = root.string("output_format")
         val data = root["data"] as? JsonArray ?: error("OpenAI response does not contain data")
         return MediaGenerationTask(
-            // 同步接口没有服务端任务 ID
             id = Uuid.random().toString(),
             provider = id,
             model = fallbackModel,
@@ -112,7 +110,6 @@ class OpenAIMediaGenerationProvider(
             outputs = data.map { element ->
                 val item = element.jsonObject
                 val base64 = item.string("b64_json")
-                // dall-e 系列和部分中转不返回 b64_json，而是有时效的 url
                 val url = item.string("url")
                 if (base64 == null && url == null) error("OpenAI image contains neither b64_json nor url")
                 MediaGenerationOutput(
@@ -126,7 +123,6 @@ class OpenAIMediaGenerationProvider(
             usage = root.obj("usage")?.let {
                 MediaGenerationUsage(totalTokens = it.long("total_tokens"))
             },
-            // data 里是整张图片的 base64，不放进 metadata
             metadata = JsonObject(root - "data"),
         )
     }
@@ -142,7 +138,6 @@ class OpenAIMediaGenerationProvider(
         require(request.callbackUrl == null) { "OpenAI image generation returns results synchronously" }
     }
 
-    // "auto" 交给服务端默认值；Grok 的兼容接口不接受 size
     private fun resolveSize(
         setting: MediaGenerationProviderSetting.OpenAI,
         model: MediaGenerationModel,
@@ -152,7 +147,6 @@ class OpenAIMediaGenerationProvider(
         return size.takeUnless { isGrok(setting, model) }
     }
 
-    // 只匹配 x.ai 本身及其子域名，避免 "xxx-max.ai" 之类的中转域名被误判
     private fun isGrok(setting: MediaGenerationProviderSetting.OpenAI, model: MediaGenerationModel): Boolean {
         val host = setting.baseUrl.toHttpUrlOrNull()?.host?.lowercase()
         return host == "x.ai" || host?.endsWith(".x.ai") == true || model.modelId.contains("grok", ignoreCase = true)

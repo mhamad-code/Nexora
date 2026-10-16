@@ -64,7 +64,6 @@ class MediaCreationRepositoryTest {
 
     @Test
     fun switchingStopsAtBothEnds() = runBlocking {
-        // 创建时间相同的版本按写入顺序排
         val first = insert("a1", at = 1)
         insert("a2", nodeId = first.nodeId, at = 1)
         insert("a3", nodeId = first.nodeId, at = 1)
@@ -144,11 +143,9 @@ class MediaCreationRepositoryTest {
         val first = insert("a1", output = "a1.png")
         assertEquals("a1.png", cover())
 
-        // 还没出结果的项不参与
         insert("b1")
         assertEquals("a1.png", cover())
 
-        // 封面跟着这一项显示的版本走
         insert("a2", nodeId = first.nodeId, output = "a2.png")
         assertEquals("a2.png", cover())
         repository.switchVersion(first.nodeId, -1)
@@ -160,7 +157,6 @@ class MediaCreationRepositoryTest {
 
     private suspend fun cover(): String? = repository.observeSessions().first().single().cover?.path
 
-    // 给了 [output] 的记录是已经成功、带这一项产出的，否则还在进行中
     private suspend fun insert(
         prompt: String,
         nodeId: Uuid = Uuid.random(),
@@ -183,7 +179,6 @@ class MediaCreationRepositoryTest {
         return record
     }
 
-    // 时间线上每一项显示的提示词和「第几个 / 共几个」版本，顺序和界面一致（最新的一项在前）
     private suspend fun timeline(): List<String> {
         val result = dao.nodePagingSource(session.id.toString())
             .load(PagingSource.LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = true))

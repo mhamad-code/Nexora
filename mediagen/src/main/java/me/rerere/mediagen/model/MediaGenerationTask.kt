@@ -42,8 +42,6 @@ enum class MediaGenerationStatus {
 }
 
 /**
- * 一项产出。异步任务返回有时效的 [url]，需要上层及时下载；同步接口内联返回的内容放在 [data]，
- * 它不参与序列化，持久化任务前要先把字节落盘。
  */
 @Serializable
 data class MediaGenerationOutput(

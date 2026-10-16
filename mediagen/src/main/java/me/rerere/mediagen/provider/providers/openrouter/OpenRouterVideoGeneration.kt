@@ -22,8 +22,6 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 
 /**
- * OpenRouter 的视频接口：提交后得到任务 ID，轮询到 `completed` 再从 `unsigned_urls` 下载。
- * 这些地址没有签名，下载时要带 [MediaGenerationProviderSetting.downloadHeaders]。
  */
 internal class OpenRouterVideoGeneration(
     private val client: OkHttpClient,
@@ -56,7 +54,6 @@ internal class OpenRouterVideoGeneration(
         put("model", model.modelId)
         request.prompt?.takeIf(String::isNotBlank)?.let { put("prompt", it) }
 
-        // 首帧 / 尾帧和参考素材是两个字段
         val frames = mutableListOf<JsonObject>()
         val references = mutableListOf<JsonObject>()
         request.inputs.forEach { input ->
@@ -120,7 +117,6 @@ internal class OpenRouterVideoGeneration(
     ): MediaGenerationTask {
         val baseUrl = setting.baseUrl.toHttpUrlOrNull()
         val urls = (root["unsigned_urls"] as? JsonArray).orEmpty().mapNotNull { (it as? JsonPrimitive)?.contentOrNull }
-        // 文档里失败原因是一句话，这里也接受和其它接口一样的 error 对象
         val errorMessage = when (val failure = root["error"]) {
             is JsonObject -> failure.string("message")
             is JsonPrimitive -> failure.contentOrNull
@@ -133,7 +129,6 @@ internal class OpenRouterVideoGeneration(
             status = mapStatus(root.string("status")),
             outputs = urls.map { url ->
                 MediaGenerationOutput(
-                    // 文档示例里的 polling_url 是相对地址，这里的地址也按 baseUrl 解析成绝对地址
                     url = baseUrl?.resolve(url)?.toString() ?: url,
                     mimeType = "video/mp4",
                 )

@@ -9,7 +9,6 @@ import me.rerere.mediagen.provider.MediaGenerationProviderSetting
 import okhttp3.OkHttpClient
 
 /**
- * 火山方舟：Seedream 图像同步返回结果，Seedance 视频是异步任务。
  */
 class VolcengineMediaGenerationProvider(
     client: OkHttpClient,

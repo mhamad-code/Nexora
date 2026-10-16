@@ -9,8 +9,6 @@ import com.mhamad.nexora.R
 import com.mhamad.nexora.ui.theme.PresetTheme
 
 /**
- * Claude 风格：象牙白/米色的暖中性底色，赤陶橙作为强调色，
- * 牛皮棕与马尼拉黄作为点缀色。
  */
 val ClaudeThemePreset by lazy {
     PresetTheme(

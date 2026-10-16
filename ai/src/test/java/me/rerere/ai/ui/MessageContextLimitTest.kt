@@ -30,7 +30,6 @@ class MessageContextLimitTest {
     }
 
     /**
-     * limit 过小时无法构造滞回, 但至少不能崩溃, 也不能把上下文清空
      */
     @Test
     fun `limitContext with tiny limit should degrade gracefully`() {
@@ -58,7 +57,6 @@ class MessageContextLimitTest {
     }
 
     /**
-     * 核心性质: 同一级台阶内追加消息时截断起点必须保持不动, 否则请求前缀每轮都变, 提示词缓存必然失效
      */
     @Test
     fun `limitContext should keep the same start message while within one step`() {
@@ -173,14 +171,12 @@ class MessageContextLimitTest {
     }
 
     /**
-     * 摘要是被压缩历史的唯一来源, 条数限制不能把它截掉
      */
     @Test
     fun `limitContext should keep the checkpoint when the limit truncates after it`() {
         val messages = createTestMessages(20).withCheckpointsAt(4)
         val result = messages.limitContext(10)
 
-        // 检查点之后有 15 条: limit=10 -> startIndex=10, 即保留最后 5 条
         assertEquals(listOf(messages[4]) + messages.subList(15, 20), result)
     }
 

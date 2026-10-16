@@ -56,7 +56,6 @@ private const val TAG = "GenerationHandler"
 private const val MAX_TOOL_OUTPUT_CHARS = 32 * 1024
 private const val TOOL_OUTPUT_PREVIEW_CHARS = 4 * 1024
 
-// 搜索结果的体积由用户设置的结果数决定，且结果列表 UI 与引用跳转都依赖完整的 JSON 结构，不参与截断
 private val TOOLS_WITHOUT_OUTPUT_TRUNCATION = setOf("search_web")
 private const val MAX_PROVIDER_NETWORK_RETRIES = 3
 private const val INITIAL_PROVIDER_RETRY_DELAY_MS = 1_000L
@@ -271,7 +270,6 @@ class GenerationLoop(
                                 output = maybeTruncateToolOutput(tool, result, hasShellAccess)
                             )
                         }.onFailure {
-                            // 取消必须向上传播，否则停止生成会被误报为工具执行错误
                             if (it is CancellationException) throw it
                             it.printStackTrace()
                             executedTools += tool.copy(
@@ -353,12 +351,10 @@ class GenerationLoop(
                     append(effectiveSystemPrompt)
                 }
 
-                // 记忆
                 if (assistant.enableMemory) {
                     appendLine()
                     append(buildMemoryPrompt(memories))
                 }
-                // 工具prompt
                 tools.forEach { tool ->
                     appendLine()
                     append(tool.systemPrompt(model, messages))
@@ -398,9 +394,6 @@ class GenerationLoop(
         )
         try {
             if (stream) {
-                // 每次重试都从本次模型调用开始前的消息快照重新合并，避免将重试响应
-                // 追加到已经展示的半截回复后面。预先创建助手消息可让所有尝试复用同一 ID，
-                // ChatService 因而会覆盖当前分支，而不是创建新的候选消息。
                 val responseBaseMessages =
                     if (messages.lastOrNull()?.role == MessageRole.ASSISTANT) {
                         messages
@@ -431,7 +424,6 @@ class GenerationLoop(
                             } catch (error: CancellationException) {
                                 throw error
                             } catch (error: Throwable) {
-                                // 下游消息转换或 UI 更新失败不属于网络故障，不能重放模型请求。
                                 throw StreamChunkHandlingException(error)
                             }
                         }
@@ -494,8 +486,6 @@ class GenerationLoop(
         processingStatus: MutableStateFlow<String?>,
         enabled: Boolean,
     ): Int {
-        // 用户主动停止生成时，底层连接也可能以 IOException("canceled") 收尾；
-        // 先检查协程状态，确保取消不会被当作网络波动重新拉起。
         currentCoroutineContext().ensureActive()
         if (!enabled || error !is IOException || retryCount >= MAX_PROVIDER_NETWORK_RETRIES) {
             throw error

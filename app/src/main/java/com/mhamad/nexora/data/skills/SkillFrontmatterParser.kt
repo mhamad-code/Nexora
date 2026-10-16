@@ -34,7 +34,6 @@ object SkillFrontmatterParser {
         return content.substring(endRange.last + 1).trimStart('\r', '\n')
     }
 
-    /** 把 [values] 写成 frontmatter 接在 [body] 前面，[parse] 和 [extractBody] 能原样读回来 */
     fun compose(values: Map<String, Any?>, body: String): String = buildString {
         append("---\n")
         append(createDumper().dump(values))
@@ -65,10 +64,8 @@ object SkillFrontmatterParser {
     private fun createDumper(): Yaml {
         val options = DumperOptions().apply {
             defaultFlowStyle = DumperOptions.FlowStyle.BLOCK
-            // 一个值占一行：长句子折行后，按行替换文本的工具就对不上了
             splitLines = false
         }
-        // 列表写成 [a, b]，和模型按格式约定写出来的一样
         val representer = object : Representer(options) {
             override fun representSequence(
                 tag: Tag,

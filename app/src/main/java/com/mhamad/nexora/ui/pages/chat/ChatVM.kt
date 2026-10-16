@@ -64,16 +64,14 @@ class ChatVM(
 ) : ViewModel() {
     private val _conversationId: Uuid = Uuid.parse(id)
     val conversation: StateFlow<Conversation> = chatService.getConversationFlow(_conversationId)
-    var chatListInitialized by mutableStateOf(false) // 聊天列表是否已经滚动到底部
+    var chatListInitialized by mutableStateOf(false)
 
-    // 聊天输入状态 - 保存在 ViewModel 中避免 TransactionTooLargeException
     val inputState = ChatInputState()
 
     val voiceSession = VoiceSessionController(viewModelScope, context::getString) {
         chatService.enqueueVoiceMessage(_conversationId, it)
     }
 
-    // 异步任务 (从ChatService获取，响应式)
     val conversationJob: StateFlow<Job?> =
         chatService
             .getGenerationJobStateFlow(_conversationId)
@@ -88,46 +86,37 @@ class ChatVM(
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     init {
-        // 添加对话引用
         chatService.addConversationReference(_conversationId)
 
-        // 初始化对话
         viewModelScope.launch {
             chatService.initializeConversation(_conversationId)
         }
 
-        // 记住对话ID, 方便下次启动恢复
         context.writeStringPreference("lastConversationId", _conversationId.toString())
     }
 
     override fun onCleared() {
         voiceSession.stop()
         super.onCleared()
-        // 移除对话引用
         chatService.removeConversationReference(_conversationId)
     }
 
-    // 用户设置
     val settings: StateFlow<Settings> =
         settingsStore.settingsFlow.stateIn(viewModelScope, SharingStarted.Eagerly, Settings.dummy())
 
-    // 流式输出时会话每个 chunk 都在变，助手和模型只取决于下面这几个字段
     private val configuredConversation = conversation.distinctUntilChanged { old, new ->
         old.assistantId == new.assistantId && old.config == new.config &&
             old.modeInjectionIds == new.modeInjectionIds && old.lorebookIds == new.lorebookIds
     }
 
-    // 会话视角下的助手：会话开始后，模型、思考级别、搜索等以会话上固定的配置为准
     val assistant: StateFlow<Assistant> = combine(settings, configuredConversation) { settings, conversation ->
         settings.getAssistantOf(conversation)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, settings.value.getAssistantOf(conversation.value))
 
-    // 当前模型
     val currentChatModel: StateFlow<Model?> = combine(settings, configuredConversation) { settings, conversation ->
         settings.getChatModelOf(conversation)
     }.stateIn(viewModelScope, SharingStarted.Lazily, settings.value.getChatModelOf(conversation.value))
 
-    // 错误状态
     val errors: StateFlow<List<ChatError>> = chatService.errors
 
     fun dismissError(id: Uuid) = chatService.dismissError(id)
@@ -145,13 +134,10 @@ class ChatVM(
 
     fun resumeMessageQueue() = chatService.resumeMessageQueue(_conversationId)
 
-    // 生成完成
     val generationDoneFlow: SharedFlow<Uuid> = chatService.generationDoneFlow
 
-    // MCP管理器
     val mcpManager = chatService.mcpManager
 
-    // 更新设置
     fun updateSettings(fn: (Settings) -> Settings): Job {
         return viewModelScope.launch {
             var oldSettings: Settings? = null
@@ -162,12 +148,10 @@ class ChatVM(
                     newSettings = new
                 }
             }
-            // 检查用户头像是否有变化，如果有则删除旧头像
             checkUserAvatarDelete(oldSettings ?: return@launch, newSettings ?: return@launch)
         }
     }
 
-    // 检查用户头像删除
     private fun checkUserAvatarDelete(oldSettings: Settings, newSettings: Settings) {
         val oldAvatar = oldSettings.displaySetting.userAvatar
         val newAvatar = newSettings.displaySetting.userAvatar
@@ -177,21 +161,18 @@ class ChatVM(
         }
     }
 
-    // 聊天页对助手的修改：新会话直接改助手，会话开始后只改当前会话
     fun updateAssistant(assistant: Assistant) {
         viewModelScope.launch {
             chatService.updateChatAssistant(_conversationId) { assistant }
         }
     }
 
-    // 设置聊天模型
     fun setChatModel(model: Model) {
         viewModelScope.launch {
             chatService.updateChatAssistant(_conversationId) { it.copy(chatModelId = model.id) }
         }
     }
 
-    // 切换搜索方式
     fun updateSearch(enableWebSearch: Boolean, builtInSearch: Boolean) {
         viewModelScope.launch {
             chatService.updateChatSearch(_conversationId, enableWebSearch, builtInSearch)
@@ -215,10 +196,7 @@ class ChatVM(
         )
 
     /**
-     * 处理消息发送
      *
-     * @param content 消息内容
-     * @param answer 是否触发消息生成，如果为false，则仅添加消息到消息列表中
      */
     fun handleMessageSend(content: List<UIMessagePart>,answer: Boolean = true) {
         if (content.isEmptyInputMessage()) return

@@ -26,7 +26,6 @@ internal val jsonMediaType = "application/json".toMediaType()
 internal fun bearerRequest(url: String, apiKey: String): Request.Builder =
     Request.Builder().url(url).addHeader("Authorization", "Bearer $apiKey")
 
-// 响应体在 IO 线程读取，调用方可以直接从主线程协程发起请求
 internal suspend fun OkHttpClient.executeJson(request: Request, provider: String): JsonObject =
     withContext(Dispatchers.IO) {
         newCall(request).await().use { response ->

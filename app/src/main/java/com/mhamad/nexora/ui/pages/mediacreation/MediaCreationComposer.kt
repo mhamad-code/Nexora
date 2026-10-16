@@ -135,7 +135,6 @@ import kotlin.uuid.Uuid
 private const val MAX_PICKED_IMAGES = 8
 
 /**
- * 页面底部的输入区：素材、提示词，以及模型和参数的选择。
  */
 @Composable
 internal fun MediaCreationComposer(
@@ -151,13 +150,10 @@ internal fun MediaCreationComposer(
     var showModels by remember { mutableStateOf(false) }
     var showParams by remember { mutableStateOf(false) }
 
-    // 正在为哪个角色挑选素材，非空时显示素材选择面板
     var pickingRole by rememberSaveable { mutableStateOf<ImageRole?>(null) }
 
-    // 系统相册返回时面板已经关闭，这里记住选中的文件该放进哪个角色
     var importRole by rememberSaveable { mutableStateOf(ImageRole.REFERENCE) }
 
-    // 非空时显示画板
     var sketching by remember { mutableStateOf<SketchRequest?>(null) }
     val imagesPicker = rememberLauncherForActivityResult(
         ActivityResultContracts.PickMultipleVisualMedia(MAX_PICKED_IMAGES)
@@ -176,14 +172,11 @@ internal fun MediaCreationComposer(
     val canSubmit = capabilities != null &&
         draft.copy(prompt = vm.promptState.text.toString()).canSubmit(capabilities)
 
-    // 分槽位（首帧、尾帧）的模型一直显示素材行，槽位本身就是提示；只有参考素材的模型没放素材时把这一行
-    // 收起来，从输入框左边的加号添加
     val hasFrameSlots = capabilities != null && capabilities.frameRoles.isNotEmpty()
     val showAssets = capabilities != null && capabilities.acceptsAssets &&
         (hasFrameSlots || draft.assets.isNotEmpty())
     val showAddButton = capabilities != null && capabilities.acceptsAssets && !hasFrameSlots
 
-    // 和聊天页的输入框一样，是一个悬浮在页面底部的圆角容器
     Surface(
         modifier = modifier
             .windowInsetsPadding(
@@ -331,7 +324,6 @@ internal fun MediaCreationComposer(
 
     val role = pickingRole
     if (role != null && capabilities != null) {
-        // 视频只能作为参考素材
         val acceptsVideo = capabilities.videoInput && role == ImageRole.REFERENCE
         AssetPickerSheet(
             role = role,
@@ -342,7 +334,6 @@ internal fun MediaCreationComposer(
                 pickingRole = null
                 importRole = role
                 val request = PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                // 首帧和尾帧各只有一张
                 if (role == ImageRole.REFERENCE) imagesPicker.launch(request) else imagePicker.launch(request)
             },
             onPickVideo = {
@@ -364,7 +355,6 @@ internal fun MediaCreationComposer(
     sketching?.let { request ->
         SketchDialog(
             image = request.asset?.let { vm.resolve(it.path).toUri() },
-            // 白纸默认用参数里选的比例，画出来的首帧、参考图和要生成的画面对得上
             aspectRatio = if (selection != null && capabilities != null) {
                 draft.params
                     .withRequired(capabilities, selection.provider.presets(selection.model.kind).defaults)
@@ -383,12 +373,10 @@ internal fun MediaCreationComposer(
 }
 
 /**
- * 打开画板的一次请求：给 [role] 画一张新的，或者在已有的 [asset] 上画。
  */
 private class SketchRequest(val role: ImageRole, val asset: MediaCreationAsset? = null)
 
 /**
- * 输入区的内容是从时间线上的一条记录填回来的：生成的结果会成为它的新版本。退出后内容保留，生成时另起一条。
  */
 @Composable
 private fun EditingBar(onStop: () -> Unit, modifier: Modifier = Modifier) {
@@ -425,7 +413,6 @@ private fun EditingBar(onStop: () -> Unit, modifier: Modifier = Modifier) {
 private val MediaGenerationCapabilities.acceptsAssets: Boolean
     get() = imageRoles.isNotEmpty() || videoInput
 
-/** 模型区分的槽位：首帧、尾帧各放一张图。 */
 private val MediaGenerationCapabilities.frameRoles: List<ImageRole>
     get() = listOf(ImageRole.FIRST_FRAME, ImageRole.LAST_FRAME).filter { it in imageRoles }
 
@@ -433,7 +420,6 @@ private val MediaGenerationModel.name: String
     get() = displayName.ifBlank { modelId }
 
 /**
- * 和聊天输入框一样只显示模型的图标，长按显示名称。
  */
 @Composable
 private fun ModelButton(model: MediaGenerationModel?, onClick: () -> Unit) {
@@ -466,7 +452,6 @@ private fun ComposerChip(
 ) {
     FilledTonalButton(
         onClick = onClick,
-        // 按下时圆角收紧
         shapes = ButtonDefaults.shapes(),
         modifier = modifier,
         contentPadding = ButtonDefaults.contentPaddingFor(ButtonDefaults.MinHeight, hasStartIcon = true),
@@ -477,7 +462,6 @@ private fun ComposerChip(
             text = text,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            // 文字放不下时省略，图标保持完整
             modifier = Modifier.weight(1f, fill = false),
         )
     }
@@ -485,7 +469,6 @@ private fun ComposerChip(
 
 @Composable
 private fun GenerateButton(enabled: Boolean, onClick: () -> Unit) {
-    // 页面上最主要的操作：比旁边的按钮宽一截，按下时圆角收紧
     FilledIconButton(
         onClick = onClick,
         shapes = IconButtonDefaults.shapes(),
@@ -502,11 +485,8 @@ private fun GenerateButton(enabled: Boolean, onClick: () -> Unit) {
     }
 }
 
-// ---- 素材 ----
 
 /**
- * 视频模型按用途分槽位：首帧、尾帧各一张，其后是任意数量的参考素材。图像模型只有参考图，
- * 这时添加入口在输入框左边，这一行只列出已经放进来的素材。
  */
 @Composable
 private fun AssetRow(
@@ -529,10 +509,8 @@ private fun AssetRow(
             file = resolve(asset.path),
             isVideo = isVideo,
             label = if (isVideo) stringResource(R.string.video) else asset.role.label.takeIf { showLabels },
-            // 图片可以在各个槽位之间挪动
             roleOptions = if (isVideo) emptyList() else capabilities.imageRoles.filter { it != asset.role },
             onSetRole = { onSetRole(asset, it) },
-            // 只有图片能垫在画板下面
             onDraw = if (isVideo) null else ({ onDraw(asset) }),
             onRemove = { onRemove(asset) },
         )
@@ -663,7 +641,6 @@ private fun EmptyAssetTile(label: String, onClick: () -> Unit) {
 }
 
 /**
- * 给某个槽位挑素材：之前生成过的内容排在前面，也可以从系统相册导入，或者现画一张草图。
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -690,7 +667,6 @@ private fun AssetPickerSheet(
             style = MaterialTheme.typography.titleMedium,
         )
 
-        // 一行两个，放不下的换到下一行
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -750,7 +726,6 @@ private fun AssetPickerSheet(
     }
 }
 
-// ---- 模型 ----
 
 @Composable
 private fun ModelSheet(
@@ -760,7 +735,6 @@ private fun ModelSheet(
     onManage: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    // 适配器没有实现的类型不列出来
     val groups = providers
         .map { provider -> provider to provider.models.filter { provider.capabilities(it.kind) != null } }
         .filter { it.second.isNotEmpty() }
@@ -854,11 +828,8 @@ private fun ModelRow(
     }
 }
 
-// ---- 参数 ----
 
 /**
- * 只列出当前模型的适配器支持的公共参数。每一项都可以回到「默认」，即不下发、交给接口决定；
- * 接口必填的参数没有「默认」，不设置时使用第一个快捷选项。
  */
 @Composable
 private fun ParamsSheet(
@@ -867,7 +838,6 @@ private fun ParamsSheet(
     onParamsChange: (MediaCreationParams) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    // 面板打开期间以本地状态为准，输入框不用等草稿绕一圈回来
     var current by remember { mutableStateOf(params) }
     fun update(value: MediaCreationParams) {
         current = value
@@ -881,7 +851,6 @@ private fun ParamsSheet(
     val defaults = presets.defaults
 
     ComposerSheet(onDismiss = onDismiss) {
-        // 改过的参数，和输入区按钮上显示的是同一份
         val changed = current.summary(kind)
         PickerHeader(
             title = stringResource(R.string.media_creation_page_params_title),
@@ -889,7 +858,6 @@ private fun ParamsSheet(
                 .ifEmpty { stringResource(R.string.media_creation_page_param_default) },
             modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
         ) {
-            // 这里不放形状，参数多的时候要把高度留给下面的列表
             TextButton(
                 onClick = { update(MediaCreationParams()) },
                 enabled = changed.isNotEmpty(),
@@ -987,7 +955,6 @@ private fun ParamsSheet(
     }
 }
 
-// [default] 不为空表示这一项必填：没有「默认」，还没设置时选中的是 [default]
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun <T> PresetChips(
@@ -1020,7 +987,6 @@ private fun <T> PresetChips(
     }
 }
 
-// 选中时从胶囊变成方角
 @Composable
 private fun PresetButton(
     selected: Boolean,
@@ -1030,7 +996,6 @@ private fun PresetButton(
 ) {
     ToggleButton(
         checked = selected,
-        // 再点一次已经选中的不会取消
         onCheckedChange = { onClick() },
         modifier = Modifier.semantics { role = Role.RadioButton },
         buttonSize = ToggleButtonSize.ExtraSmall,
@@ -1044,7 +1009,6 @@ private fun PresetButton(
 }
 
 /**
- * 比例选项前面的小图标：按「宽:高」画出对应形状的方框。adaptive 这类不是固定比例的取值画成虚线方框。
  */
 @Composable
 private fun AspectRatioIcon(value: String) {
@@ -1052,9 +1016,7 @@ private fun AspectRatioIcon(value: String) {
     val color = LocalContentColor.current
     Canvas(modifier = Modifier.size(18.dp)) {
         val strokeWidth = 1.5.dp.toPx()
-        // 描边压在边线两侧，留出一个线宽才不会被裁掉
         val box = size.minDimension - strokeWidth
-        // 太扁或太窄的比例收一收，保证看得出是个方框
         val shape = (ratio ?: 1f).coerceIn(0.4f, 2.5f)
         val frame = if (shape >= 1f) Size(box, box / shape) else Size(box * shape, box)
         drawRoundRect(
@@ -1112,8 +1074,6 @@ private fun TextParam(
     }
 }
 
-// 只接受正整数（[allowZero] 时含 0）；清空输入框等于回到默认。
-// [special] 是额外接受的一个负数取值和它在快捷选项上的名字，输入框里打出负号就算选中它
 @Composable
 private fun NumberParam(
     label: String,
@@ -1140,7 +1100,6 @@ private fun NumberParam(
             onValueChange = { text ->
                 val input = text.trim()
                 val number = if (special != null && input.startsWith("-")) {
-                    // 已经是特殊取值时内容变短，说明是在删除
                     special.first.takeUnless { value == it && input.length < it.toString().length }
                 } else {
                     input.filter(Char::isDigit).take(maxDigits).toLongOrNull()?.takeIf { allowZero || it > 0 }
@@ -1169,7 +1128,6 @@ private fun ToggleParam(
         false to stringResource(R.string.media_creation_page_param_off),
     )
     FormItem(label = { Text(label) }) {
-        // 连接式按钮组
         Row(
             modifier = Modifier
                 .fillMaxWidth()

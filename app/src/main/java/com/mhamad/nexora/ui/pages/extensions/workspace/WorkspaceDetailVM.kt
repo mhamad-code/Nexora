@@ -78,7 +78,6 @@ class WorkspaceDetailVM(
                         } catch (error: Exception) {
                             failures += "${entry.name}：${error.message ?: "导出失败"}"
                         } finally {
-                            // 只清理本次创建但未完整写入的文件。
                             destination?.let { runCatching { DocumentsContract.deleteDocument(resolver, it) } }
                         }
                         _state.update { it.copy(exportCompleted = index + 1) }
@@ -187,7 +186,7 @@ class WorkspaceDetailVM(
             }.onSuccess {
                 refresh()
             }.onFailure { error ->
-                _state.update { it.copy(error = error.message ?: "删除失败") }
+                _state.update { it.copy(error = error.message ?: "فشل الحذف") }
             }
         }
     }
@@ -231,8 +230,6 @@ class WorkspaceDetailVM(
     ): File = repository.resolveFile(id, area, entry.path)
 
     /**
-     * 把当前区域下的文件导出到 cacheDir 的临时文件, 完成后回调 [onReady].
-     * 供分享 / 图片预览 / 交给系统应用打开等复用 (它们都需要一个 FileProvider 可访问的真实 File).
      */
     fun exportToCacheFile(entry: WorkspaceFileEntry, cacheDir: File, onReady: (File) -> Unit) {
         viewModelScope.launch {
@@ -305,7 +302,6 @@ class WorkspaceDetailVM(
     fun executeTerminalCommand(command: String) {
         val trimmed = command.trim()
         if (trimmed.isBlank()) return
-        // 原子地完成「检查 running」与「置 running=true」, 避免两次快速提交并发启动两条命令
         val previous = _terminalState.getAndUpdate { state ->
             if (state.running) {
                 state

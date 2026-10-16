@@ -178,7 +178,6 @@ class AliyunMediaGenerationProviderTest {
                 jsonResponse(request, """{"output":{"task_id":"t1","task_status":"PENDING"}}""")
             }
         })
-        // 不含占位符的地址（如旧的 dashscope 域名）原样使用，不需要 workspaceId
         val setting = MediaGenerationProviderSetting.Aliyun(apiKey = "key", baseUrl = "https://dash.example.com/api/v1")
         val video = setting.models.single { it.kind == MediaKind.VIDEO }
 
@@ -196,7 +195,6 @@ class AliyunMediaGenerationProviderTest {
             imageRequest.url.toString(),
         )
         assertEquals("Bearer key", imageRequest.header("Authorization"))
-        // 图像走同步接口，不带异步头
         assertNull(imageRequest.header("X-DashScope-Async"))
         assertEquals(
             "https://dash.example.com/api/v1/services/aigc/video-generation/video-synthesis",
@@ -237,7 +235,6 @@ class AliyunMediaGenerationProviderTest {
             requests.map { it.url.toString() },
         )
 
-        // 换地域只改 baseUrl 里的地域段
         requests.clear()
         val singapore = setting.copy(baseUrl = "https://{WorkspaceId}.ap-southeast-1.maas.aliyuncs.com/api/v1/")
         manager.create(singapore, wan, MediaGenerationRequest(prompt = "cat")).getOrThrow()
@@ -275,12 +272,10 @@ class AliyunMediaGenerationProviderTest {
     @Test
     fun aliyunTreatsUnknownTaskStatusAsExpired() {
         val video = AliyunVideoGeneration(client)
-        // 文档里 task_id 过期后的查询结果
         val expired = video.parseTask(parse("""{"output":{"task_id":"t1","task_status":"UNKNOWN"}}"""))
         assertEquals(MediaGenerationStatus.EXPIRED, expired.status)
         assertTrue(expired.isTerminal)
 
-        // 文档没列出的状态仍然当作未结束，不能把还在跑的任务判成过期
         val unrecognised = video.parseTask(parse("""{"output":{"task_id":"t1","task_status":"SUSPENDED"}}"""))
         assertEquals(MediaGenerationStatus.UNKNOWN, unrecognised.status)
         assertTrue(!unrecognised.isTerminal)

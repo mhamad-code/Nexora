@@ -129,7 +129,6 @@ class MediaCreationTest {
     fun `required params fall back to the given defaults`() {
         val defaults = MediaCreationParams(count = 1, resolution = "768P", aspectRatio = "16:9", durationSeconds = 5)
 
-        // MiniMax 要求分辨率、比例、时长；数量不是必填，不会被补上
         assertEquals(
             MediaCreationParams(resolution = "768P", aspectRatio = "16:9", durationSeconds = 5),
             MediaCreationParams().withRequired(miniMaxVideo, defaults),
@@ -162,7 +161,6 @@ class MediaCreationTest {
         )
         assertEquals("1080p", request.resolution)
         assertEquals(5, request.durationSeconds)
-        // 火山视频不接受数量和提示词优化
         assertNull(request.count)
         assertNull(request.promptEnhancement)
     }

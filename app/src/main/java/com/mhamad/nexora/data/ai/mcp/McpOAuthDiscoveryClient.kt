@@ -20,7 +20,6 @@ import kotlin.coroutines.resumeWithException
 
 private const val TAG = "McpOAuthDiscovery"
 
-/** MCP 授权规范特有的资源服务器与授权服务器元数据发现。 */
 internal class McpOAuthDiscoveryClient(
     private val httpClient: OkHttpClient,
 ) {
@@ -48,8 +47,6 @@ internal class McpOAuthDiscoveryClient(
     )
 
     /**
-     * 优先根据 MCP Server 401 响应中的 resource_metadata 定位，退回 RFC 9728
-     * well-known 路径。
      */
     suspend fun discoverProtectedResource(serverUrl: String): ProtectedResourceMetadata =
         withContext(Dispatchers.IO) {
@@ -64,10 +61,9 @@ internal class McpOAuthDiscoveryClient(
                     return@withContext metadata
                 }
             }
-            error("无法发现受保护资源元数据 (protected resource metadata)")
+            error("تعذر اكتشاف البيانات الوصفية للمورد المحمي")
         }
 
-    /** 依次尝试 RFC 8414 与 OIDC Discovery 的 well-known 路径。 */
     suspend fun discoverAuthorizationServer(issuer: String): AuthorizationServerMetadata =
         withContext(Dispatchers.IO) {
             for (url in wellKnownAuthorizationServerUrls(issuer)) {
@@ -77,7 +73,7 @@ internal class McpOAuthDiscoveryClient(
                     return@withContext metadata
                 }
             }
-            error("无法发现授权服务器元数据 (authorization server metadata): $issuer")
+            error("تعذر اكتشاف خادم المصادقة元数据 (authorization server metadata): $issuer")
         }
 
     private suspend fun probeResourceMetadataUrl(serverUrl: String): String? {
@@ -165,7 +161,6 @@ internal class McpOAuthDiscoveryClient(
     companion object {
         private val RESOURCE_METADATA_REGEX = Regex("resource_metadata=\"([^\"]+)\"")
 
-        /** 服务器 origin，用于未提供受保护资源元数据时作为授权服务器 issuer。 */
         fun serverOrigin(serverUrl: String): String? {
             val url = serverUrl.toHttpUrlOrNull() ?: return null
             val defaultPort = HttpUrl.defaultPort(url.scheme)
@@ -173,11 +168,9 @@ internal class McpOAuthDiscoveryClient(
             return "${url.scheme}://${url.host}$port"
         }
 
-        /** RFC 8707 与 MCP 规范使用的 canonical resource URI。 */
         fun canonicalResource(serverUrl: String): String {
             val url = serverUrl.toHttpUrlOrNull() ?: return serverUrl
             val canonical = url.newBuilder().fragment(null).build().toString()
-            // 根路径不带尾部斜杠（如 https://mcp.mongodb.com），与资源服务器声明的 resource 保持一致
             return if (url.encodedPath == "/" && url.query == null) canonical.removeSuffix("/") else canonical
         }
     }

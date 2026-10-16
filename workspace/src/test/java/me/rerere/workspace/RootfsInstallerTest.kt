@@ -18,7 +18,6 @@ class RootfsInstallerTest {
 
     @Test
     fun `extract skips OTHER entry data exactly once`() {
-        // OTHER 条目 (如 GNU sparse) 带 size>0 数据区, 双重 skip 会让后续 header 错位
         val archive = tmp.newFile("rootfs.tar.gz")
         GZIPOutputStream(archive.outputStream()).use { out ->
             out.writeTarEntry("a.txt", '0', "hello".toByteArray())
@@ -53,7 +52,6 @@ class RootfsInstallerTest {
 
     @Test
     fun `extract handles alpine style rootfs`() {
-        // Alpine minirootfs 以根目录条目 "./" 开头, 且 /bin/sh 是指向 /bin/busybox 的绝对路径软链
         val archive = tmp.newFile("rootfs.tar.gz")
         GZIPOutputStream(archive.outputStream()).use { out ->
             out.writeTarEntry("./", '5', ByteArray(0))

@@ -200,7 +200,6 @@ fun McpPickerListItem(
     }
 }
 
-// MCP 选择页，作为子页面嵌在加号 sheet 里
 @Composable
 internal fun McpPickerPage(
     assistant: Assistant,
@@ -332,7 +331,6 @@ fun McpPicker(
                     }
                 },
                 trailingContent = {
-                    // 整行都能点击切换，开关只用来显示状态
                     Switch(checked = checked, onCheckedChange = null)
                 },
             ) {

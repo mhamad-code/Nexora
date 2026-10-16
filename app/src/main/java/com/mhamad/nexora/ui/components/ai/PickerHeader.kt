@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.sp
 import androidx.graphics.shapes.Morph
 import androidx.graphics.shapes.RoundedPolygon
 
-// sheet 的头部：左侧标题与说明，右侧放操作
 @Composable
 internal fun PickerHeader(
     title: String,
@@ -64,7 +63,6 @@ internal fun PickerHeader(
         ) {
             Text(
                 text = title,
-                // 各语言标题长短差别很大，放不下两行时自动缩小字号
                 autoSize = TextAutoSize.StepBased(minFontSize = 20.sp, maxFontSize = 28.sp),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
@@ -84,7 +82,6 @@ internal fun PickerHeader(
     }
 }
 
-// 选择器 sheet 的紧凑头部：左侧依次是小标题、当前选项和说明，右侧放随选项变形的形状
 @Composable
 internal fun <T : Comparable<T>> PickerValueHeader(
     title: String,
@@ -119,7 +116,6 @@ internal fun <T : Comparable<T>> PickerValueHeader(
     }
 }
 
-// 形状随 index 切换，相邻形状之间用 Morph 连续过渡
 @Composable
 internal fun PickerHero(
     shapes: List<RoundedPolygon>,
@@ -150,7 +146,6 @@ internal fun PickerHero(
         modifier = modifier
             .size(72.dp)
             .drawBehind {
-                // 弹簧会过冲，position 可能略微越界
                 val segment = position.toInt().coerceIn(0, morphs.lastIndex)
                 morphs[segment].toPath(
                     progress = (position - segment).coerceIn(0f, 1f),
@@ -158,7 +153,6 @@ internal fun PickerHero(
                 )
                 withTransform({
                     rotate(position * 30f)
-                    // MaterialShapes 是归一化到 1x1 的
                     scale(size.width, size.height, pivot = Offset.Zero)
                 }) {
                     drawPath(path, animatedContainerColor)
@@ -183,7 +177,6 @@ internal fun PickerHero(
     }
 }
 
-// 当前选项的名称，切换时上下滚动
 @Composable
 private fun <T : Comparable<T>> PickerValueLabel(
     value: T,
@@ -196,7 +189,6 @@ private fun <T : Comparable<T>> PickerValueLabel(
         targetState = value,
         modifier = modifier,
         transitionSpec = {
-            // 值变大时向上滚动，变小时向下滚动
             val direction = if (targetState > initialState) 1 else -1
             (slideInVertically(spatialSpec) { it * direction / 2 } + fadeIn(effectsSpec)) togetherWith
                 (slideOutVertically(spatialSpec) { -it * direction / 2 } + fadeOut(effectsSpec)) using
@@ -205,7 +197,6 @@ private fun <T : Comparable<T>> PickerValueLabel(
     ) {
         Text(
             text = label(it),
-            // 个别语言的选项名很长，放不下两行时自动缩小字号
             autoSize = TextAutoSize.StepBased(minFontSize = 18.sp, maxFontSize = 24.sp),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
@@ -218,7 +209,6 @@ private fun <T : Comparable<T>> PickerValueLabel(
     }
 }
 
-// sheet 内子页面的头部：返回按钮加标题
 @Composable
 internal fun SheetHeader(
     title: String,

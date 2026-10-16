@@ -6,7 +6,6 @@ import com.mhamad.nexora.R
 import com.mhamad.nexora.data.ai.MemoryConsolidationRun
 import com.mhamad.nexora.data.model.memoryTitleOf
 
-/** 一句话说明一次整理的结果 */
 @Composable
 internal fun MemoryConsolidationRun.resultText(): String = when {
     error != null -> stringResource(R.string.assistant_page_memory_dream_failed, error)
@@ -19,5 +18,4 @@ internal fun MemoryConsolidationRun.resultText(): String = when {
     )
 }
 
-// 删掉的文件读不到标题，从文件名推
 private fun memoryFileTitle(path: String): String = memoryTitleOf(path.substringAfterLast('/').removeSuffix(".md"))

@@ -90,14 +90,10 @@ import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 
-/** 正在全屏查看的文件。 */
 private data class MediaPreview(val file: File, val isVideo: Boolean)
 
 /**
- * 时间线上的一项，显示它当前选中的版本：上面是这次生成的输入，下面是进度或产出，
- * 最后一行是可以对它做的操作，有多个版本时右下角可以切换。
  *
- * [editing] 表示输入区正在修改这一项。
  */
 @Composable
 internal fun MediaCreationRecordItem(
@@ -111,13 +107,11 @@ internal fun MediaCreationRecordItem(
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        // 内容离边 16dp，里面的小块圆角 12dp，和外圈同心
         shape = MaterialTheme.shapes.extraLarge,
         colors = CustomColors.cardColors,
         border = if (editing) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
     ) {
         Column(
-            // 最后一行按钮自带 8dp 的点击留白，底部补 8dp 后看起来和其它三边一样是 16dp
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
@@ -161,7 +155,6 @@ private fun RecordInput(
                 modifier = Modifier.horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                // 只有区分角色的输入才标注，纯参考图不需要说明
                 val showRoles = record.inputs.any { it.type == MediaCreationAssetType.IMAGE && it.role != ImageRole.REFERENCE }
                 record.inputs.forEach { asset ->
                     InputThumbnail(
@@ -232,7 +225,6 @@ private fun InputThumbnail(
 
 @Composable
 private fun RecordProgress(record: MediaCreationRecord) {
-    // 当前阶段已经持续的时间
     val elapsed by produceState(initialValue = elapsedSeconds(record.updateAt), record.updateAt) {
         while (true) {
             value = elapsedSeconds(record.updateAt)
@@ -294,7 +286,6 @@ private fun RecordFailure(record: MediaCreationRecord) {
 private val SingleOutputMaxWidth = 200.dp
 private val OutputMaxHeight = 160.dp
 
-// 多项产出时一行摆几格
 private const val OUTPUT_COLUMNS = 3
 
 @Composable
@@ -305,7 +296,6 @@ private fun RecordOutputs(
 ) {
     val outputs = record.outputs
     if (outputs.size == 1) {
-        // 不铺满整行：横图受宽度限制，竖图受高度限制，免得一条记录占掉大半屏
         OutputTile(
             output = outputs.single(),
             vm = vm,
@@ -317,7 +307,6 @@ private fun RecordOutputs(
             outputs.chunked(OUTPUT_COLUMNS).forEach { row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     row.forEach { output ->
-                        // 每格宽度固定，太高的竖图在格子里按高度上限缩小
                         Box(modifier = Modifier.weight(1f)) {
                             OutputTile(
                                 output = output,
@@ -327,7 +316,6 @@ private fun RecordOutputs(
                             )
                         }
                     }
-                    // 没摆满的一行用空格占位，每格宽度保持一致
                     repeat(OUTPUT_COLUMNS - row.size) { Spacer(Modifier.weight(1f)) }
                 }
             }
@@ -383,7 +371,6 @@ private fun OutputTile(
     }
 }
 
-/** 单项产出的操作：放回输入区、保存、分享。 */
 @Composable
 private fun OutputMenu(
     output: MediaCreationOutput,
@@ -486,21 +473,17 @@ private fun RecordActions(
     var confirmCancel by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
 
-    // 右边的版本切换和左边的最后一行对齐
     Row(verticalAlignment = Alignment.Bottom) {
-        // 放不下时换行，保证每个操作都看得见
         FlowRow(
             modifier = Modifier.weight(1f),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             when {
                 record.status.isActive -> ActionChip(stringResource(R.string.cancel), HugeIcons.Cancel01) {
-                    // 已经提交给服务端的任务撤不回来，先说明清楚
                     if (record.taskId != null) confirmCancel = true else vm.cancel(record)
                 }
 
                 record.status == MediaCreationStatus.SUCCEEDED -> {
-                    // 只有一项产出时把最常用的去向直接摆出来，多项产出走各自的菜单
                     record.outputs.singleOrNull()?.let { output ->
                         if (output.isVideo) {
                             ActionChip(
@@ -534,8 +517,6 @@ private fun RecordActions(
                         ),
                         icon = HugeIcons.Refresh,
                     ) { vm.retry(record) }
-                    // 服务端的任务可能已经取不回来了（被清掉、结果地址失效），而这一点客户端判断不了：
-                    // 留一个不依赖旧任务的出口，另起一个版本重新提交
                     if (record.taskId != null) {
                         ActionChip(stringResource(R.string.media_creation_page_rerun), HugeIcons.Refresh) {
                             vm.rerun(record)
@@ -546,7 +527,6 @@ private fun RecordActions(
             ActionChip(stringResource(R.string.media_creation_page_edit), HugeIcons.PencilEdit01) {
                 vm.editFrom(record)
             }
-            // 次要操作只放图标，跟在后面一起换行，不再收进弹出菜单
             if (record.prompt.isNotBlank()) {
                 ActionIcon(stringResource(R.string.media_creation_page_copy_prompt), HugeIcons.Copy01) {
                     context.writeClipboardText(record.prompt)
@@ -614,7 +594,6 @@ private fun RecordActions(
     }
 }
 
-/** 在一项的各个版本之间切换。 */
 @Composable
 private fun VersionSwitcher(
     node: MediaCreationNode,
@@ -639,7 +618,6 @@ private fun VersionSwitcher(
     }
 
     Row(
-        // 和左边的操作按钮同高
         modifier = Modifier.heightIn(min = 48.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -658,7 +636,6 @@ private fun ActionChip(text: String, icon: ImageVector, onClick: () -> Unit) {
     val height = ButtonDefaults.ExtraSmallContainerHeight
     FilledTonalButton(
         onClick = onClick,
-        // 按下时圆角收紧
         shapes = ButtonDefaults.shapesFor(height),
         modifier = Modifier.heightIn(min = height),
         colors = ButtonDefaults.filledTonalButtonColors(
@@ -673,7 +650,6 @@ private fun ActionChip(text: String, icon: ImageVector, onClick: () -> Unit) {
     }
 }
 
-/** 只有图标的操作，长按显示名称。 */
 @Composable
 private fun ActionIcon(
     text: String,
@@ -684,7 +660,6 @@ private fun ActionIcon(
     Tooltip(tooltip = { Text(text) }) {
         FilledTonalIconButton(
             onClick = onClick,
-            // 按下时圆角收紧
             shapes = IconButtonDefaults.shapes(),
             modifier = Modifier.size(
                 IconButtonDefaults.extraSmallContainerSize(IconButtonDefaults.IconButtonWidthOption.Wide)

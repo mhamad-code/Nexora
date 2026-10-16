@@ -324,7 +324,6 @@ private fun MediaProviderItem(
     }
 }
 
-// 新建时先选类型，再进配置面板
 @Composable
 private fun AddMediaProviderButton(onAdd: (MediaGenerationProviderSetting) -> Unit) {
     var showTypeSheet by remember { mutableStateOf(false) }
@@ -382,7 +381,6 @@ private fun MediaProviderSheet(
         initial = initial,
         confirmText = confirmText,
         onConfirm = { provider ->
-            // 没填模型 ID 的行不保存
             onConfirm(provider.copyProvider(models = provider.models.filter { it.modelId.isNotBlank() }))
         },
         onDismiss = onDismiss,
@@ -407,7 +405,6 @@ private fun MediaUploadS3Tab(
     val scope = rememberCoroutineScope()
     var testing by remember { mutableStateOf(false) }
 
-    // 输入框以本地状态为准：设置要经过存储再回流，直接绑定的话打字快了会被旧值覆盖
     var config by remember { mutableStateOf(settings.uploadS3Config) }
 
     Column(

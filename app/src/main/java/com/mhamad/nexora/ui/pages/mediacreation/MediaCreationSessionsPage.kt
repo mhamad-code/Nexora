@@ -65,7 +65,6 @@ import java.time.ZoneId
 import kotlin.uuid.Uuid
 
 /**
- * 媒体创作的入口：列出所有会话，点进去是这个会话的创作页（[MediaCreationPage]）。
  */
 @Composable
 fun MediaCreationSessionsPage(vm: MediaCreationSessionsVM = koinViewModel()) {
@@ -75,7 +74,6 @@ fun MediaCreationSessionsPage(vm: MediaCreationSessionsVM = koinViewModel()) {
     var renaming by remember { mutableStateOf<MediaCreationSession?>(null) }
     var deleting by remember { mutableStateOf<MediaCreationSession?>(null) }
     val listState = rememberLazyListState()
-    // 列表滚动后把按钮收成只剩图标，少挡一点内容
     val fabExpanded by remember { derivedStateOf { listState.firstVisibleItemIndex == 0 } }
 
     val open: (Uuid) -> Unit = { id ->
@@ -105,7 +103,6 @@ fun MediaCreationSessionsPage(vm: MediaCreationSessionsVM = koinViewModel()) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             state = listState,
-            // 底部留出悬浮按钮的位置，最后一项的菜单才点得到
             contentPadding = innerPadding + PaddingValues(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 96.dp),
             verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap),
         ) {
@@ -207,7 +204,6 @@ private fun EmptySessionsState(modifier: Modifier = Modifier) {
 
 private val SessionLeadingSize = 48.dp
 
-// 每个会话按 id 固定分到一个形状，列表看起来不那么整齐划一
 private val sessionShapes = listOf(
     MaterialShapes.Cookie4Sided,
     MaterialShapes.Clover4Leaf,
@@ -238,10 +234,8 @@ private fun SessionItem(
             val shape = sessionShapes[session.id.hashCode().mod(sessionShapes.size)].toShape()
             val cover = session.cover
             when {
-                // 有任务在生成时换成变形的加载指示器
                 session.activeCount > 0 -> ContainedLoadingIndicator(modifier = Modifier.size(SessionLeadingSize))
 
-                // 最近的产出裁成这个会话的形状当封面
                 cover != null -> MediaThumbnail(
                     file = remember(cover.path) { resolve(cover.path) },
                     isVideo = cover.isVideo,

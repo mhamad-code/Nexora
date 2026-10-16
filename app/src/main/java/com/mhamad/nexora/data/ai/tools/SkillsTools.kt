@@ -11,7 +11,6 @@ import com.mhamad.nexora.data.skills.SkillFrontmatterParser
 import com.mhamad.nexora.data.skills.SkillMetadata
 import com.mhamad.nexora.data.skills.SkillPaths
 
-// 与 Agent Skills 规范的 description 上限一致
 private const val MAX_SKILL_DESCRIPTION_LENGTH = 1024
 
 fun createSkillTools(
@@ -35,7 +34,6 @@ fun createSkillTools(
                     appendLine("<available_skills>")
                     available.forEach { skill ->
                         appendLine("  <skill>")
-                        // 技能可能来自第三方导入，转义并限长，防止 name/description 闭合标签注入任意系统提示
                         appendLine("    <name>${skill.name.escapeXml()}</name>")
                         appendLine("    <description>${skill.description.take(MAX_SKILL_DESCRIPTION_LENGTH).escapeXml()}</description>")
                         appendLine("  </skill>")
@@ -65,7 +63,6 @@ fun createSkillTools(
             execute = {
                 val name = it.jsonObject["name"]?.jsonPrimitive?.content
                     ?: error("name is required")
-                // 模型可能照抄系统提示中转义后的名称，两种形式都接受
                 val skill = available.firstOrNull { skill -> skill.name == name || skill.name.escapeXml() == name }
                     ?: error("Skill '$name' is not available. Available skills: ${available.joinToString { it.name }}")
                 val path = it.jsonObject["path"]?.jsonPrimitive?.content

@@ -57,7 +57,7 @@ fun TTSProviderConfigure(
                         is TTSProviderSetting.Step -> "Step"
                         is TTSProviderSetting.ElevenLabs -> "ElevenLabs"
                         is TTSProviderSetting.FishAudio -> "Fish Audio"
-                        is TTSProviderSetting.Volcengine -> "火山引擎"
+                        is TTSProviderSetting.Volcengine -> "Volcengine"
                     },
                     options = TTSProviderSetting.Types,
                     readOnly = true,
@@ -74,7 +74,7 @@ fun TTSProviderConfigure(
                             TTSProviderSetting.MiMo::class -> "MiMo"
                             TTSProviderSetting.ElevenLabs::class -> "ElevenLabs"
                             TTSProviderSetting.FishAudio::class -> "Fish Audio"
-                            TTSProviderSetting.Volcengine::class -> "火山引擎"
+                            TTSProviderSetting.Volcengine::class -> "Volcengine"
                             TTSProviderSetting.Step::class -> "Step"
                             else -> providerClass.simpleName ?: "Unknown"
                         }
@@ -254,7 +254,6 @@ private fun CardGroupScope.miMoTTSItems(
     setting: TTSProviderSetting.MiMo,
     onValueChange: (TTSProviderSetting) -> Unit
 ) {
-    // MiMo 配置均为自由输入 默认值只是占位
     // API Key
     formItem(
         headlineContent = { Text(stringResource(R.string.setting_tts_page_api_key)) },
@@ -303,10 +302,10 @@ private fun CardGroupScope.miMoTTSItems(
     // Voice
     val voices = listOf(
         "mimo_default",
-        "冰糖",
-        "茉莉",
-        "苏打",
-        "白桦",
+        "BingTang",
+        "Jasmine",
+        "Soda",
+        "Birch",
         "Mia",
         "Chloe",
         "Milo",
@@ -975,10 +974,9 @@ private fun CardGroupScope.fishAudioTTSItems(
         )
     }
 
-    // Model (下拉选择框 + 文本输入框，完全同 ElevenLabs 格式)
     val models = listOf(
-        "s2.1-pro" to "S2.1-Pro (推荐)",
-        "s2.1-pro-free" to "S2.1-Pro Free (免费)",
+        "s2.1-pro" to "S2.1-Pro (موصى به)",
+        "s2.1-pro-free" to "S2.1-Pro Free (مجاني)",
         "s2-pro" to "S2-Pro",
         "s1" to "S1"
     )
@@ -1054,7 +1052,7 @@ private fun CardGroupScope.stepTTSItems(
     // API Key
     formItem(
         headlineContent = { Text(stringResource(R.string.setting_tts_page_api_key)) },
-        supportingContent = { Text("从阶跃星辰官网获取密钥: platform.stepfun.com/interface-key") }
+        supportingContent = { Text("احصل على مفتاح API من موقع StepFun: platform.stepfun.com/interface-key") }
     ) {
         OutlinedTextField(
             value = setting.apiKey,
@@ -1062,7 +1060,7 @@ private fun CardGroupScope.stepTTSItems(
                 onValueChange(setting.copy(apiKey = newApiKey))
             },
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("从阶跃星辰官网获取密钥") },
+            placeholder = { Text("احصل على مفتاح API من موقع StepFun") },
         )
     }
 
@@ -1083,7 +1081,7 @@ private fun CardGroupScope.stepTTSItems(
 
     // Model
     val models = listOf(
-        "step-tts-mini" to "step-tts-mini (轻量, 便宜)",
+        "step-tts-mini" to "step-tts-mini (خفيف واقتصادي)",
         "step-tts-vivid" to "step-tts-vivid (情感丰富)",
         "stepaudio-2.5-tts" to "stepaudio-2.5-tts (语境感知, 支持 instruction)",
         "step-tts-2" to "step-tts-2 (上一代)",
@@ -1108,7 +1106,6 @@ private fun CardGroupScope.stepTTSItems(
     }
 
     // Voice
-    // 部分常用 voice-id, 完整列表见官方开发指南
     // https://platform.stepfun.com/docs/zh/guides/developer/tts
     val voices = listOf(
         "elegantgentle-female" to "气质温婉 (elegantgentle-female)",
@@ -1235,7 +1232,6 @@ private fun CardGroupScope.stepTTSItems(
         )
     }
 
-    // Instruction (仅 stepaudio-2.5-tts 生效)
     formItem(
         headlineContent = { Text("Instruction") },
         supportingContent = { Text("全局语境指令, 仅 stepaudio-2.5-tts 生效 (≤200 字符, 留空不下发)") }
@@ -1243,7 +1239,6 @@ private fun CardGroupScope.stepTTSItems(
         OutlinedTextField(
             value = setting.instruction,
             onValueChange = { newInstruction ->
-                // 服务端上限 200 字符, 客户端做一层保护
                 if (newInstruction.length <= 200) {
                     onValueChange(setting.copy(instruction = newInstruction))
                 }

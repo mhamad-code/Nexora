@@ -282,7 +282,6 @@ private fun MessagePartsBlock(
     onUserMessageClick: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
-    // 消息输出HapticFeedback
     val hapticFeedback = LocalHapticFeedback.current
     val settings = LocalSettings.current
     val partsState by rememberUpdatedState(parts)
@@ -380,7 +379,6 @@ private fun MessagePartsBlock(
                                     role = role,
                                     color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = settings.displaySetting.bubbleOpacity),
                                     onClick = { onUserMessageClick?.invoke() },
-                                    // 用户气泡不占满整行，和助手的回复错开
                                     modifier = Modifier
                                         .padding(start = 48.dp)
                                         .animateContentSize(),
@@ -425,10 +423,6 @@ private fun MessagePartsBlock(
                             }
                         }
 
-                        // 流式生成期间不启用 SelectionContainer：Markdown 在不断重渲染，
-                        // 内部可选择的 Text 会频繁注册/注销，与 Compose 选择工具栏在绘制阶段
-                        // 对 selectable 列表的排序产生并发修改，导致 ConcurrentModificationException。
-                        // 生成结束后内容稳定，再启用文本选择。
                         if (loading) {
                             textContent()
                         } else {
@@ -527,7 +521,6 @@ private val BubbleTailCorner = 6.dp
 private val BubblePressedCorner = 12.dp
 
 /**
- * 消息气泡：大圆角，靠头像一侧的顶角收紧；可点击时按下其余圆角也跟着收紧
  */
 @Composable
 private fun ChatMessageBubble(
@@ -545,7 +538,6 @@ private fun ChatMessageBubble(
     } else {
         RoundedCornerShape(topStart = BubbleTailCorner, topEnd = corner, bottomEnd = corner, bottomStart = corner)
     }
-    // MarkdownBlock 自带 4dp 的水平内边距
     val contentModifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
     if (onClick != null) {
         Surface(

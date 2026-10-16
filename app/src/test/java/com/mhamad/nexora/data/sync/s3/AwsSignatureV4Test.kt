@@ -11,7 +11,6 @@ import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 
 class AwsSignatureV4Test {
-    // AWS 文档 "Authenticating Requests: Using Query Parameters" 里的示例凭据和时间
     private val awsExample = S3Config(
         endpoint = "https://s3.amazonaws.com",
         accessKeyId = "AKIAIOSFODNN7EXAMPLE",
@@ -75,7 +74,6 @@ class AwsSignatureV4Test {
             "https://rikka-hub.oss-cn-beijing.aliyuncs.com/rikkahub_uploads/a.png",
             url("oss-cn-beijing.aliyuncs.com"),
         )
-        // 显式写了 http:// 的（内网自建服务）保持不变
         assertEquals("http://rikka-hub.minio.lan:9000/rikkahub_uploads/a.png", url("http://minio.lan:9000"))
         assertEquals(S3Config(), S3Config().withHttpsByDefault())
     }
@@ -123,7 +121,6 @@ class AwsSignatureV4Test {
         assertEquals("s3.amazonaws.com", pathStyle.headers["host"])
         assertEquals("https://s3.amazonaws.com/examplebucket/test.txt", pathStyle.url)
 
-        // 端点已经带桶名时不再重复拼接
         val bucketInEndpoint = AwsSignatureV4.sign(
             awsExample.copy(endpoint = "https://examplebucket.s3.amazonaws.com"),
             method = "GET",

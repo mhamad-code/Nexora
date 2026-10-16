@@ -29,7 +29,6 @@ class MediaGenerationCapabilitiesTest {
         MediaGenerationProviderSetting.OpenRouter(),
     )
 
-    // 各适配器组装请求体的入口，不支持的公共字段会在这里被拒绝
     private fun buildBody(setting: MediaGenerationProviderSetting, kind: MediaKind, request: MediaGenerationRequest) {
         val model = MediaGenerationModel(modelId = "model", kind = kind)
         when (setting) {

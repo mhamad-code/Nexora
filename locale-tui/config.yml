@@ -1,9 +1,6 @@
-# locale-tui 配置文件
 
-# 项目根路径 (相对于 locale-tui 目录)
 project_root: ".."
 
-# 模块配置
 modules:
   - name: "app"
     res_path: "app/src/main/res"
@@ -46,7 +43,6 @@ modules:
       - "rag/src/main/java/**/*.java"
       - "rag/src/main/AndroidManifest.xml"
 
-# 支持的语言列表
 languages:
   - code: "values"
     name: "English"
@@ -81,7 +77,6 @@ languages:
     name: "Russian"
   - code: "values-ar"
     name: "Arabic"
-    # 使用不带冠词的基本形式，由模型按语法变格
     glossary:
       prompt: "مطالبة (plural مطالبات); never موجه"
       system prompt: "مطالبة النظام"
@@ -102,7 +97,6 @@ languages:
       memory: "ذاكرة"
       quick message: "رسالة سريعة"
 
-# AI 翻译配置
 translation:
   batch_size: 10
   model: "deepseek-v4-flash"
@@ -127,7 +121,6 @@ translation:
     Respond with a JSON object mapping the same keys to translated values.
     Only output the JSON, no other text.
 
-# 显示设置
 display:
   column_widths:
     key: 30

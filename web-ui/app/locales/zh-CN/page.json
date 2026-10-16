@@ -21,13 +21,13 @@
     "empty_state": {
       "select_title": "请选择会话",
       "select_description": "选择左侧会话以查看消息",
-      "loading_title": "加载中...",
+      "loading_title": "جاري التحميل...",
       "loading_description": "正在加载会话详情",
-      "error_title": "加载失败",
+      "error_title": "فشل التحميل",
       "no_message_title": "暂无消息",
       "no_message_description": "当前会话还没有消息"
     },
-    "welcome_prompt": "有什么可以帮助你的？",
+    "welcome_prompt": "有什么可以المساعدة你的？",
     "user": {
       "default_name": "用户"
     },

@@ -116,7 +116,6 @@ class SkillsVM(
                     return@launch
                 }
 
-                // 按字节下载保存，避免图片等二进制附属文件被当作 UTF-8 文本解码而损坏
                 val fileContents = LinkedHashMap<String, ByteArray>()
                 for ((relativePath, downloadUrl) in files) {
                     val content = if (relativePath == "SKILL.md") skillMdBytes else downloadBytes(downloadUrl)
@@ -129,7 +128,7 @@ class SkillsVM(
 
                 val saved = skillManager.saveSkillFileBytesAtomically(name, fileContents)
                 if (!saved) {
-                    withContext(Dispatchers.Main) { onResult(false, "保存失败") }
+                    withContext(Dispatchers.Main) { onResult(false, "فشل الحفظ") }
                     return@launch
                 }
 
@@ -152,7 +151,7 @@ class SkillsVM(
         if (frontmatter["description"].isNullOrBlank()) {
             error("SKILL.md 格式错误：缺少 description 字段")
         }
-        val saved = skillManager.saveSkill(name, content) ?: error("保存失败，请检查技能格式")
+        val saved = skillManager.saveSkill(name, content) ?: error("فشل الحفظ，请检查技能格式")
         return listOf(saved.name)
     }
 
@@ -212,7 +211,7 @@ class SkillsVM(
 
             val saved = skillManager.saveSkillFileBytesAtomically(name, skillFiles)
             if (!saved) {
-                error("保存失败：$name")
+                error("فشل الحفظ：$name")
             }
             importedNames += name
         }
@@ -318,7 +317,6 @@ class SkillsVM(
         connection.setRequestProperty("Accept", "application/vnd.github+json")
         return try {
             val code = connection.responseCode
-            // 未登录的 GitHub API 每小时仅 60 次，超限时给出明确提示而不是笼统的"读取失败"
             if ((code == 403 || code == 429) && connection.getHeaderField("X-RateLimit-Remaining") == "0") {
                 error("GitHub API 请求次数已达上限，请稍后再试")
             }

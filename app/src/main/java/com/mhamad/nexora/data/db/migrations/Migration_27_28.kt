@@ -26,7 +26,6 @@ val Migration_27_28 = object : Migration(27, 28) {
                 }
             }
 
-            // 旧记忆每次都会完整注入，迁到同样会完整注入的 profile 里，升级后模型看到的内容不变
             val now = System.currentTimeMillis()
             var migratedCount = 0
             memories.forEach { (assistantId, contents) ->
@@ -48,7 +47,6 @@ val Migration_27_28 = object : Migration(27, 28) {
     }
 }
 
-/** 把旧的逐条记忆拼成一份 profile 文件，没有有效内容时返回 null */
 internal fun legacyMemoriesToProfile(contents: List<String>): String? {
     val lines = contents
         .map { it.lines().joinToString(" ") { line -> line.trim() }.trim() }

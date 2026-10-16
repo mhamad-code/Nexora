@@ -15,23 +15,19 @@ import com.mhamad.nexora.data.repository.MemoryWriteResult
 sealed interface MemoryFileState {
     data object Loading : MemoryFileState
 
-    /** 文件不存在：路径不合法，或者已经被删掉 */
     data object Missing : MemoryFileState
 
     data class Loaded(val file: MemoryFile) : MemoryFileState
 }
 
 /**
- * 单个记忆文件的查看与编辑。
  *
- * [memoryId] 是记忆库的 id（助手 id 或全局记忆库），[path] 为 null 表示新建。
  */
 class MemoryFileVM(
     private val memoryId: String,
     path: String?,
     private val memoryRepository: MemoryRepository,
 ) : ViewModel() {
-    // 工具调用里的路径是模型给的，可能没带开头的斜杠
     private val normalizedPath = path?.let(MemoryFile::normalizePath)
 
     val state: StateFlow<MemoryFileState> =
@@ -43,7 +39,6 @@ class MemoryFileVM(
             }
         }.stateIn(viewModelScope, SharingStarted.Eagerly, MemoryFileState.Loading)
 
-    /** 新建文件，路径已被占用时返回 [MemoryWriteResult.Conflict] */
     fun create(path: String, content: String, onResult: (MemoryWriteResult) -> Unit) {
         viewModelScope.launch {
             onResult(memoryRepository.writeFile(memoryId, path, content, MemoryRepository.NEW_FILE_VERSION))

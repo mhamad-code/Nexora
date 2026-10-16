@@ -60,7 +60,6 @@ fun ProviderConfigure(
         provider.description()
 
         CardGroup {
-            // 内置服务商的类型是定死的
             if (!provider.builtIn) {
                 formItem {
                     ConnectedChoiceButtons(
@@ -156,7 +155,6 @@ internal fun ProviderSetting.isUsingDefaultBaseUrl(): Boolean {
     return baseUrl == defaultBaseUrlForReset()
 }
 
-// 地址不是默认值时，输入框右侧出现的恢复默认按钮
 private fun resetBaseUrlButton(
     provider: ProviderSetting,
     onReset: () -> Unit,
@@ -213,7 +211,6 @@ private val OFFICIAL_PROVIDER_HOSTS = setOf(
     CLAUDE_OFFICIAL_HOST
 )
 
-// 标题在上、输入框在下的表单项；secret 为 true 时默认遮住内容，右侧是显示/隐藏按钮
 private fun CardGroupScope.textFieldItem(
     @StringRes label: Int,
     value: String,

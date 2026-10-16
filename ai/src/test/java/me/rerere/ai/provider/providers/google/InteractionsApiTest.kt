@@ -84,14 +84,12 @@ class InteractionsApiTest {
         assertEquals(1024, generationConfig["max_output_tokens"]!!.jsonPrimitive.content.toInt())
         assertFalse(generationConfig.containsKey("thinkingConfig"))
 
-        // 函数工具与内置工具是同一个扁平数组，不再嵌套 functionDeclarations
         val tools = body["tools"]!!.jsonArray.map { it.jsonObject }
         assertEquals(listOf("function", "google_search", "url_context"), tools.map {
             it["type"]!!.jsonPrimitive.content
         })
         assertEquals("save_weather", tools[0]["name"]!!.jsonPrimitive.content)
 
-        // Gemini API 的 Interactions 不接受 safety_settings
         assertFalse(body.containsKey("safety_settings"))
     }
 
@@ -160,7 +158,6 @@ class InteractionsApiTest {
                     ).toMetadata(),
                 ),
                 reasoning("I should check the weather.", GoogleInteractionsMetadata("thought-signature").toMetadata()),
-                // generateContent 协议的签名不能当作 Interactions 的 thought step 回传
                 reasoning("foreign thought", GoogleThoughtMetadata("generate-content-signature").toMetadata()),
                 UIMessagePart.Tool(
                     toolCallId = "fc_1",
@@ -323,7 +320,6 @@ class InteractionsApiTest {
         assertEquals("get_weather", tool.toolName)
         assertEquals("""{"location":"Mount Elbrus, Russia"}""", tool.input)
 
-        // 工具执行完成后，下一轮请求需要把上面的 step 原样带回去
         val executed = message.copy(parts = message.parts.map { part ->
             if (part is UIMessagePart.Tool) part.copy(output = listOf(UIMessagePart.Text("-12C"))) else part
         })

@@ -85,7 +85,7 @@ fun ColumnScope.ChatMessageActionButtons(
 
     LaunchedEffect(isPendingDelete) {
         if (isPendingDelete) {
-            delay(3000) // 3秒后自动取消
+            delay(3000)
             isPendingDelete = false
         }
     }
@@ -116,7 +116,6 @@ fun ColumnScope.ChatMessageActionButtons(
             val tts = LocalTTSState.current
             val isSpeaking by tts.isSpeaking.collectAsState()
             val isAvailable by tts.isAvailable.collectAsState()
-            // 朗读中换成带底色的方角按钮
             CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
                 IconToggleButton(
                     checked = isSpeaking,
@@ -218,7 +217,6 @@ fun ColumnScope.ChatMessageActionButtons(
 
 private val ActionIconSize = 18.dp
 
-// 消息下方的小号图标按钮，按下时圆形收成方角
 @Composable
 internal fun ChatMessageActionButton(
     icon: ImageVector,
@@ -227,7 +225,6 @@ internal fun ChatMessageActionButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
-    // 按钮排得密，不让 48dp 的最小触控尺寸把间距撑开
     CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
         IconButton(
             onClick = onClick,

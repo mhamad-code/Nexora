@@ -343,7 +343,6 @@ private fun RequestLogDetail(log: LogEntry.RequestLog) {
                                             ClipEntry(ClipData.newPlainText("Request Body", body))
                                         )
                                     } catch (e: RuntimeException) {
-                                        // 内容过大时 Binder 会抛出 TransactionTooLargeException (被包装为 RuntimeException)
                                         Toast.makeText(
                                             context,
                                             "Copy failed: content too large for clipboard",

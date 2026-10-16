@@ -71,14 +71,12 @@ fun LanguageSelectionDialog(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            // 标题
             Text(
                 text = stringResource(R.string.translation_language_selection_title),
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // 语言列表
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
@@ -179,7 +177,6 @@ fun CollapsibleTranslationText(
                 )
             }
 
-            // 折叠/展开按钮
             IconButton(
                 onClick = { isCollapsed = !isCollapsed },
                 modifier = Modifier.size(32.dp)

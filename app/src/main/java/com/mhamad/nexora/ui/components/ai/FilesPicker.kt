@@ -90,7 +90,6 @@ private enum class FilesPickerPage {
 @Composable
 internal fun FilesPicker(
     conversation: Conversation,
-    // 会话视角下的助手和模型：会话开始后以会话上固定的配置为准
     assistant: Assistant,
     chatModel: Model?,
     state: ChatInputState,
@@ -122,7 +121,6 @@ internal fun FilesPicker(
     var showCwdSheet by remember { mutableStateOf(false) }
 
     var page by remember { mutableStateOf(FilesPickerPage.MAIN) }
-    // 在子页面时，返回键回到主页面而不是关闭 sheet
     BackHandler(enabled = page != FilesPickerPage.MAIN) {
         page = FilesPickerPage.MAIN
     }
@@ -179,7 +177,6 @@ internal fun FilesPicker(
                     }
                 )
 
-                // 分段列表：各项按显示条件依次占位，首尾项才有大圆角
                 val showWorkspace = workspaces.isNotEmpty()
                 val showMcp = settings.mcpServers.isNotEmpty()
                 val itemCount = 2 + listOf(showWorkspace, showWorkspace && showCwd, showMcp).count { it }
@@ -224,7 +221,6 @@ internal fun FilesPicker(
                             ) {
                                 Text(
                                     text = conversation.workspaceCwd ?: "/workspace",
-                                    // 路径的末尾更有辨识度，放不下时省略开头
                                     maxLines = 1,
                                     overflow = TextOverflow.StartEllipsis,
                                 )
@@ -379,7 +375,6 @@ private fun WorkspacePickerListItem(
             onSelect = { workspaceId ->
                 val newId = workspaceId?.let { Uuid.parse(it) }
                 if (newId != assistant.workspaceId) {
-                    // 会话的工作目录随工作区一并重置
                     onUpdateAssistant(assistant.copy(workspaceId = newId))
                 }
                 showSheet = false
@@ -393,7 +388,6 @@ private fun WorkspacePickerListItem(
     }
 }
 
-// 扩展选择页，作为子页面嵌在加号 sheet 里
 @Composable
 private fun ExtensionPickerPage(
     assistant: Assistant,
@@ -446,7 +440,6 @@ private class AttachmentAction(
     val onClick: () -> Unit,
 )
 
-// 附件入口：一行最多四个，再多就均分成两行
 @Composable
 private fun AttachmentGrid(
     actions: List<AttachmentAction>,
@@ -480,7 +473,6 @@ private fun AttachmentTile(
 ) {
     FilledTonalButton(
         onClick = action.onClick,
-        // 按下时圆角收紧
         shapes = ButtonDefaults.shapes(
             shape = MaterialTheme.shapes.extraLarge,
             pressedShape = MaterialTheme.shapes.medium,
@@ -499,7 +491,6 @@ private fun AttachmentTile(
             )
             Text(
                 text = stringResource(action.label),
-                // 四个并排时较长的译文放不下，自动缩小字号
                 autoSize = TextAutoSize.StepBased(minFontSize = 11.sp, maxFontSize = 14.sp),
                 maxLines = 1,
                 softWrap = false,
@@ -509,7 +500,6 @@ private fun AttachmentTile(
     }
 }
 
-// 列表项尾部的已启用数量
 @Composable
 internal fun CountBadge(count: Int) {
     Badge(

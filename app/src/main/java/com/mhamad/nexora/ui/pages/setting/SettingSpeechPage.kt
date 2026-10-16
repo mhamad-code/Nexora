@@ -359,7 +359,6 @@ private fun ASRProviderList(
     }
 }
 
-// 类型在配置面板里选，新建时默认是系统 TTS
 @Composable
 private fun AddTTSProviderButton(onAdd: (TTSProviderSetting) -> Unit) {
     var newProvider by remember { mutableStateOf<TTSProviderSetting?>(null) }
@@ -383,7 +382,6 @@ private fun AddTTSProviderButton(onAdd: (TTSProviderSetting) -> Unit) {
     }
 }
 
-// 新建时先选类型，再进配置面板
 @Composable
 private fun AddASRProviderButton(onAdd: (ASRProviderSetting) -> Unit) {
     var showTypeSheet by remember { mutableStateOf(false) }
@@ -443,10 +441,9 @@ private val TTSProviderSetting.typeName: String
         is TTSProviderSetting.Step -> "Step"
         is TTSProviderSetting.ElevenLabs -> "ElevenLabs"
         is TTSProviderSetting.FishAudio -> "Fish Audio"
-        is TTSProviderSetting.Volcengine -> "火山引擎"
+        is TTSProviderSetting.Volcengine -> "Volcengine"
     }
 
-// TTS 和 ASR 列表共用的服务商卡片，点卡片编辑，点单选圈设为当前使用
 @Composable
 private fun SpeechProviderItem(
     name: String,
@@ -457,7 +454,6 @@ private fun SpeechProviderItem(
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
     deletable: Boolean = true,
-    // 跟在标签后面的操作，比如试听
     action: (@Composable () -> Unit)? = null,
 ) {
     val containerColor by animateColorAsState(
@@ -542,7 +538,6 @@ private fun SpeechProviderItem(
     }
 }
 
-// 用当前选中的 TTS 念一句测试文本，播放中再点一次停止
 @Composable
 private fun TTSTestButton() {
     val tts = LocalTTSState.current
@@ -560,7 +555,6 @@ private fun TTSTestButton() {
                 tts.stop()
             }
         },
-        // 按下时圆角收紧
         shapes = ButtonDefaults.shapesFor(height),
         modifier = Modifier.heightIn(min = height),
         colors = if (isSpeaking) {

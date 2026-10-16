@@ -30,12 +30,8 @@ import java.time.Instant
 import kotlin.uuid.Uuid
 
 /**
- * 媒体创作的会话、生成记录以及它们在磁盘上的文件。
  *
- * 时间线由「项」组成，每一项下面是一条或多条记录（版本），其中一条被选中显示。
  *
- * 文件按归属存放：`media_creation/{会话}/{记录}/` 下是一条记录自己的输入和输出，`media_creation/{会话}/draft/`
- * 下是草稿里还没有提交的素材，从相册选进来的和选用已有产出时复制过来的都在这里。删除记录或会话时连同目录一起删除。
  */
 class MediaCreationRepository(
     private val context: Context,
@@ -45,7 +41,6 @@ class MediaCreationRepository(
 ) {
     private val activeStatuses = MediaCreationStatus.ACTIVE.map { it.name }
 
-    // ---- 文件 ----
 
     fun resolve(path: String): File = File(context.filesDir, path)
 
@@ -57,7 +52,6 @@ class MediaCreationRepository(
 
     fun draftDir(sessionId: Uuid): File = File(sessionDir(sessionId), DRAFT_DIR)
 
-    // ---- 会话 ----
 
     fun observeSessions(): Flow<List<MediaCreationSession>> =
         dao.observeSessions(activeStatuses, MediaCreationStatus.SUCCEEDED.name).map { sessions ->
@@ -80,7 +74,6 @@ class MediaCreationRepository(
     suspend fun getLatestSession(): MediaCreationSession? = dao.getLatestSession()?.toSession()
 
     /**
-     * 返回一个还没有任何记录的会话：已经有空会话时直接复用，避免攒下一堆空会话。
      */
     suspend fun getOrCreateEmptySession(draft: MediaCreationDraft): MediaCreationSession = database.withTransaction {
         dao.getEmptySession()?.toSession() ?: MediaCreationSession(draft = draft).also {
@@ -88,7 +81,6 @@ class MediaCreationRepository(
         }
     }
 
-    /** 准备一个空会话，模型沿用最近那个会话选中的。 */
     suspend fun newSession(): MediaCreationSession =
         getOrCreateEmptySession(MediaCreationDraft(modelId = getLatestSession()?.draft?.modelId))
 
@@ -109,10 +101,8 @@ class MediaCreationRepository(
         withContext(Dispatchers.IO) { sessionDir(id).deleteRecursively() }
     }
 
-    // ---- 时间线 ----
 
     /**
-     * 会话的时间线，最新的一项排在最前。开启占位后第 0 项始终是最新的那一项，界面可以可靠地滚回底部。
      */
     fun observeNodes(sessionId: Uuid): Flow<PagingData<MediaCreationNode>> =
         Pager(PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = true)) {
@@ -121,13 +111,11 @@ class MediaCreationRepository(
             page.map { MediaCreationNode(it.record.toRecord(), it.versionIndex, it.versionCount) }
         }
 
-    /** 一项在 [observeNodes] 里的位置。 */
     suspend fun getNodePosition(id: Uuid): Int = dao.getNodePosition(id.toString())
 
     suspend fun hasNode(id: Uuid): Boolean = dao.getNode(id.toString()) != null
 
     /**
-     * 让一项改为显示相邻的版本，[offset] 为 -1 是上一个、1 是下一个；已经到头时不变。
      */
     suspend fun switchVersion(nodeId: Uuid, offset: Int) = database.withTransaction {
         val node = dao.getNode(nodeId.toString()) ?: return@withTransaction
@@ -136,7 +124,6 @@ class MediaCreationRepository(
         dao.selectRecord(node.id, target)
     }
 
-    // ---- 记录 ----
 
     suspend fun getRecord(id: Uuid): MediaCreationRecord? = dao.getRecord(id.toString())?.toRecord()
 
@@ -155,8 +142,6 @@ class MediaCreationRepository(
         dao.getLatestRecordOfKind(kind.name)?.toRecord()
 
     /**
-     * 把 [record] 写进时间线并选中它：[MediaCreationRecord.nodeId] 对应的项已经存在时成为它的新版本，
-     * 否则在时间线末尾另起一项。
      */
     suspend fun insertRecord(record: MediaCreationRecord) = database.withTransaction {
         val entity = record.toEntity()
@@ -177,7 +162,6 @@ class MediaCreationRepository(
     }
 
     /**
-     * 原子地修改一条记录，返回修改后的记录；记录已被删除时返回 null。
      */
     suspend fun updateRecord(
         id: Uuid,
@@ -190,8 +174,6 @@ class MediaCreationRepository(
     }
 
     /**
-     * 删除一个版本。它是所在项的最后一个版本时这一项也随之消失；删掉的是正在显示的版本时，
-     * 改为显示它前面的那个，没有的话显示后面的。
      */
     suspend fun deleteRecord(record: MediaCreationRecord) {
         database.withTransaction {
@@ -210,7 +192,6 @@ class MediaCreationRepository(
         withContext(Dispatchers.IO) { recordDir(record.sessionId, record.id).deleteRecursively() }
     }
 
-    // ---- 映射 ----
 
     private fun MediaCreationSessionEntity.toSession() = MediaCreationSession(
         id = Uuid.parse(id),

@@ -133,7 +133,6 @@ fun ColumnScope.ConversationList(
             count = conversations.itemCount,
             key = conversations.itemKey { item ->
                 when (item) {
-                    // key 带上排序方式，避免切换排序后列表锚定到另一种排序下的同日期分组而发生跳动
                     is ConversationListItem.DateHeader -> "date_${item.sortOrder}_${item.date}"
                     is ConversationListItem.PinnedHeader -> "pinned_header"
                     is ConversationListItem.Item -> item.conversation.id.toString()
@@ -276,7 +275,6 @@ private fun ConversationItem(
             )
             Spacer(Modifier.weight(1f))
 
-            // 置顶图标
             AnimatedVisibility(conversation.isPinned) {
                 Icon(
                     imageVector = HugeIcons.Pin,

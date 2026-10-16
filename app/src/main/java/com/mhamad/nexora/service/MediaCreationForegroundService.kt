@@ -19,9 +19,7 @@ import kotlin.uuid.Uuid
 private const val TAG = "MediaCreationFgs"
 
 /**
- * 有媒体生成任务在跑时把进程留在前台，界面被隐藏后上传、轮询和下载仍能继续。
  *
- * 任务本身由 [MediaCreationService] 持有，这里只提供前台服务的生命周期。
  */
 class MediaCreationForegroundService : Service() {
     companion object {
@@ -59,7 +57,6 @@ class MediaCreationForegroundService : Service() {
             }
         }
 
-        /** 点击通知后打开对应的媒体创作会话。 */
         fun sessionPendingIntent(context: Context, sessionId: String): PendingIntent {
             val intent = Intent(context, RouteActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -74,7 +71,6 @@ class MediaCreationForegroundService : Service() {
         }
     }
 
-    // 记录 ID -> 会话 ID
     private val activeRecords = linkedMapOf<String, String>()
     private var isForeground = false
 
@@ -99,7 +95,6 @@ class MediaCreationForegroundService : Service() {
     }
 
     override fun onTimeout(startId: Int, fgsType: Int) {
-        // 任务不依赖前台服务才能恢复：进程还在就继续跑，被回收了下次启动会按任务 ID 接着查询
         Log.w(TAG, "Foreground service timed out (type=$fgsType)")
         activeRecords.clear()
         stopService()

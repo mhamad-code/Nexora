@@ -46,7 +46,6 @@ import me.rerere.ui.R
 enum class ChartDisplayMode { Chart, Table }
 
 /**
- * 图表卡片: 标题、图表/表格切换、绘图区与图例
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -197,7 +196,6 @@ private fun ChartModeButton(
     selected: Boolean,
     onClick: () -> Unit,
 ) {
-    // 不用 Surface(onClick): 它会强制 48dp 最小触控尺寸, 把紧凑的切换条撑大
     val shape = RoundedCornerShape(6.dp)
     Box(
         modifier = Modifier

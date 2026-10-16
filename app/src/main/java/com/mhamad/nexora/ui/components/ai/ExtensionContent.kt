@@ -154,7 +154,6 @@ fun QuickMessagesContent(
     }
 }
 
-// 扩展项的分段列表，末尾可带一个跳转到管理页的按钮
 @Composable
 private fun <T> ExtensionList(
     items: List<T>,
@@ -189,7 +188,6 @@ private fun ExtensionListItem(
     shapes: ListItemShapes,
     colors: ListItemColors,
     description: String = "",
-    // 技能等的描述可能很长，完整内容在管理页看
     descriptionMaxLines: Int = 3,
 ) {
     SegmentedListItem(
@@ -207,7 +205,6 @@ private fun ExtensionListItem(
             }
         } else null,
         trailingContent = {
-            // 整行都能点击切换，开关只用来显示状态
             Switch(checked = checked, onCheckedChange = null)
         },
     ) {

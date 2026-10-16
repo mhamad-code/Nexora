@@ -44,8 +44,6 @@ class MediaGenerationManager(
     }
 
     /**
-     * 提交请求并跟踪到终态。同步返回结果的供应商只会发出一次终态任务；异步供应商先发出提交结果，
-     * 再按 [interval] 轮询。Flow 被取消时，轮询也会立即停止。
      */
     fun generate(
         setting: MediaGenerationProviderSetting,
@@ -62,7 +60,6 @@ class MediaGenerationManager(
     }
 
     /**
-     * 轮询并依次发出服务端状态。Flow 被取消时，轮询也会立即停止。
      */
     fun watch(
         setting: MediaGenerationProviderSetting,
@@ -88,7 +85,6 @@ class MediaGenerationManager(
             is MediaGenerationProviderSetting.OpenRouter -> openRouter
         }
 
-    // 厂商适配器尚未实现该模型的 kind 时返回失败，否则返回 null
     private fun unsupportedKind(
         setting: MediaGenerationProviderSetting,
         model: MediaGenerationModel,

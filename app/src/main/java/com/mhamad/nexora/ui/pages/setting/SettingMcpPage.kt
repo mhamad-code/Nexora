@@ -112,7 +112,6 @@ fun SettingMcpPage(vm: SettingVM = koinViewModel()) {
                     }
                     IconButton(
                         onClick = {
-                            // 名称为空的配置不会连接，先加进列表，具体配置到详情页里填
                             val config = McpServerConfig.StreamableHTTPServer()
                             vm.updateSettings { latest ->
                                 latest.copy(mcpServers = latest.mcpServers + config)
@@ -351,7 +350,7 @@ private fun McpServerItem(
                         onClick = { mcpManager.cancelAuthorization(item) },
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
                     ) {
-                        Text("取消授权")
+                        Text("إلغاء授权")
                     }
                 }
             }
