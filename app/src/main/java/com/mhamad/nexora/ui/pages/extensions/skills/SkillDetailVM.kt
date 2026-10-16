@@ -99,7 +99,7 @@ class SkillDetailVM(
             }
             val success = skillManager.saveSkillFile(skillName, relativePath, content)
             loadFiles()
-            withContext(Dispatchers.Main) { onResult(if (success) null else "保存失败") }
+            withContext(Dispatchers.Main) { onResult(if (success) null else "فشل الحفظ") }
         }
     }
 

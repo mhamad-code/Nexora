@@ -61,7 +61,7 @@ internal class McpOAuthDiscoveryClient(
                     return@withContext metadata
                 }
             }
-            error("无法发现受保护资源元数据 (protected resource metadata)")
+            error("تعذر اكتشاف البيانات الوصفية للمورد المحمي")
         }
 
     suspend fun discoverAuthorizationServer(issuer: String): AuthorizationServerMetadata =
@@ -73,7 +73,7 @@ internal class McpOAuthDiscoveryClient(
                     return@withContext metadata
                 }
             }
-            error("无法发现授权服务器元数据 (authorization server metadata): $issuer")
+            error("تعذر اكتشاف خادم المصادقة元数据 (authorization server metadata): $issuer")
         }
 
     private suspend fun probeResourceMetadataUrl(serverUrl: String): String? {

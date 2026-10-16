@@ -296,7 +296,7 @@ class GoogleProvider(private val client: OkHttpClient, context: Context? = null)
                 var exception = t
 
                 t?.printStackTrace()
-                println("[onFailure] 发生错误: ${t?.message}")
+                println("[onFailure] : ${t?.message}")
 
                 try {
                     if (t == null && response != null) {
@@ -323,7 +323,7 @@ class GoogleProvider(private val client: OkHttpClient, context: Context? = null)
             }
 
             override fun onClosed(eventSource: EventSource) {
-                println("[onClosed] 连接已关闭")
+                println("[onClosed] ")
                 sendChunks(decoder.onClosed())
                 close()
             }
@@ -333,7 +333,7 @@ class GoogleProvider(private val client: OkHttpClient, context: Context? = null)
                 .newEventSource(request, listener)
 
         awaitClose {
-            println("[awaitClose] 关闭eventSource")
+            println("[awaitClose] eventSource")
             eventSource.cancel()
         }
     }.buffer(Channel.UNLIMITED).flowOn(Dispatchers.IO)

@@ -128,7 +128,7 @@ class SkillsVM(
 
                 val saved = skillManager.saveSkillFileBytesAtomically(name, fileContents)
                 if (!saved) {
-                    withContext(Dispatchers.Main) { onResult(false, "保存失败") }
+                    withContext(Dispatchers.Main) { onResult(false, "فشل الحفظ") }
                     return@launch
                 }
 
@@ -151,7 +151,7 @@ class SkillsVM(
         if (frontmatter["description"].isNullOrBlank()) {
             error("SKILL.md 格式错误：缺少 description 字段")
         }
-        val saved = skillManager.saveSkill(name, content) ?: error("保存失败，请检查技能格式")
+        val saved = skillManager.saveSkill(name, content) ?: error("فشل الحفظ，请检查技能格式")
         return listOf(saved.name)
     }
 
@@ -211,7 +211,7 @@ class SkillsVM(
 
             val saved = skillManager.saveSkillFileBytesAtomically(name, skillFiles)
             if (!saved) {
-                error("保存失败：$name")
+                error("فشل الحفظ：$name")
             }
             importedNames += name
         }

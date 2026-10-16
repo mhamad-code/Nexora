@@ -110,7 +110,7 @@ fun WorkspaceFileEditorPage(
                                     }.onSuccess {
                                         toaster.show("已保存", type = ToastType.Success)
                                     }.onFailure {
-                                        toaster.show(it.message ?: "保存失败", type = ToastType.Error)
+                                        toaster.show(it.message ?: "فشل الحفظ", type = ToastType.Error)
                                     }
                                     saving = false
                                 }

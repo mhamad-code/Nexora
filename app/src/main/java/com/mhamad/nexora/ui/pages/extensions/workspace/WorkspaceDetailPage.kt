@@ -745,7 +745,7 @@ private fun WorkspaceFilesPage(
                 colors = CustomColors.floatingToolbarColors,
                 leadingContent = {
                     IconButton(onClick = { exitSelection() }) {
-                        Icon(HugeIcons.Cancel01, contentDescription = "取消多选")
+                        Icon(HugeIcons.Cancel01, contentDescription = "إلغاء多选")
                     }
                 },
                 trailingContent = {
@@ -754,7 +754,7 @@ private fun WorkspaceFilesPage(
                             selectedPaths = if (allSelected) emptySet() else files.map { it.path }.toSet()
                         },
                     ) {
-                        Icon(HugeIcons.CheckList, contentDescription = if (allSelected) "取消全选" else "全选")
+                        Icon(HugeIcons.CheckList, contentDescription = if (allSelected) "إلغاء全选" else "全选")
                     }
                 },
             ) {

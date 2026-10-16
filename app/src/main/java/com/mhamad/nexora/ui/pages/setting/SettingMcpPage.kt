@@ -350,7 +350,7 @@ private fun McpServerItem(
                         onClick = { mcpManager.cancelAuthorization(item) },
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
                     ) {
-                        Text("取消授权")
+                        Text("إلغاء授权")
                     }
                 }
             }
