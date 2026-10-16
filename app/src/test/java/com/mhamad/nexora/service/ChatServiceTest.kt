@@ -56,7 +56,6 @@ class ChatServiceTest {
         val checkpoint = result.messageNodes[2].currentMessage
         assertTrue(checkpoint.isContextCheckpoint)
         assertEquals("summary", checkpoint.toText())
-        // 只有检查点之后的消息会继续发送给模型
         assertEquals(result.currentMessages.subList(2, 5), result.currentMessages.limitContext(0))
     }
 

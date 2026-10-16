@@ -8,7 +8,6 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /**
- * 媒体创作的一个会话，[draft] 是输入区的草稿（JSON 序列化的 MediaCreationDraft）。
  */
 @Entity(tableName = "media_creation_session")
 data class MediaCreationSessionEntity(
@@ -25,8 +24,6 @@ data class MediaCreationSessionEntity(
 )
 
 /**
- * 会话时间线上的一项。再来一次、修改后重新生成都不会另起一项，而是在这一项下面多出一条记录（版本），
- * [selectedRecordId] 是当前显示的那一条。一项下面至少有一条记录。
  */
 @Entity(
     tableName = "media_creation_node",
@@ -52,7 +49,6 @@ data class MediaCreationNodeEntity(
 )
 
 /**
- * 一次生成，是 [nodeId] 那一项的一个版本。[params] / [inputs] / [outputs] 是 JSON，文件路径都相对于 filesDir。
  */
 @Entity(
     tableName = "media_creation_record",
@@ -119,7 +115,6 @@ data class MediaCreationSessionWithStats(
 )
 
 /**
- * 时间线上一项当前显示的记录，以及它在这一项的所有版本里排第几（从 0 开始）。
  */
 data class MediaCreationRecordWithVersion(
     @Embedded

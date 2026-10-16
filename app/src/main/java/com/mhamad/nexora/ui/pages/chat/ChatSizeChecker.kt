@@ -14,7 +14,6 @@ import me.rerere.ai.core.MessageRole
 import com.mhamad.nexora.R
 import com.mhamad.nexora.data.model.Conversation
 
-// 消息节点数量警告阈值
 const val MESSAGE_NODE_WARNING_THRESHOLD = 768
 const val LAST_ASSISTANT_INPUT_TOKEN_WARNING_THRESHOLD = 300_000
 

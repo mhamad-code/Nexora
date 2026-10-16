@@ -28,10 +28,7 @@ import kotlin.time.toJavaDuration
 private const val TAG = "RemoteFileStore"
 
 /**
- * 把本地文件传到 S3 换成临时公网地址，供只接受 URL 的接口使用（媒体生成的参考素材、聊天附件等）。
  *
- * 远程对象只是缓存，本地文件始终是源：key 由文件内容的 SHA-256 决定，相同内容不会重复上传；
- * 调用方不应持久化返回的地址，需要时重新调用 [upload] 即可。超过 [RETENTION] 的对象会被清扫删除。
  */
 class RemoteFileStore internal constructor(
     private val scope: CoroutineScope,
@@ -41,7 +38,6 @@ class RemoteFileStore internal constructor(
 ) {
     constructor(settingsStore: SettingsStore, httpClient: HttpClient, scope: CoroutineScope) : this(
         scope = scope,
-        // 签出的地址要交给只接受 HTTPS 素材的接口，没写协议时不能落到 http
         config = { settingsStore.settingsFlow.value.uploadS3Config.withHttpsByDefault() },
         storage = { S3ObjectStorage(S3Client(it, httpClient)) },
     )
@@ -49,7 +45,6 @@ class RemoteFileStore internal constructor(
     private val mutex = Mutex()
     private val hashes = ConcurrentHashMap<String, FileHash>()
 
-    // 以下状态只在持有 mutex 时读写
     private var knownConfig: S3Config? = null
     private val knownObjects = HashMap<String, KnownObject>()
     private var lastSweepAt: Instant? = null
@@ -58,7 +53,6 @@ class RemoteFileStore internal constructor(
         get() = config().isUsable()
 
     /**
-     * 确保 [file] 在桶里，并返回 [expires] 内有效的下载地址。内容已上传过时不会重传，只重新签发地址。
      */
     suspend fun upload(
         file: File,
@@ -98,7 +92,6 @@ class RemoteFileStore internal constructor(
     }.onFailure { if (it is CancellationException) throw it }
 
     /**
-     * 用当前配置访问一次桶，配置缺失或请求失败时返回失败。
      */
     suspend fun testConnection(): Result<Unit> = runCatching {
         val config = config()
@@ -108,7 +101,6 @@ class RemoteFileStore internal constructor(
     }.onFailure { if (it is CancellationException) throw it }
 
     /**
-     * 删除超过 [RETENTION] 的对象。
      */
     internal suspend fun sweep() {
         val config = config()
@@ -117,7 +109,6 @@ class RemoteFileStore internal constructor(
 
         var token: String? = null
         do {
-            // 逐页加锁：清扫不会和上传交错，上传也不用等整轮清扫结束
             token = mutex.withLock {
                 val page = storage.list(KEY_PREFIX, token)
                 val deadline = now() - RETENTION.toJavaDuration()
@@ -132,7 +123,6 @@ class RemoteFileStore internal constructor(
         } while (token != null)
     }
 
-    // 对象已在桶里，并且在地址过期前不会被清扫掉
     private suspend fun isReusable(storage: RemoteObjectStorage, key: String, expires: Duration): Boolean {
         val now = now()
         val known = knownObjects[key]?.takeIf { now < it.checkedAt + RECHECK_INTERVAL.toJavaDuration() }
@@ -163,11 +153,9 @@ class RemoteFileStore internal constructor(
     companion object {
         const val KEY_PREFIX = "rikkahub_uploads/"
 
-        /** 对象的保留时长，同时也是 SigV4 预签名地址的最长有效期。 */
         val RETENTION = 7.days
         val DEFAULT_URL_EXPIRES = 24.hours
 
-        // 超过这个时间就重新向桶确认对象还在，避免对象被桶的生命周期规则或手动删除后仍然签出地址
         private val RECHECK_INTERVAL = 1.hours
         private val SWEEP_INTERVAL = 24.hours
     }
@@ -180,10 +168,8 @@ data class RemoteFile(
 )
 
 /**
- * [RemoteFileStore] 用到的对象存储操作。
  */
 internal interface RemoteObjectStorage {
-    /** 对象不存在，或拿不到修改时间时返回 null。 */
     suspend fun lastModified(key: String): Instant?
 
     suspend fun put(key: String, file: File, contentType: String)

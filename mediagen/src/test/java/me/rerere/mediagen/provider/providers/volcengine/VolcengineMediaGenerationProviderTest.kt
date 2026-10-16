@@ -65,14 +65,12 @@ class VolcengineMediaGenerationProviderTest {
         assertEquals(JsonPrimitive("png"), textOnly["output_format"])
         assertNull(textOnly["image"])
 
-        // 单张参考图是字符串，本地文件编码成 data URI
         val single = generation.buildBody(
             seedream,
             MediaGenerationRequest(prompt = "换背景", inputs = listOf(MediaGenerationInput.Image(local.absolutePath))),
         )
         assertEquals(JsonPrimitive("data:image/png;base64,cG5n"), single["image"])
 
-        // 多张参考图是数组，公网地址原样下发
         val multiple = generation.buildBody(
             seedream,
             MediaGenerationRequest(
@@ -138,7 +136,6 @@ class VolcengineMediaGenerationProviderTest {
         assertEquals("2048x2048", first.resolution)
         assertEquals("hello", second.data!!.decodeToString())
         assertEquals("image/png", second.mimeType)
-        // 逐图信息保留，但 base64 不进 metadata
         val items = task.metadata["data"]!!.jsonArray.map { it.jsonObject }
         assertEquals(3, items.size)
         assertFalse(items.any { "b64_json" in it })

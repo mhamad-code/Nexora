@@ -8,7 +8,6 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import kotlin.uuid.Uuid
 
 /**
- * 厂商级配置：只保存凭据和该厂商下的模型列表，同一份配置可以同时提供图像和视频模型。
  */
 @Serializable
 sealed class MediaGenerationProviderSetting {
@@ -22,8 +21,6 @@ sealed class MediaGenerationProviderSetting {
     abstract val supportedKinds: Set<MediaKind>
 
     /**
-     * 下载产出地址 [url] 时要带上的请求头。多数厂商给的是带签名的地址，不需要额外的头；
-     * OpenRouter 的视频要凭 API Key 从它自己的接口取。
      */
     open fun downloadHeaders(url: String): Map<String, String> = emptyMap()
 
@@ -68,8 +65,6 @@ sealed class MediaGenerationProviderSetting {
     }
 
     /**
-     * 百炼按业务空间分配域名：[baseUrl] 里的 `{WorkspaceId}` 会被替换成 [workspaceId]。换地域时改 [baseUrl] 里的地域段；
-     * 不含占位符的地址（如旧的 `https://dashscope.aliyuncs.com/api/v1`）原样使用，此时不需要 [workspaceId]。
      */
     @Serializable
     @SerialName("aliyun")
@@ -187,7 +182,6 @@ sealed class MediaGenerationProviderSetting {
         override val supportedKinds: Set<MediaKind>
             get() = setOf(MediaKind.IMAGE, MediaKind.VIDEO)
 
-        // 密钥只发给 baseUrl 所在的站点，结果地址指向别处时原样下载
         override fun downloadHeaders(url: String): Map<String, String> {
             val target = url.toHttpUrlOrNull() ?: return emptyMap()
             val base = baseUrl.toHttpUrlOrNull() ?: return emptyMap()

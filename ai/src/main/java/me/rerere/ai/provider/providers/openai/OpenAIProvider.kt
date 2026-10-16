@@ -220,7 +220,6 @@ class OpenAIProvider(
                 put("prompt", params.prompt)
                 put("n", params.numOfImages)
                 
-                // 只匹配 x.ai 本身及其子域名，避免 "xxx-max.ai" 之类的中转域名被误判
                 val host = providerSetting.baseUrl.toHttpUrlOrNull()?.host?.lowercase()
                 val isGrok = host == "x.ai" || host?.endsWith(".x.ai") == true ||
                     params.model.modelId.contains("grok", ignoreCase = true)
@@ -267,7 +266,6 @@ class OpenAIProvider(
 
         val key = keyRoulette.next(providerSetting.apiKey, providerSetting.id.toString())
 
-        // OpenRouter 没有 /images/edits，参考图通过图像生成接口的 input_references 传入
         if (providerSetting.baseUrl.toHttpUrlOrNull()?.host?.lowercase() == "openrouter.ai") {
             editImageWithInputReferences(providerSetting, params, key).forEach { emit(it) }
             return@flow

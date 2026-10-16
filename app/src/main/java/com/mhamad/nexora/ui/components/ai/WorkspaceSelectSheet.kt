@@ -68,7 +68,6 @@ internal fun WorkspaceSelectSheet(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                // 不绑定
                 WorkspaceSelectRow(
                     title = stringResource(R.string.workspace_no_binding),
                     selected = assistant.workspaceId == null,
@@ -86,7 +85,6 @@ internal fun WorkspaceSelectSheet(
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
 
-            // 管理工作区
             ListItem(
                 leadingContent = {
                     Icon(HugeIcons.Codesandbox, contentDescription = null)

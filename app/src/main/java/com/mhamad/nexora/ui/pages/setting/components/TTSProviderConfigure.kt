@@ -254,7 +254,6 @@ private fun CardGroupScope.miMoTTSItems(
     setting: TTSProviderSetting.MiMo,
     onValueChange: (TTSProviderSetting) -> Unit
 ) {
-    // MiMo 配置均为自由输入 默认值只是占位
     // API Key
     formItem(
         headlineContent = { Text(stringResource(R.string.setting_tts_page_api_key)) },
@@ -975,7 +974,6 @@ private fun CardGroupScope.fishAudioTTSItems(
         )
     }
 
-    // Model (下拉选择框 + 文本输入框，完全同 ElevenLabs 格式)
     val models = listOf(
         "s2.1-pro" to "S2.1-Pro (推荐)",
         "s2.1-pro-free" to "S2.1-Pro Free (免费)",
@@ -1108,7 +1106,6 @@ private fun CardGroupScope.stepTTSItems(
     }
 
     // Voice
-    // 部分常用 voice-id, 完整列表见官方开发指南
     // https://platform.stepfun.com/docs/zh/guides/developer/tts
     val voices = listOf(
         "elegantgentle-female" to "气质温婉 (elegantgentle-female)",
@@ -1235,7 +1232,6 @@ private fun CardGroupScope.stepTTSItems(
         )
     }
 
-    // Instruction (仅 stepaudio-2.5-tts 生效)
     formItem(
         headlineContent = { Text("Instruction") },
         supportingContent = { Text("全局语境指令, 仅 stepaudio-2.5-tts 生效 (≤200 字符, 留空不下发)") }
@@ -1243,7 +1239,6 @@ private fun CardGroupScope.stepTTSItems(
         OutlinedTextField(
             value = setting.instruction,
             onValueChange = { newInstruction ->
-                // 服务端上限 200 字符, 客户端做一层保护
                 if (newInstruction.length <= 200) {
                     onValueChange(setting.copy(instruction = newInstruction))
                 }

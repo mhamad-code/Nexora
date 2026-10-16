@@ -52,8 +52,6 @@ class TTSManager(private val context: Context) {
     }
 
     /**
-     * 返回该 provider 硬编码的语气标记引导提示词（默认空）。
-     * 供 text_to_speech 工具注入 system prompt 使用。
      */
     fun getPromptGuidance(providerSetting: TTSProviderSetting): String {
         return when (providerSetting) {

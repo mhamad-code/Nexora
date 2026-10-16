@@ -25,7 +25,6 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 
 /**
- * OpenRouter 没有 /images/edits，图片编辑要走图像生成接口的 input_references (#1993)
  */
 class OpenAIProviderImageEditTest {
     @get:Rule

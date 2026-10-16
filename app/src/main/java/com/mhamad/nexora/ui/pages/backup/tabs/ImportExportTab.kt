@@ -53,10 +53,8 @@ fun ImportExportTab(
     var isRestoring by remember { mutableStateOf(false) }
     var showImportConfirmDialog by remember { mutableStateOf(false) }
 
-    // 导入类型：local 为本地备份，chatbox 为 Chatbox 导入，cherry 为 Cherry Studio 导入
     var importType by remember { mutableStateOf("local") }
 
-    // 创建文件保存的launcher
     val createDocumentLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/zip")
     ) { uri ->
@@ -64,17 +62,14 @@ fun ImportExportTab(
             scope.launch {
                 isExporting = true
                 runCatching {
-                    // 导出文件
                     val exportFile = vm.exportToFile()
 
-                    // 复制到用户选择的位置
                     context.contentResolver.openOutputStream(targetUri)?.use { outputStream ->
                         FileInputStream(exportFile).use { inputStream ->
                             inputStream.copyTo(outputStream)
                         }
                     }
 
-                    // 清理临时文件
                     exportFile.delete()
 
                     toaster.show(
@@ -93,7 +88,6 @@ fun ImportExportTab(
         }
     }
 
-    // 创建文件选择的launcher
     val openDocumentLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
@@ -103,7 +97,6 @@ fun ImportExportTab(
                 runCatching {
                     when (importType) {
                         "local" -> {
-                            // 本地备份导入：处理zip文件
                             val tempFile =
                                 File(context.cacheDir, "temp_restore_${System.currentTimeMillis()}.zip")
 
@@ -113,15 +106,12 @@ fun ImportExportTab(
                                 }
                             }
 
-                            // 从临时文件恢复
                             vm.restoreFromLocalFile(tempFile)
 
-                            // 清理临时文件
                             tempFile.delete()
                         }
 
                         "chatbox" -> {
-                            // Chatbox Backup v2：处理 ZIP 文件
                             val tempFile =
                                 File(context.cacheDir, "temp_chatbox_${System.currentTimeMillis()}.zip")
 
@@ -139,7 +129,6 @@ fun ImportExportTab(
                         }
 
                         "cherry" -> {
-                            // Cherry Studio导入：处理zip文件
                             val tempFile =
                                 File(context.cacheDir, "temp_cherry_${System.currentTimeMillis()}.zip")
 
@@ -149,10 +138,8 @@ fun ImportExportTab(
                                 }
                             }
 
-                            // 从Cherry Studio备份恢复
                             vm.restoreFromCherryStudio(tempFile)
 
-                            // 清理临时文件
                             tempFile.delete()
                         }
                     }

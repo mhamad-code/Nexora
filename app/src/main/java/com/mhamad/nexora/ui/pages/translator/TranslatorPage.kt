@@ -107,7 +107,6 @@ fun TranslatorPage(vm: TranslatorVM = koinViewModel()) {
     val copiedText = stringResource(R.string.copied)
     val errorText = stringResource(R.string.translator_page_error)
 
-    // settings.init 为 true 时设置还没加载完，这时不提示没选模型
     val modelMissing = !settings.init && settings.providers.findModelById(settings.translateModeId) == null
 
     LaunchedEffect(Unit) {
@@ -233,7 +232,6 @@ fun TranslatorPage(vm: TranslatorVM = koinViewModel()) {
     }
 }
 
-// 短文本用大字号，长文本降下来，避免一屏只放得下几行
 @Composable
 private fun adaptiveTextStyle(text: String): TextStyle =
     if (text.length <= 80) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.bodyLarge
@@ -424,7 +422,6 @@ private fun TranslateToolbar(
         Box {
             TextButton(
                 onClick = { menuExpanded = true },
-                // 默认是 primary，在 vibrant 工具栏上看不清
                 colors = ButtonDefaults.textButtonColors(contentColor = LocalContentColor.current),
             ) {
                 Icon(

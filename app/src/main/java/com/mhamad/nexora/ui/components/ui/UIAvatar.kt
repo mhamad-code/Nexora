@@ -180,7 +180,6 @@ fun UIAvatar(
                             text = value.content,
                             autoSize = TextAutoSize.StepBased(
                                 minFontSize = 15.sp,
-                                // 大头像里表情跟着放大，小头像保持原来的 30sp 上限
                                 maxFontSize = maxOf(30f, maxWidth.value * 0.45f).sp,
                             ),
                             lineHeight = 0.8.em,
@@ -204,7 +203,6 @@ fun UIAvatar(
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    // 角标跟着头像一起变大，小头像保底 14dp
                     .sizeIn(minWidth = 14.dp, minHeight = 14.dp)
                     .fillMaxSize(0.3f)
                     .clip(CircleShape)

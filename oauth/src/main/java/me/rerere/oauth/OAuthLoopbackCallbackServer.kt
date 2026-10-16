@@ -31,13 +31,8 @@ data class OAuthCallback(
 )
 
 /**
- * 临时 OAuth loopback 回调服务器。
  *
- * 服务器只绑定 IPv4 回环地址；首个授权会话打开时启动，最后一个会话关闭时停止。
- * 同一实例可以承载多个并发授权，并通过 state 将回调路由到对应会话。
  *
- * redirect URI 使用 localhost 而非 127.0.0.1：部分授权服务器前置的 WAF 会拦截请求体中
- * 带 IPv4 主机的 URL，导致动态客户端注册直接 403。
  */
 class OAuthLoopbackCallbackServer(
     private val port: Int = 0,
@@ -66,9 +61,7 @@ class OAuthLoopbackCallbackServer(
     }
 
     /**
-     * 打开由前台服务保活的授权会话。
      *
-     * 应在应用仍处于用户可见状态时调用；返回时前台服务已经成功启动，可以安全打开浏览器。
      */
     suspend fun openSession(
         context: Context,

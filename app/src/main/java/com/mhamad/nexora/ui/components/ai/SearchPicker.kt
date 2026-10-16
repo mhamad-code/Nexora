@@ -145,7 +145,6 @@ fun SearchPickerButton(
             sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden, enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded))
         ) {
             var selectingProvider by remember { mutableStateOf(false) }
-            // 在服务商选择页时，返回键回到上一页而不是关闭 sheet
             BackHandler(enabled = selectingProvider) {
                 selectingProvider = false
             }
@@ -198,12 +197,9 @@ private fun SearchPicker(
     val navBackStack = LocalNavController.current
 
     val provider = model?.findProvider(settings.providers)
-    // Google 和使用 Responses API 的 OpenAI Provider 支持内置搜索
     val supportsBuiltInSearch = provider is ProviderSetting.Google ||
         provider is ProviderSetting.OpenAI && provider.useResponseApi
-    // 模型是否已开启内置搜索（可能是不支持的模型残留的孤儿状态）
     val hasBuiltInSearchEnabled = model?.tools?.contains(BuiltInTools.Search) == true
-    // 模型支持内置搜索，或已开启内置搜索（后者保证残留状态也能被关闭）时显示模型搜索选项
     val showModelSearch = model != null && (supportsBuiltInSearch || hasBuiltInSearchEnabled)
     val currentMode = when {
         hasBuiltInSearchEnabled -> SearchMode.BUILT_IN
@@ -259,7 +255,6 @@ private fun SearchPicker(
             )
         }
 
-        // 连接式按钮组，选中项更宽并带图标
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -309,7 +304,6 @@ private fun SearchPicker(
                             SearchMode.LOCAL -> stringResource(R.string.search_picker_local_title)
                             SearchMode.BUILT_IN -> stringResource(R.string.search_picker_model_title)
                         },
-                        // 三个按钮并排时较长的译文放不下，自动缩小字号
                         autoSize = TextAutoSize.StepBased(minFontSize = 11.sp, maxFontSize = 14.sp),
                         maxLines = 1,
                         softWrap = false,
@@ -343,7 +337,6 @@ private fun SearchPicker(
                 },
                 trailingContent = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        // 搜索设置只和本地搜索的服务商有关，跟着这一行一起出现
                         IconButton(
                             onClick = {
                                 onDismiss()

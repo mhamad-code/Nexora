@@ -94,7 +94,6 @@ fun TranslationHistoryItem(
 ) {
     val dismissState = rememberSwipeToDismissBoxState(initialValue = SwipeToDismissBoxValue.Settled)
 
-    // 用 settledValue 而不是 currentValue，后者在动画途中就会变，会把这个 effect 提前取消
     LaunchedEffect(dismissState.settledValue) {
         if (dismissState.settledValue == SwipeToDismissBoxValue.EndToStart) {
             onDelete()

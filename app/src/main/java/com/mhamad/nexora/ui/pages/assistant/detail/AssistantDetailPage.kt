@@ -77,7 +77,6 @@ fun AssistantDetailPage(id: String) {
     val navController = LocalNavController.current
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val listState = rememberLazyListState()
-    // 头部滚出屏幕后，名字改在顶栏里显示
     val showTitle by remember { derivedStateOf { listState.firstVisibleItemIndex > 0 } }
     val name = assistant.name.ifBlank { stringResource(R.string.assistant_page_default_assistant) }
 
@@ -210,7 +209,6 @@ private fun AssistantHeader(
 
         Text(
             text = name,
-            // 名字长短不一，放不下两行时自动缩小字号
             autoSize = TextAutoSize.StepBased(minFontSize = 22.sp, maxFontSize = 32.sp),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,

@@ -77,7 +77,6 @@ class OpenAIMediaGenerationProviderTest {
         )
         assertNull(grok["size"])
 
-        // 域名只是以 x.ai 结尾的中转不应被当成 Grok
         val relay = provider.buildGenerationBody(
             setting = setting.copy(baseUrl = "https://api.foo-max.ai/v1"),
             model = model,

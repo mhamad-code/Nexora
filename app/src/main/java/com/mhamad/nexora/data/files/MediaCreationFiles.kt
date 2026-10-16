@@ -11,8 +11,6 @@ import java.io.File
 import kotlin.uuid.Uuid
 
 /**
- * 媒体创作用到的本地媒体处理：把相册里的素材导入应用目录、读取尺寸、抽取视频帧。
- * 都是阻塞调用，需要在 IO 线程使用。
  */
 object MediaCreationFiles {
     data class MediaInfo(
@@ -22,12 +20,10 @@ object MediaCreationFiles {
     )
 
     /**
-     * 解码并按 EXIF 摆正后重新编码：各家接口对 HEIC、超大尺寸和 EXIF 方向的处理不一致，统一成它们都接受的格式。
      */
     fun importImage(context: Context, uri: Uri, dir: File): File {
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         context.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
-        // 长边缩到 MAX_IMAGE_SIZE 以内，避免超大照片解码时占满内存
         var sampleSize = 1
         while (maxOf(bounds.outWidth, bounds.outHeight) / sampleSize > MAX_IMAGE_SIZE) sampleSize *= 2
         val options = BitmapFactory.Options().apply { inSampleSize = sampleSize }
@@ -35,7 +31,6 @@ object MediaCreationFiles {
             ?: error("无法读取图片")
         val bitmap = ImageUtils.correctImageOrientation(context, uri, decoded)
         try {
-            // 带透明通道的图片保留 PNG，其余用 JPEG 控制体积
             val (format, extension) = if (bitmap.hasAlpha()) {
                 Bitmap.CompressFormat.PNG to "png"
             } else {
@@ -82,7 +77,6 @@ object MediaCreationFiles {
     }
 
     /**
-     * 把视频的第一帧或最后一帧存成 JPEG，抽不出来时返回 false。
      */
     fun extractFrame(video: File, target: File, last: Boolean): Boolean = video.withRetriever { retriever ->
         val bitmap = if (last) retriever.lastFrame() else retriever.getFrameAtTime(0)
@@ -95,7 +89,6 @@ object MediaCreationFiles {
         }
     } ?: false
 
-    /** 视频第一帧的缩略图，给没有封面文件的视频素材显示用。 */
     fun videoThumbnail(file: File, size: Int = 256): Bitmap? = file.withRetriever { retriever ->
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             retriever.getScaledFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST_SYNC, size, size)
@@ -130,7 +123,6 @@ object MediaCreationFiles {
         }
     }
 
-    /** 还没下载完的结果文件带这个后缀，下载完成后改名去掉。 */
     const val PARTIAL_SUFFIX = ".part"
 
     private const val MAX_IMAGE_SIZE = 4096

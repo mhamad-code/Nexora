@@ -62,7 +62,6 @@ data class UpdateConversationInjectionsRequest(
     val lorebookIds: List<String>,
 )
 
-// 只更新传了值的字段；会话开始前这些修改落在助手上
 @Serializable
 data class UpdateConversationConfigRequest(
     val chatModelId: String? = null,
@@ -84,7 +83,6 @@ data class RenameFolderRequest(
 
 @Serializable
 data class MoveConversationToFolderRequest(
-    // null 表示移出文件夹（未归类）
     val folderId: String? = null
 )
 

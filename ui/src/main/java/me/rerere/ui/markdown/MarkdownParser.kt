@@ -24,19 +24,13 @@ import org.jsoup.nodes.Node
 import org.jsoup.nodes.TextNode
 import org.jsoup.parser.Tag
 
-// 解析流程：Markdown --(JetBrains Markdown)--> HTML --(Jsoup)--> DOM --> MarkdownDocument
 //
-// Markdown 解析器会把内嵌的 HTML 拆成零散的节点（行内标签是一个个独立的 token，块级 HTML 遇到空行就断开），
-// 直接在 AST 上渲染没法还原标签的嵌套关系。这里统一先生成 HTML 再交给 Jsoup，
-// 由它把 Markdown 生成的标签和原文里手写的标签拼成同一棵 DOM 树，于是只需要维护 DOM -> 节点这一套转换。
 
 private val flavour = GFMFlavourDescriptor(useSafeLinks = true, makeHttpsAutoLinks = true)
 private val markdownParser = MarkdownParser(flavour)
 
 /**
- * 把 Markdown 文本解析成 [MarkdownDocument]。纯计算、线程安全，长文本建议放在后台线程调用。
  *
- * @param softBreakAsLineBreak 段落内的单个换行是否渲染为换行（聊天场景的习惯）；为 false 时按 CommonMark 当作空格
  */
 fun parseMarkdown(content: String, softBreakAsLineBreak: Boolean = true): MarkdownDocument {
     val text = normalizeLatexDelimiters(content)
@@ -51,35 +45,27 @@ fun parseMarkdown(content: String, softBreakAsLineBreak: Boolean = true): Markdo
     )
 }
 
-// ---- 预处理 ----
 
-// 第 1 组匹配代码（围栏未闭合时一直算到结尾），用来跳过代码里的内容；第 2、3 组分别是 \( \) 和 \[ \]
 private val LATEX_DELIMITER_REGEX =
     Regex("""(```[\s\S]*?(?:```|\z)|`[^`\n]*`)|\\\((.+?)\\\)|\\\[([\s\S]+?)\\]""")
 private val LATEX_LINE_BREAK_REGEX = Regex("""[ \t]*\r?\n[ \t]*""")
 
-/** 把 `\( \)`、`\[ \]` 形式的公式定界符换成解析器认识的 `$ $`、`$$ $$` */
 internal fun normalizeLatexDelimiters(content: String): String {
     if ('\\' !in content) return content
     return LATEX_DELIMITER_REGEX.replace(content) { match ->
         val inline = match.groups[2]?.value?.trim()
         when {
             match.groups[1] != null -> match.value
-            // 解析器要求 $ 内侧不能有空白，而 \( x \) 这种带空格的写法很常见，所以要去掉
             inline != null -> if (inline.isEmpty()) match.value else "$$inline$"
-            // 块级公式里的换行会打断解析，合并成一行
             else -> "$$" + match.groupValues[3].trim().replace(LATEX_LINE_BREAK_REGEX, " ") + "$$"
         }
     }
 }
 
-// ---- 生成 HTML ----
 
-// Markdown 生成的这些标签会带上标记，转换时据此区分文本来自 Markdown 还是手写的 HTML（两者的空白处理规则不同）
 private const val MARKDOWN_ATTR = "data-md"
 private val MARKDOWN_TEXT_TAGS = setOf("p", "li", "th", "td", "h1", "h2", "h3", "h4", "h5", "h6")
 
-// HTML 里保留不了的源码信息，通过自定义属性带到 DOM 上
 private val tagRenderer = HtmlGenerator.DefaultTagRenderer(
     customizer = { node, tagName, attributes ->
         val tag = tagName.toString()
@@ -100,8 +86,6 @@ private val tagRenderer = HtmlGenerator.DefaultTagRenderer(
 private val HTML_TAG_NAME_REGEX = Regex("""^</?([a-zA-Z][a-zA-Z0-9-]*)""")
 
 /**
- * 行内的 `<xxx>` 只有是已知的 HTML 标签时才当作 HTML 输出，否则转义成普通文本。
- * 不然正文里的 `List<String>`、`<answer>` 这类内容会被当成未知标签吞掉。
  */
 private object InlineHtmlTagProvider : GeneratingProvider {
     override fun processNode(visitor: HtmlGenerator.HtmlGeneratingVisitor, text: String, node: ASTNode) {
@@ -115,7 +99,6 @@ private object InlineHtmlTagProvider : GeneratingProvider {
     }
 }
 
-// ---- DOM -> 节点 ----
 
 private val BLOCK_TAGS = setOf(
     "p", "div", "section", "article", "aside", "header", "footer", "main", "nav", "figure", "figcaption",
@@ -123,7 +106,6 @@ private val BLOCK_TAGS = setOf(
     "blockquote", "table", "hr", "details", "summary", "form", "fieldset",
 )
 
-// 这些标签的内容不是给人看的正文，或者这里画不出来，整棵子树直接跳过
 private val SKIPPED_TAGS = setOf(
     "script", "style", "head", "title", "meta", "link", "template", "noscript", "svg", "math", "iframe",
     "object", "embed", "canvas", "video", "audio", "input", "select", "textarea", "button",
@@ -164,9 +146,7 @@ private class DomConverter(
     private val softBreakAsLineBreak: Boolean,
 ) {
     /**
-     * 转换一组混排的子节点：块级元素各自成块，夹在中间的连续行内内容合成一个隐式段落。
      *
-     * @param markdown 这组节点里的裸文本是否来自 Markdown（而不是手写的 HTML）
      */
     fun flow(nodes: List<Node>, markdown: Boolean): List<MarkdownBlock> {
         val blocks = mutableListOf<MarkdownBlock>()
@@ -234,7 +214,6 @@ private class DomConverter(
         return MarkdownBlock.ListBlock(
             ordered = ordered,
             items = items.map { item ->
-                // 嵌套列表里的复选框排在后面，selectFirst 取到的一定是当前项自己的
                 val checkbox = if (item.hasClass("task-list-item")) item.selectFirst("input[type=checkbox]") else null
                 ListItem(
                     children = flow(item.childNodes(), item.hasAttr(MARKDOWN_ATTR)),
@@ -242,7 +221,6 @@ private class DomConverter(
                 )
             },
             start = element.attr("start").toIntOrNull() ?: 1,
-            // 松散列表（列表项之间有空行）的内容会被包进 <p>
             tight = items.none { item -> item.children().any { it.normalName() == "p" } },
         )
     }
@@ -260,11 +238,9 @@ private class DomConverter(
     }
 
     private fun table(element: Element): MarkdownBlock.Table? {
-        // 不处理嵌套表格的行
         val rows = element.select("tr").filter { it.closest("table") === element }
         if (rows.isEmpty()) return null
 
-        // 表格和行上的样式由单元格继承。<table align> 指的是表格自身的摆放位置，不算文字对齐
         val tableStyle = parseBlockStyle(element.attr("style"))
         fun cells(row: Element): List<TableCell> {
             val rowStyle = tableStyle.mergeWith(row.blockStyle())
@@ -282,7 +258,6 @@ private class DomConverter(
             header = header,
             rows = rows.drop(1).map(::cells),
             alignments = header.map { cell -> cell.style?.textAlign?.takeIf { it != TextAlign.Unspecified } },
-            // 手写的 HTML 也可能带这个属性，范围不合法就当作没有
             source = sourceRange.takeIf { it.size == 2 && it[0] in 0..it[1] && it[1] <= source.length }
                 ?.let { (start, end) -> source.substring(start, end).trim() },
         )
@@ -344,7 +319,6 @@ private class DomConverter(
             }
 
             else -> {
-                // 行内上下文里遇到块级元素（例如单元格里的 <p>），退化成换行分隔的文本
                 val isBlock = tag in BLOCK_TAGS
                 if (isBlock && out.isNotEmpty()) out.appendText("\n")
                 val children = inlines(element.childNodes(), if (isBlock) element.hasAttr(MARKDOWN_ATTR) else markdown)
@@ -359,7 +333,6 @@ private class DomConverter(
     }
 
     private fun normalizeText(text: String, markdown: Boolean): String = when {
-        // 手写 HTML 里的缩进和换行只是排版，按 HTML 的规则折叠成一个空格
         !markdown -> text.replace(HTML_WHITESPACE_REGEX, " ")
         '\n' !in text -> text
         else -> text.replace(SOFT_BREAK_REGEX, if (softBreakAsLineBreak) "\n" else " ")
@@ -381,7 +354,6 @@ private fun Element.inlineStyle(): SpanStyle? {
     val tag = normalName()
     val tagStyle = when {
         tag == "font" -> parseFontTag(color = attr("color"), size = attr("size"), face = attr("face"))
-        // GFM 的 ~~删除线~~ 生成的是这个 class
         tag == "span" && hasClass("user-del") -> STRIKETHROUGH
         else -> TAG_STYLES[tag]
     }
@@ -395,7 +367,6 @@ private fun Element.inlineStyle(): SpanStyle? {
 
 private fun MutableList<MarkdownInline>.appendText(text: String) {
     val last = lastOrNull() as? MarkdownInline.Text
-    // 换行后面紧跟的空白没有意义：<br> 后面的换行符不该再多出一个空行
     val appended = if (last != null && last.text.endsWith('\n')) text.trimStart() else text
     if (appended.isEmpty()) return
     if (last != null) {

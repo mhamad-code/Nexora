@@ -76,7 +76,6 @@ internal fun MarkdownBlocks(
     }
 }
 
-// 节点都是不可变的 data class，block 与上次相等时这个函数整个被跳过，流式输出时只有变化的块会重组
 @Composable
 private fun MarkdownBlockNode(block: MarkdownBlock, first: Boolean) {
     val context = LocalMarkdownContext.current
@@ -102,7 +101,6 @@ private fun WithTextStyle(style: TextStyle?, content: @Composable () -> Unit) {
     }
 }
 
-// HTML 样式里的相对字号解析成了 em，但段落级的样式没有父级可以参照，这里按当前字号换算成具体的值
 private fun TextStyle.resolveFontSize(base: TextUnit): TextStyle = when {
     !fontSize.isEm -> this
     base.isSp -> copy(fontSize = base * fontSize.value)
@@ -110,7 +108,6 @@ private fun TextStyle.resolveFontSize(base: TextUnit): TextStyle = when {
 }
 
 /**
- * 渲染一段行内内容。纯文本是一个 Text；夹着图片或块级公式时，按片段放进 FlowRow 里流式排布。
  */
 @Composable
 private fun InlineContent(
@@ -121,7 +118,6 @@ private fun InlineContent(
     val components = LocalMarkdownContext.current.components
     val segments = remember(content) { content.toSegments() }
     val textAlign = LocalTextStyle.current.textAlign
-    // 默认按内容宽度布局，放进聊天气泡时不会把气泡撑满；只有非起始对齐才需要占满整行
     val alignedModifier = if (fillWidthToAlign && textAlign.needsFullWidth()) modifier.fillMaxWidth() else modifier
 
     when (val single = segments.singleOrNull()) {
@@ -161,7 +157,6 @@ private fun HeadingBlock(block: MarkdownBlock.Heading, first: Boolean) {
     ProvideTextStyle(style.merge(block.style?.resolveFontSize(baseFontSize))) {
         InlineContent(
             content = block.content,
-            // 标题和上文之间多留一点距离，让它更靠近自己引出的内容
             modifier = Modifier
                 .padding(top = if (first) 0.dp else theme.blockSpacing / 2)
                 .semantics { heading() },
@@ -227,7 +222,6 @@ private fun TaskCheckbox(checked: Boolean) {
         val fontSize = if (style.fontSize.isSpecified) style.fontSize.toDp() else 16.dp
         fontSize to if (style.lineHeight.isSpecified && style.lineHeight.isSp) style.lineHeight.toDp() else fontSize * 1.4f
     }
-    // 外层占一行文字的高度，让复选框和第一行文字垂直居中对齐
     Box(
         modifier = Modifier.height(lineHeight),
         contentAlignment = Alignment.Center,
@@ -298,9 +292,7 @@ private fun TextAlign.toCellAlignment(): Alignment? = when (this) {
 @Composable
 private fun TableCellContent(cell: TableCell, columnAlign: TextAlign?, fontWeight: FontWeight?) {
     val columnStyle = TextStyle(fontWeight = fontWeight, textAlign = columnAlign ?: TextAlign.Unspecified)
-    // 单元格自己的样式优先于列的对齐方式和表头的字重
     ProvideTextStyle(columnStyle.merge(cell.style?.resolveFontSize(LocalTextStyle.current.fontSize))) {
-        // 列宽由内容决定，单元格在列内的对齐交给表格，这里不能为了对齐把宽度撑满
         InlineContent(cell.content, fillWidthToAlign = false)
     }
 }
@@ -308,7 +300,6 @@ private fun TableCellContent(cell: TableCell, columnAlign: TextAlign?, fontWeigh
 @Composable
 private fun DetailsBlock(block: MarkdownBlock.Details) {
     val theme = LocalMarkdownContext.current.theme
-    // 流式输出时标签是一点点出现的，open 属性后到的话要跟着更新
     var expanded by rememberSaveable(block.open) { mutableStateOf(block.open) }
     val rotation by animateFloatAsState(if (expanded) 90f else 0f)
     Column {

@@ -54,10 +54,7 @@ import me.rerere.hugeicons.stroke.Undo
 import me.rerere.ui.R
 
 /**
- * 全屏的画板：用手指或触控笔画一张草图，确认后得到一张图片。
  *
- * @param image 垫在下面的图片，在它上面圈画标注；为空时是一张白纸
- * @param aspectRatio 白纸的宽高比，为空时占满屏幕。之后还可以在画板里改
  */
 @Composable
 fun SketchDialog(
@@ -77,7 +74,6 @@ fun SketchDialog(
         if (background != null) {
             state.useBackground(background)
         } else {
-            // 应用内的提示显示在画板这个窗口的下面，看不到，这里用系统的
             Toast.makeText(context, loadFailed, Toast.LENGTH_SHORT).show()
         }
     }
@@ -88,7 +84,6 @@ fun SketchDialog(
         if (uri != null) scope.launch { loadBackground(uri) }
     }
 
-    // 画了东西之后退出要先确认，在屏幕边缘起笔时容易误触返回手势
     fun close() {
         if (state.isBlank) onDismiss() else confirmDiscard = true
     }
@@ -101,7 +96,6 @@ fun SketchDialog(
             decorFitsSystemWindows = false,
         ),
     ) {
-        // 对话框有自己的窗口，系统栏图标的深浅要另外跟着画板的底色设置
         val window = (LocalView.current.parent as? DialogWindowProvider)?.window
         val containerColor = MaterialTheme.colorScheme.surfaceContainer
         val lightContainer = containerColor.luminance() > 0.5f
@@ -121,7 +115,6 @@ fun SketchDialog(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    // 只避开系统栏和挖孔，不管键盘：写字时键盘弹出来，画纸的大小不能跟着变
                     .windowInsetsPadding(WindowInsets.systemBars.union(WindowInsets.displayCutout)),
             ) {
                 SketchTopBar(
@@ -141,7 +134,6 @@ fun SketchDialog(
                         .padding(horizontal = 12.dp),
                 ) {
                     SketchCanvas(state = state, modifier = Modifier.fillMaxSize())
-                    // 浮在画纸上面而不是挤占它的位置：画纸的尺寸不能因为调色而变
                     if (state.pickingColor) {
                         SketchColorPicker(
                             state = state,
@@ -184,7 +176,6 @@ fun SketchDialog(
     }
 }
 
-// 关闭、撤销、重做、清空、选画纸和确认
 @Composable
 private fun SketchTopBar(
     state: SketchState,

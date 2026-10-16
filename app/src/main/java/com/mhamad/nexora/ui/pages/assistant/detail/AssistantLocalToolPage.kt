@@ -142,7 +142,6 @@ private fun AssistantLocalToolContent(
         switchItem(
             checked = checked,
             onCheckedChange = { toggleLocalTool(option, it) },
-            // 图标底色跟着开关状态变化
             leadingContent = {
                 CardGroupIcon(
                     icon = icon,

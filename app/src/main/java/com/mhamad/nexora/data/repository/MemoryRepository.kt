@@ -10,20 +10,15 @@ import com.mhamad.nexora.data.model.Assistant
 import com.mhamad.nexora.data.model.MemoryFile
 
 sealed interface MemoryWriteResult {
-    /** [file] 为 null 表示文件已被删除 */
     data class Success(val file: MemoryFile?) : MemoryWriteResult
 
-    /** 版本对不上；[current] 是最新内容，为 null 表示文件不存在 */
     data class Conflict(val current: MemoryFile?) : MemoryWriteResult
 
     data class Rejected(val reason: String) : MemoryWriteResult
 }
 
 /**
- * 记忆库：每个助手（或全局）一组 Markdown 文件。
  *
- * 写操作都带 ifVersion 做乐观锁：传 [NEW_FILE_VERSION] 表示新建，传版本号表示基于该版本修改，
- * 传 null 则不校验（用户在界面里直接编辑）。
  */
 class MemoryRepository(private val memoryDAO: MemoryDAO) {
     companion object {
@@ -31,7 +26,6 @@ class MemoryRepository(private val memoryDAO: MemoryDAO) {
         const val NEW_FILE_VERSION = "new"
     }
 
-    // 读取、校验版本、写入必须一起完成，否则两个写入方会互相覆盖
     private val writeLock = Mutex()
 
     fun getFilesFlow(assistantId: String): Flow<List<MemoryFile>> =
@@ -45,7 +39,6 @@ class MemoryRepository(private val memoryDAO: MemoryDAO) {
         return memoryDAO.getFile(assistantId, normalized)?.toMemoryFile()
     }
 
-    /** 新建或整体覆盖 */
     suspend fun writeFile(
         assistantId: String,
         path: String,
@@ -53,7 +46,6 @@ class MemoryRepository(private val memoryDAO: MemoryDAO) {
         ifVersion: String? = null,
     ): MemoryWriteResult = update(assistantId, path, ifVersion, allowCreate = true) { Edit.Content(content) }
 
-    /** 把唯一匹配的 [oldStr] 换成 [newStr]，[newStr] 为空即删除 */
     suspend fun replaceInFile(
         assistantId: String,
         path: String,
@@ -72,7 +64,6 @@ class MemoryRepository(private val memoryDAO: MemoryDAO) {
         }
     }
 
-    /** 在文件末尾追加一行 */
     suspend fun appendToFile(
         assistantId: String,
         path: String,
@@ -153,13 +144,11 @@ class MemoryRepository(private val memoryDAO: MemoryDAO) {
     )
 }
 
-/** 助手读写的记忆库：开启全局记忆后所有助手共用一份 */
 val Assistant.memoryId: String
     get() = if (useGlobalMemory) MemoryRepository.GLOBAL_MEMORY_ID else id.toString()
 
 private fun MemoryFileEntity.toMemoryFile() = MemoryFile(path = path, content = content, updatedAt = updatedAt)
 
-// 删掉的是完整一行时连换行一起去掉，不留空行
 private fun String.replaceAt(index: Int, length: Int, replacement: String): String {
     var start = index
     var end = index + length

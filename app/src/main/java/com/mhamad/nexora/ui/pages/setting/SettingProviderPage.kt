@@ -396,7 +396,6 @@ private fun ImportProviderButton(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        // 主要操作：扫描二维码
                         Button(
                             onClick = {
                                 showImportDialog = false
@@ -425,7 +424,6 @@ private fun ImportProviderButton(
                             }
                         }
 
-                        // 次要操作：从相册选择
                         OutlinedButton(
                             onClick = {
                                 showImportDialog = false
@@ -526,7 +524,6 @@ private fun handleImageQRCode(
     context: android.content.Context
 ) {
     runCatching {
-        // 使用ImageUtils解析二维码
         val qrContent = ImageUtils.decodeQRCodeFromUri(context, uri)
 
         if (qrContent.isNullOrEmpty()) {
@@ -552,7 +549,6 @@ private fun handleImageQRCode(
 }
 
 
-// 新建时只选类型，其余配置到详情页里填
 @Composable
 private fun AddButton(onAdd: (ProviderSetting) -> Unit) {
     var showSheet by remember { mutableStateOf(false) }

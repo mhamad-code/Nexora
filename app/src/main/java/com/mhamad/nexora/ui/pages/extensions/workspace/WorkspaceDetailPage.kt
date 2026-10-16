@@ -274,8 +274,6 @@ fun WorkspaceDetailPage(id: String) {
                                     )
 
                                     WorkspaceFileType.IMAGE -> vm.exportToCacheFile(entry, context.cacheDir) { file ->
-                                        // 传绝对路径 (而非 content:// URI): Coil 可直接加载,
-                                        // 预览弹窗的保存按钮 saveMessageImage 只认 "/" 开头路径, content URI 会报错
                                         previewImageUri = file.absolutePath
                                     }
 
@@ -489,7 +487,6 @@ private fun WorkspaceBasicPage(
     }
 }
 
-// Shell 状态标签，就绪和出错用不同的底色区分
 @Composable
 private fun ShellStatusBadge(status: String?) {
     val colorScheme = MaterialTheme.colorScheme
@@ -676,7 +673,6 @@ private fun WorkspaceFilesPage(
                 start = 16.dp,
                 top = 16.dp,
                 end = 16.dp,
-                // 多选时底部留出悬浮工具栏的位置
                 bottom = if (selecting) 128.dp else 16.dp,
             ),
         ) {
@@ -713,7 +709,6 @@ private fun WorkspaceFilesPage(
                 }
             }
 
-            // 文件列表排成一个分组：首尾大圆角，项与项之间留 2dp 的缝
             itemsIndexed(state.entries, key = { _, entry -> "${state.area.name}:${entry.path}" }) { index, entry ->
                 WorkspaceFileItem(
                     entry = entry,
@@ -789,7 +784,6 @@ private fun WorkspaceAreaSelector(
         options = WorkspaceStorageArea.entries,
         selected = selected,
         onSelect = onSelected,
-        // 直接放在页面背景上，用更深一档的底色才分得开
         containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
     ) { area, isSelected ->
         ConnectedChoiceLabel(
@@ -832,7 +826,6 @@ private fun WorkspacePathBar(
                 fontFamily = FontFamily.Monospace,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
-                // 路径太长时省略开头，当前所在的目录始终看得到
                 overflow = TextOverflow.StartEllipsis,
             )
         }
@@ -965,7 +958,6 @@ private fun WorkspaceFileItem(
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
 
-                // 选中时整行换成 secondaryContainer，图标底色跟着换一档，不然会融进背景
                 else -> CardGroupIcon(
                     icon = HugeIcons.File02,
                     containerColor = if (selected) {
@@ -996,7 +988,6 @@ private fun WorkspaceFileItem(
                 )
             }
             if (selecting) {
-                // 和菜单按钮占一样大的位置，进出多选时行高不跳；点整行切换，勾选框自己不接收点击
                 Box(
                     modifier = Modifier.size(48.dp),
                     contentAlignment = Alignment.Center,
@@ -1015,7 +1006,6 @@ private fun WorkspaceFileItem(
                                 icon = HugeIcons.Copy01,
                                 onClick = {
                                     context.writeClipboardText(entry.rootfsPath(area))
-                                    // Android 13 起系统会自己弹复制提示
                                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                                         Toast.makeText(context, R.string.workspace_detail_path_copied, Toast.LENGTH_SHORT).show()
                                     }
@@ -1053,7 +1043,6 @@ private fun WorkspaceFileItem(
     }
 }
 
-// 复制出去的路径要能直接给 AI 工具和终端用，所以按 Rootfs 内的绝对路径给
 private fun WorkspaceFileEntry.rootfsPath(area: WorkspaceStorageArea): String = when (area) {
     WorkspaceStorageArea.FILES -> "${WorkspaceManager.ROOTFS_WORKSPACE_DIR}/$path"
     WorkspaceStorageArea.LINUX -> "/$path"

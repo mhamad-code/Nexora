@@ -24,7 +24,6 @@ data class S3Config(
     val isHttps: Boolean
         get() = endpoint.startsWith("https://")
 
-    /** endpoint 没写协议时补上 https://，给不需要兼容旧行为的配置用。 */
     fun withHttpsByDefault(): S3Config =
         if (endpoint.isBlank() || "://" in endpoint) this else copy(endpoint = "https://$endpoint")
 

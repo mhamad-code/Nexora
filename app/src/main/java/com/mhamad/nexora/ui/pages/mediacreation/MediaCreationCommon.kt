@@ -66,10 +66,8 @@ internal val MediaCreationStatus.label: String
         MediaCreationStatus.CANCELLED -> stringResource(R.string.media_creation_status_cancelled)
     }
 
-/** 时长的特殊取值：交给模型决定（智能时长）。 */
 internal const val AUTO_DURATION = -1
 
-/** 用户改过的参数，按「比例 · 分辨率 · 时长 · 数量」的顺序列出；都没改时为空。 */
 @Composable
 internal fun MediaCreationParams.summary(kind: MediaKind): List<String> = listOfNotNull(
     aspectRatio,
@@ -115,8 +113,6 @@ internal fun MediaCreationParams.summary(kind: MediaKind): List<String> = listOf
 )
 
 /**
- * 各厂商常用的参数取值，只是输入时的快捷选项：模型之间的差异很大，实际能用哪些值以接口为准，
- * 列表里没有的可以手动输入。
  */
 internal data class MediaCreationPresets(
     val resolutions: List<String> = emptyList(),
@@ -124,7 +120,6 @@ internal data class MediaCreationPresets(
     val durations: List<Int> = emptyList(),
     val counts: List<Int> = emptyList(),
 ) {
-    /** 接口必填的参数没有设置时使用的值：各自的第一个快捷选项。 */
     val defaults: MediaCreationParams
         get() = MediaCreationParams(
             count = counts.firstOrNull(),
@@ -141,9 +136,7 @@ internal fun MediaGenerationProviderSetting.presets(kind: MediaKind): MediaCreat
     )
 
     is MediaGenerationProviderSetting.Volcengine -> when (kind) {
-        // 各代 Seedream 的档位不同：5.0 pro / flash 是 1K、1.5K、2K，5.0 lite 是 2K、3K、4K，4.5 是 2K、4K
         MediaKind.IMAGE -> MediaCreationPresets(resolutions = listOf("1K", "1.5K", "2K", "3K", "4K"))
-        // 智能时长是 Seedance 2.0 起才有的
         MediaKind.VIDEO -> MediaCreationPresets(
             resolutions = listOf("480p", "720p", "1080p"),
             aspectRatios = VIDEO_ASPECT_RATIOS + "adaptive",
@@ -152,7 +145,6 @@ internal fun MediaGenerationProviderSetting.presets(kind: MediaKind): MediaCreat
     }
 
     is MediaGenerationProviderSetting.Aliyun -> when (kind) {
-        // 千问 3.0 的 size 只接受像素尺寸，万相 2.7 另外还接受 1K、2K 档位
         MediaKind.IMAGE -> MediaCreationPresets(
             resolutions = listOf("1024x1024", "1536x1024", "1024x1536", "2048x2048"),
             counts = IMAGE_COUNTS,
@@ -164,14 +156,12 @@ internal fun MediaGenerationProviderSetting.presets(kind: MediaKind): MediaCreat
         )
     }
 
-    // 分辨率、比例、时长是必填的，排在最前面的作为默认值；768P 是 H3 和 H3-Max 都支持的档位
     is MediaGenerationProviderSetting.MiniMax -> MediaCreationPresets(
         resolutions = listOf("768P", "2K", "480P"),
         aspectRatios = VIDEO_ASPECT_RATIOS + "adaptive",
         durations = VIDEO_DURATIONS,
     )
 
-    // 背后是各家的模型，取值取的是多数模型都接受的那些
     is MediaGenerationProviderSetting.OpenRouter -> when (kind) {
         MediaKind.IMAGE -> MediaCreationPresets(
             resolutions = listOf("1K", "2K", "4K"),
@@ -192,7 +182,6 @@ private val VIDEO_ASPECT_RATIOS = listOf("16:9", "9:16", "1:1", "4:3", "3:4", "2
 private val VIDEO_DURATIONS = listOf(5, 10)
 
 /**
- * 素材或产出的缩略图。视频显示 [poster]，没有封面文件时从视频里取第一帧。
  */
 @Composable
 internal fun MediaThumbnail(
@@ -241,7 +230,6 @@ internal fun MediaThumbnail(
 }
 
 /**
- * 把生成的图片或视频存进系统相册。
  */
 internal suspend fun saveMediaToGallery(context: Context, file: File, mimeType: String) = withContext(Dispatchers.IO) {
     check(file.isFile) { context.getString(R.string.media_creation_page_file_missing) }
@@ -271,7 +259,6 @@ internal suspend fun saveMediaToGallery(context: Context, file: File, mimeType: 
             throw e
         }
     } else {
-        // Android 9 及以下直接写公共目录，需要存储权限
         val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
         if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
             context.getActivity()?.let { ActivityCompat.requestPermissions(it, arrayOf(permission), 1) }

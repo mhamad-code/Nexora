@@ -17,8 +17,6 @@ import me.rerere.common.http.jsonObjectOrNull
 import me.rerere.common.http.jsonPrimitiveOrNull
 
 /**
- * Interactions API 的流按 step 组织：`step.start` → `step.delta`* → `step.stop`，
- * 每个 step 通过 `index` 关联，最后由 `interaction.completed` 给出状态和用量。
  */
 internal class InteractionsStreamDecoder(
     private val fallbackModel: String? = null,
@@ -65,7 +63,6 @@ internal class InteractionsStreamDecoder(
             }
 
             else -> {
-                // interaction.status_update 等状态事件；未知事件按文档要求直接跳过
                 payload.stringOrNull("status")?.let { status = it }
                 DecodeResult()
             }
@@ -88,7 +85,6 @@ internal class InteractionsStreamDecoder(
         val state = StepState(index, type, step).also { steps[index] = it }
 
         return when {
-            // step.start 可能已经带有首段内容
             type == "model_output" -> step["content"]?.jsonArrayOrNull.orEmpty().flatMap { content ->
                 content.jsonObjectOrNull?.let { contentDelta(state, it) }.orEmpty()
             }
@@ -117,7 +113,6 @@ internal class InteractionsStreamDecoder(
         val index = payload["index"]?.jsonPrimitiveOrNull?.intOrNull ?: return emptyList()
         val delta = payload["delta"]?.jsonObjectOrNull ?: return emptyList()
         val deltaType = delta.stringOrNull("type") ?: return emptyList()
-        // 容忍缺失的 step.start：根据 delta 类型推断 step 类型
         val state = steps.getOrPut(index) {
             val stepType = when (deltaType) {
                 "thought_summary", "thought_signature" -> "thought"
@@ -156,8 +151,6 @@ internal class InteractionsStreamDecoder(
 
             else -> {
                 delta.stringOrNull("signature")?.takeIf { it.isNotEmpty() }?.let { state.signature = it }
-                // 服务端工具的 delta 与 step 同名，携带 arguments / result / signature 等字段，
-                // 合并后得到与非流式响应一致的完整 step，供后续轮次原样回传
                 val isServerToolCall = isInteractionsServerToolCall(state.type)
                 if (isServerToolCall || isInteractionsServerToolResult(state.type)) {
                     state.raw = JsonObject(state.raw + delta.filterKeys { it != "type" })
@@ -183,7 +176,6 @@ internal class InteractionsStreamDecoder(
                     ?.let { add(StreamChunk.Annotations(it)) }
             }
 
-            // 每个 image delta 是一张完整图片，图片前后的文本属于不同的 text part
             "image" -> buildList {
                 val data = content.stringOrNull("data")?.takeIf { it.isNotEmpty() } ?: return@buildList
                 addAll(state.closeText())
@@ -211,7 +203,6 @@ internal class InteractionsStreamDecoder(
     private fun closeStep(state: StepState): List<StreamChunk> = when {
         state.type == "model_output" -> state.closeText()
 
-        // 签名是 thought step 的最后一个 delta，因此在结束时一并写入 metadata
         state.type == "thought" -> listOf(
             StreamChunk.ReasoningEnd(state.reasoningId, interactionsSignatureMetadata(state.signature))
         )
@@ -219,7 +210,6 @@ internal class InteractionsStreamDecoder(
         state.type == "function_call" -> buildList {
             val id = state.toolCallId(interactionId)
             val metadata = interactionsSignatureMetadata(state.signature)
-            // 非增量返回时参数直接放在 step.start 的 arguments 里
             val initialArguments = state.raw["arguments"]?.jsonObjectOrNull
                 ?.takeIf { !state.hasArgumentsDelta && it.isNotEmpty() }
             if (initialArguments != null || metadata != null) {
@@ -252,7 +242,6 @@ internal class InteractionsStreamDecoder(
         if (finished) return emptyList()
         finished = true
         return buildList {
-            // 连接提前断开时，未完成的服务端工具结果没有可回传的内容，不物化
             steps.values.filterNot { isInteractionsServerToolResult(it.type) }.forEach { addAll(closeStep(it)) }
             steps.clear()
             add(StreamChunk.Finish(status, interactionId, model ?: fallbackModel))

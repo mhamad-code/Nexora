@@ -35,7 +35,6 @@ class SettingsStoreTest {
     @get:Rule
     val temp = TemporaryFolder()
 
-    // 这些测试靠卡住读写来排时序，出问题时表现为一直挂着
     @get:Rule
     val timeout: Timeout = Timeout.seconds(30)
 
@@ -46,7 +45,6 @@ class SettingsStoreTest {
         runBlocking { opened?.close() }
     }
 
-    // 同一个文件同一时间只能有一个 DataStore，重新打开前先关掉上一个
     private suspend fun open(loadGate: CompletableDeferred<Unit>? = null): OpenedStore {
         opened?.close()
         return OpenedStore(File(temp.root, "settings.preferences_pb"), loadGate).also { opened = it }
@@ -62,7 +60,6 @@ class SettingsStoreTest {
         opened.disk.writeDelayMillis = 20
 
         val typing = "hello world".map { char ->
-            // 和输入框一样：在当前显示的值后面追加，不等上一次写盘
             val shown = store.settingsFlow.value.titlePrompt
             launch(start = CoroutineStart.UNDISPATCHED) {
                 store.update { it.copy(titlePrompt = shown + char) }
@@ -115,7 +112,6 @@ class SettingsStoreTest {
         val opened = open()
         val store = opened.store
         store.update { it.copy(titlePrompt = "first") }
-        // 绕过 store 直接改盘上的值：之后的写入如果把没变的字段也重写一遍，它就会被内存里的值盖回去
         opened.disk.edit { it[SettingsStore.OCR_PROMPT] = "on disk" }
 
         store.update { it.copy(titlePrompt = "second") }
@@ -127,8 +123,6 @@ class SettingsStoreTest {
 
     @Test
     fun `values repaired while loading are written back by the next update`() = runBlocking {
-        // 盘上留着一个越界的下标，读盘时会被收回 0。它必须跟着下一次写入落盘，
-        // 否则以后搜索服务变多、这个下标重新落在范围内时，重启后选中的服务会悄悄变掉
         open().disk.edit { it[SettingsStore.SEARCH_SELECTED] = 3 }
         val opened = open()
         val store = opened.store
@@ -203,7 +197,6 @@ class SettingsStoreTest {
         val gate = CompletableDeferred<Unit>()
         opened.disk.writeGate = gate
 
-        // 页面关闭时 viewModelScope 里还没写完的修改
         val update = launch(start = CoroutineStart.UNDISPATCHED) { store.update { it.copy(titlePrompt = "kept") } }
         update.cancel()
         gate.complete(Unit)
@@ -221,7 +214,6 @@ private class OpenedStore(file: File, loadGate: CompletableDeferred<Unit>?) {
     suspend fun close() = scope.coroutineContext.job.cancelAndJoin()
 }
 
-// 可以卡住或拖慢读写的磁盘，用来确定地制造「内存已经改了、盘还没写完」的时刻
 private class GatedDataStore(
     private val delegate: DataStore<Preferences>,
     private val loadGate: CompletableDeferred<Unit>?,

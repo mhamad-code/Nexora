@@ -22,7 +22,6 @@ import java.util.Base64
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-/** OAuth 2.x 的通用 HTTP、PKCE、授权码和刷新令牌客户端。 */
 class OAuthHttpClient(
     private val httpClient: OkHttpClient,
 ) {
@@ -33,7 +32,6 @@ class OAuthHttpClient(
         explicitNulls = false
     }
 
-    /** RFC 7591 动态客户端注册请求。 */
     @Serializable
     data class ClientRegistrationRequest(
         @SerialName("client_name") val clientName: String,

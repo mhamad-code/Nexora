@@ -101,12 +101,10 @@ fun SettingAboutPage() {
             "💡", "🔥", "💥", "🚀", "⭐", "🌙"
         )
     }
-    // 直接画图标的各层：整张图标带着系统的图标蒙版，会和变形的轮廓叠在一起
     val logoLayers = remember(context) {
         val icon = ContextCompat.getDrawable(context, R.mipmap.ic_launcher)
         if (icon is AdaptiveIconDrawable) listOfNotNull(icon.background, icon.foreground) else listOfNotNull(icon)
     }
-    // 表情从 logo 中心喷出，坐标要换算到 EmojiBurstHost 里
     var hostCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
     var logoCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
     Scaffold(
@@ -144,7 +142,6 @@ fun SettingAboutPage() {
                         targetValue = if (pressed) 0.88f else 1f,
                         animationSpec = MaterialTheme.motionScheme.fastSpatialSpec(),
                     )
-                    // 每点一次，轮廓变形到下一个形状
                     var shapeIndex by remember { mutableIntStateOf(0) }
                     val shapePosition by animateFloatAsState(
                         targetValue = shapeIndex.toFloat(),
@@ -168,7 +165,6 @@ fun SettingAboutPage() {
                                     val segment = shapePosition.toInt()
                                     shape = MorphShape(
                                         morph = LogoMorphs[segment % LogoMorphs.size],
-                                        // 弹簧会过冲，过冲的部分落在下一段变形的开头
                                         progress = shapePosition - segment,
                                         rotation = shapePosition * 90f,
                                     )
@@ -259,14 +255,12 @@ fun SettingAboutPage() {
     }
 }
 
-// 自适应图标的图层是 108dp，可见的只有中间 72dp，四周各多出四分之一
 private fun logoLayerBounds(size: Size): Rect {
     val insetX = (size.width / 4f).roundToInt()
     val insetY = (size.height / 4f).roundToInt()
     return Rect(-insetX, -insetY, size.width.roundToInt() + insetX, size.height.roundToInt() + insetY)
 }
 
-// logo 依次变成的形状，最后一个接回第一个
 private val LogoShapes = listOf(
     MaterialShapes.Cookie12Sided,
     MaterialShapes.Clover4Leaf,
@@ -281,7 +275,6 @@ private val LogoMorphs = LogoShapes.indices.map { index ->
     Morph(LogoShapes[index], LogoShapes[(index + 1) % LogoShapes.size])
 }
 
-// 停在两个形状之间某一帧的轮廓
 private class MorphShape(
     private val morph: Morph,
     private val progress: Float,
@@ -289,7 +282,6 @@ private class MorphShape(
 ) : Shape {
     override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
         val path = morph.toPath(progress = progress)
-        // MaterialShapes 是归一化到 1x1 的，先放大到实际尺寸，再绕中心旋转
         val matrix = Matrix().apply {
             translate(size.width / 2f, size.height / 2f)
             rotateZ(rotation)

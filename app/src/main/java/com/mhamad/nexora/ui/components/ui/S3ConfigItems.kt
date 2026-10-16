@@ -20,7 +20,6 @@ import com.mhamad.nexora.R
 import com.mhamad.nexora.data.sync.s3.S3Config
 
 /**
- * S3 连接信息的表单项，备份和媒体上传的配置共用。
  */
 fun CardGroupScope.s3ConnectionItems(
     config: S3Config,

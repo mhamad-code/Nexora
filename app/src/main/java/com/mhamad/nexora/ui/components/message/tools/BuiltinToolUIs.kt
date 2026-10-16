@@ -91,7 +91,6 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 /**
- * 记忆库工具: 标题按读/写/删区分, 摘要显示操作的文件路径, 点路径跳到该文件的详情页
  */
 class MemoryFileToolUI(override val toolName: String) : ToolUIRenderer {
     override fun icon(context: ToolUIContext): ImageVector = when (toolName) {
@@ -105,7 +104,6 @@ class MemoryFileToolUI(override val toolName: String) : ToolUIRenderer {
         memoryToolTitle(toolName, context.arguments)
             ?: stringResource(R.string.chat_message_tool_call_generic, toolName)
 
-    // memory_read 的 path 是数组, 其余工具是单个路径
     private fun paths(context: ToolUIContext): List<String> =
         when (val path = context.arguments.jsonObjectOrNull?.get("path")) {
             is JsonArray -> path.mapNotNull { it.jsonPrimitiveOrNull?.contentOrNull }
@@ -118,7 +116,6 @@ class MemoryFileToolUI(override val toolName: String) : ToolUIRenderer {
     override fun Summary(context: ToolUIContext) {
         val navController = LocalNavController.current
         val paths = paths(context)
-        // 参数还在生成时路径可能不完整; 删掉的文件没有详情可看
         val memoryId = context.assistant?.memoryId
             ?.takeIf { !context.loading && toolName != MemoryToolNames.DELETE }
         Column {
@@ -177,7 +174,6 @@ class MemoryFileToolUI(override val toolName: String) : ToolUIRenderer {
     }
 }
 
-/** 记忆库工具的标题, 聊天消息与导出图片共用; 不是记忆库工具时返回 null */
 @Composable
 internal fun memoryToolTitle(toolName: String, arguments: JsonElement?): String? = when (toolName) {
     MemoryToolNames.READ -> stringResource(R.string.chat_message_tool_read_memory)
@@ -194,7 +190,6 @@ internal fun memoryToolTitle(toolName: String, arguments: JsonElement?): String?
 }
 
 /**
- * 网络搜索: 标题带查询词, 摘要显示 answer 与结果数, 详情为结果列表
  */
 object SearchWebToolUI : ToolUIRenderer {
     override val toolName: String = "search_web"
@@ -256,7 +251,6 @@ object SearchWebToolUI : ToolUIRenderer {
 }
 
 /**
- * 网页抓取: 摘要显示 URL, 详情为各网页的 Markdown 内容
  */
 object ScrapeWebToolUI : ToolUIRenderer {
     override val toolName: String = "scrape_web"
@@ -291,7 +285,6 @@ object ScrapeWebToolUI : ToolUIRenderer {
 }
 
 /**
- * 获取时间信息
  */
 object GetTimeInfoToolUI : ToolUIRenderer {
     override val toolName: String = "get_time_info"
@@ -304,7 +297,6 @@ object GetTimeInfoToolUI : ToolUIRenderer {
 }
 
 /**
- * 剪贴板: 按 action 区分读/写标题
  */
 object ClipboardToolUI : ToolUIRenderer {
     private const val ACTION_READ = "read"
@@ -324,7 +316,6 @@ object ClipboardToolUI : ToolUIRenderer {
 }
 
 /**
- * 文本转语音: 摘要显示朗读文本与重播按钮
  */
 object TextToSpeechToolUI : ToolUIRenderer {
     override val toolName: String = "text_to_speech"
@@ -375,7 +366,6 @@ object TextToSpeechToolUI : ToolUIRenderer {
 }
 
 /**
- * 技能调用: 标题显示技能名与路径
  */
 object UseSkillToolUI : ToolUIRenderer {
     override val toolName: String = "use_skill"
@@ -391,7 +381,6 @@ object UseSkillToolUI : ToolUIRenderer {
 }
 
 /**
- * 最近聊天: 标题固定, 摘要列出最近对话的标题
  */
 object RecentChatsToolUI : ToolUIRenderer {
     override val toolName: String = "recent_chats"
@@ -423,7 +412,6 @@ object RecentChatsToolUI : ToolUIRenderer {
 }
 
 /**
- * 对话历史搜索: 标题带查询词, 摘要显示命中数
  */
 object ConversationSearchToolUI : ToolUIRenderer {
     override val toolName: String = "conversation_search"
@@ -454,8 +442,6 @@ object ConversationSearchToolUI : ToolUIRenderer {
 }
 
 /**
- * 屏幕使用时间: 摘要显示总时长与用时最多的应用, 详情为按时长排序的应用列表 (带占比条);
- * 无权限时回退到默认 JSON 详情
  */
 object GetScreenTimeToolUI : ToolUIRenderer {
     private const val SUMMARY_MAX_APPS = 3
@@ -690,11 +676,9 @@ private fun ScreenTimePreview(content: JsonElement, apps: List<JsonElement>) {
     }
 }
 
-/** 读取单个应用条目的前台时长 (毫秒) */
 private fun JsonElement.appMs(): Long =
     jsonObjectOrNull?.get("total_ms")?.jsonPrimitiveOrNull?.longOrNull ?: 0
 
-/** 读取单个应用条目的前台时长 (分钟) */
 private fun JsonElement.appMinutes(): Long =
     jsonObjectOrNull?.get("total_minutes")?.jsonPrimitiveOrNull?.longOrNull ?: (appMs() / 60000)
 
@@ -702,10 +686,7 @@ private val SCREEN_TIME_RANGE_FORMATTER: DateTimeFormatter =
     DateTimeFormatter.ofPattern("MM-dd HH:mm")
 
 /**
- * 将工具返回的 ISO 时间字符串格式化为 "MM-dd HH:mm", 解析失败时原样返回.
  *
- * 工具用 ZonedDateTime.toString() 输出, 区域 ID 时会带 "[Asia/Shanghai]" 后缀,
- * 故优先用 ZonedDateTime.parse, 再回退到 offset / 本地日期时间.
  */
 private fun formatRangeTime(iso: String): String = runCatching {
     ZonedDateTime.parse(iso).format(SCREEN_TIME_RANGE_FORMATTER)
@@ -715,7 +696,6 @@ private fun formatRangeTime(iso: String): String = runCatching {
     LocalDateTime.parse(iso).format(SCREEN_TIME_RANGE_FORMATTER)
 }.getOrDefault(iso)
 
-/** 将分钟数格式化为 "Xh Ym" / "Xh" / "Ym" */
 private fun formatMinutes(minutes: Long): String {
     val h = minutes / 60
     val m = minutes % 60

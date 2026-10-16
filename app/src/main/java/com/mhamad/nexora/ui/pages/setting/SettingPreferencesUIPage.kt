@@ -237,7 +237,6 @@ fun SettingPreferencesUIPage(vm: SettingVM = koinViewModel()) {
                             },
                             minHeight = 64.dp,
                         ) { family, _ ->
-                            // 每个按钮用对应的字体写一个样字
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
                                     text = "Aa",
@@ -316,7 +315,6 @@ fun SettingPreferencesUIPage(vm: SettingVM = koinViewModel()) {
                             steps = 11,
                             modifier = Modifier.fillMaxWidth(),
                         )
-                        // 预览放在凹下去的底色里，和设置项本身区分开
                         Surface(
                             modifier = Modifier.fillMaxWidth(),
                             shape = MaterialTheme.shapes.large,

@@ -45,7 +45,6 @@ fun AssistantExtensionsPage(id: String) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val pagerState = rememberPagerState { ExtensionTab.entries.size }
     val listPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-    // 页面背景比 sheet 深，列表项用更亮的容器色才分得开
     val listColors = ListItemDefaults.segmentedColors(
         containerColor = MaterialTheme.colorScheme.surfaceBright,
     )

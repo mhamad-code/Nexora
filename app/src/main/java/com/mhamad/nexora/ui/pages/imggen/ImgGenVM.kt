@@ -47,7 +47,6 @@ private fun GenMediaEntity.toGeneratedImage(filesManager: FilesManager): Generat
     val imagesDir = filesManager.getImagesDir()
     val name = this.path.removePrefix("images/")
     val file = File(imagesDir, name)
-    // 旧版本直接把含 "/" 的模型名拼进文件名，图片实际落在子目录里，而记录只存了最后一段
     val fullPath = if (file.exists() || '/' !in modelId) {
         file.absolutePath
     } else {
@@ -63,7 +62,6 @@ private fun GenMediaEntity.toGeneratedImage(filesManager: FilesManager): Generat
     )
 }
 
-// 模型名可能含 "/"（如 OpenRouter 的 vendor/model），直接拼进文件名会变成子目录
 private fun String.toFileNamePart(): String = replace(Regex("""[\\/:*?"<>|]"""), "_")
 
 class ImgGenVM(

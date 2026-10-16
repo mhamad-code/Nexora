@@ -60,8 +60,6 @@ import org.koin.core.parameter.parametersOf
 import kotlin.uuid.Uuid
 
 /**
- * 一个媒体创作会话：一条时间线，最新的记录在最下面，紧挨着输入区，上一轮的产出可以直接放回输入区继续用。
- * 再来一次、修改后重新生成的结果留在原来那条记录的位置上，作为它的另一个版本。
  */
 @Composable
 fun MediaCreationPage(id: String) {
@@ -104,7 +102,6 @@ fun MediaCreationPage(id: String) {
             )
         },
     ) { innerPadding ->
-        // 底部的安全区和键盘留给输入区自己处理
         val layoutDirection = LocalLayoutDirection.current
         Column(
             modifier = Modifier
@@ -164,13 +161,10 @@ private fun MediaCreationTimeline(
     val nodes = vm.nodes.collectAsLazyPagingItems()
     val listState = rememberLazyListState()
 
-    // 列表是倒序排布的，第 0 项就是最下面那条最新的记录。停在底部时，新记录出现后跟着露出来；
-    // 往上翻看旧记录时不打扰。
     val newestId = nodes.newestId()
     LaunchedEffect(newestId) {
         if (newestId != null && listState.firstVisibleItemIndex <= 1) listState.scrollToItem(0)
     }
-    // 自己提交的记录无论当前翻到哪里都滚过去；新版本出现在原来那一项上，它还在屏幕里时不动
     LaunchedEffect(vm) {
         vm.submitted.collect { submitted ->
             val key = submitted.nodeId.toString()
@@ -194,14 +188,12 @@ private fun MediaCreationTimeline(
     ) {
         items(
             count = nodes.itemCount,
-            // 以项为单位：切换版本时原地换内容，不会被当成另一项
             key = nodes.itemKey { it.id.toString() },
         ) { index ->
             val node = nodes[index]
             if (node != null) {
                 MediaCreationRecordItem(node = node, editing = node.id == editingNodeId, vm = vm)
             } else {
-                // 还没加载到的记录先占位，保证列表总长度和滚动位置稳定
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -225,7 +217,6 @@ private fun TimelineEmpty(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            // 键盘弹出后高度不够时可以滚动，不至于被裁掉
             .verticalScroll(rememberScrollState())
             .padding(32.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),

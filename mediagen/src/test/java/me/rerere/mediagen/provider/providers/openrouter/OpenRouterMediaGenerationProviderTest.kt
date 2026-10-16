@@ -77,7 +77,6 @@ class OpenRouterMediaGenerationProviderTest {
         assertEquals(JsonPrimitive("16:9"), body["aspect_ratio"])
         assertEquals(JsonPrimitive(7), body["seed"])
         assertEquals(JsonPrimitive("high"), body["quality"])
-        // 公网地址原样下发，本地文件编码成 data URI
         val references = body["input_references"]!!.jsonArray.map { it.jsonObject }
         assertTrue(references.all { it["type"] == JsonPrimitive("image_url") })
         assertEquals(
@@ -85,7 +84,6 @@ class OpenRouterMediaGenerationProviderTest {
             references.map { it["image_url"]!!.jsonObject["url"]!!.jsonPrimitive.content },
         )
 
-        // 像素尺寸走 size
         val sized = generation.buildBody(imageModel, MediaGenerationRequest(prompt = "cat", resolution = "1536x1024"))
         assertEquals(JsonPrimitive("1536x1024"), sized["size"])
         assertNull(sized["resolution"])
@@ -134,7 +132,6 @@ class OpenRouterMediaGenerationProviderTest {
         assertEquals(4175L, task.usage?.totalTokens)
         assertEquals(listOf("image/webp", "image/png"), task.outputs.map { it.mimeType })
         assertEquals("hello", task.outputs.first().data!!.decodeToString())
-        // 费用留在 metadata 里，base64 不进 metadata
         assertEquals(JsonPrimitive(0.04), task.metadata["usage"]!!.jsonObject["cost"])
         assertFalse("data" in task.metadata)
 
@@ -193,7 +190,6 @@ class OpenRouterMediaGenerationProviderTest {
             references[1]["video_url"]!!.jsonObject["url"]!!.jsonPrimitive.content,
         )
 
-        // 只有图片也能提交；像素尺寸走 size
         val imageOnly = generation.buildCreateBody(
             videoModel,
             MediaGenerationRequest(
@@ -334,7 +330,6 @@ class OpenRouterMediaGenerationProviderTest {
         assertTrue(setting.downloadHeaders("https://storage.example.com/video.mp4").isEmpty())
         assertTrue(setting.downloadHeaders("http://openrouter.ai/api/v1/videos/job-1/content").isEmpty())
         assertTrue(setting.downloadHeaders("not a url").isEmpty())
-        // 其它厂商的结果地址自带签名
         assertTrue(
             MediaGenerationProviderSetting.Volcengine(apiKey = "key")
                 .downloadHeaders("https://ark.cn-beijing.volces.com/api/v3/a.mp4")

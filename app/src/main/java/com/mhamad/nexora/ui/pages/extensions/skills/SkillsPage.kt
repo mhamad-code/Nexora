@@ -328,7 +328,6 @@ private fun SkillCard(
                     )
                 }
             }
-            // 内置技能只读，不提供删除
             if (!skill.builtin) {
                 ItemActionMenu(
                     actions = listOf(

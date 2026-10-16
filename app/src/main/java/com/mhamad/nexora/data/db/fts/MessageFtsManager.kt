@@ -64,7 +64,6 @@ class MessageFtsManager(private val database: AppDatabase) {
     suspend fun search(
         keyword: String,
         sort: MessageSearchSort = MessageSearchSort.RELEVANCE,
-        // 只搜这些助手的对话，null 表示不限
         assistantIds: Collection<String>? = null,
     ): List<MessageSearchResult> = withContext(Dispatchers.IO) {
         val results = mutableListOf<MessageSearchResult>()

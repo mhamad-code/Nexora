@@ -106,7 +106,6 @@ fun ReasoningPicker(
     }
     val interactionSource = remember { MutableInteractionSource() }
     val hapticFeedback = LocalHapticFeedback.current
-    // 拖动过程中就跟随滑块预览，松手后才真正提交
     val previewLevel = levels[sliderState.value.roundToInt().coerceIn(0, levelCount - 1)]
 
     LaunchedEffect(currentIndex) {
@@ -136,7 +135,6 @@ fun ReasoningPicker(
                 hint = stringResource(R.string.reasoning_picker_hint),
                 label = { it.label() },
             ) {
-                // 等级越高形状越「激烈」
                 PickerHero(
                     shapes = levelShapes,
                     index = levels.indexOf(previewLevel),

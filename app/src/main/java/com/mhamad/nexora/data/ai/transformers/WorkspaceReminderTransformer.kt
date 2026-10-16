@@ -12,12 +12,7 @@ import java.io.ByteArrayOutputStream
 import java.nio.file.Paths
 
 /**
- * Workspace 系统提示注入转换器
  *
- * 当助手绑定了一个 shell 已就绪的 workspace 时, 在系统提示词中追加一段引导,
- * 让模型了解 workspace 环境与 workspace_* 工具的使用方式。
- * 提示中包含 Rootfs 实际使用的 shell 与发行版, 避免模型默认按 bash / apt 来写命令。
- * 同时读取 ~/.agents、/workspace 和会话当前目录中的 AGENTS.md 作为工作区指令。
  */
 class WorkspaceReminderTransformer(
     private val workspaceRepository: WorkspaceRepository,
@@ -28,7 +23,6 @@ class WorkspaceReminderTransformer(
     ): List<UIMessage> {
         val workspaceId = ctx.assistant.workspaceId?.toString() ?: return messages
         val workspace = workspaceRepository.getById(workspaceId) ?: return messages
-        // 与 ChatToolFactory.createWorkspaceToolsIfReady 保持一致: 仅在 shell 就绪时注入
         if (workspace.shellStatus != WorkspaceShellStatus.READY.name) return messages
 
         val prompt = buildWorkspacePrompt(
@@ -38,7 +32,6 @@ class WorkspaceReminderTransformer(
             cwd = ctx.workspaceCwd,
         ) + buildAgentsPrompt(workspaceId, ctx.workspaceCwd)
 
-        // 追加到第一条 system 消息; 若不存在则插入一条
         val systemIndex = messages.indexOfFirst { it.role == MessageRole.SYSTEM }
         return if (systemIndex >= 0) {
             messages.toMutableList().apply {
@@ -52,7 +45,6 @@ class WorkspaceReminderTransformer(
     }
 
     private suspend fun buildAgentsPrompt(workspaceId: String, cwd: String?): String {
-        // ProotShellRunner 将 HOME 固定为 /root；相对 PWD 按 /workspace 解析。
         val workingDirectory = Paths.get("/workspace")
             .resolve(cwd?.takeIf { it.isNotBlank() } ?: ".")
             .normalize()
@@ -84,7 +76,6 @@ class WorkspaceReminderTransformer(
             readRootfsText(workspaceId, path, MAX_OS_RELEASE_BYTES)?.let(::parseOsReleaseName)
         }
 
-    // 文件不存在、过大或不可读时返回 null, 不影响提示词的其余部分
     private suspend fun readRootfsText(workspaceId: String, path: String, maxBytes: Long): String? =
         try {
             val size = workspaceRepository.rootfsFileSize(workspaceId, path)
@@ -110,7 +101,6 @@ class WorkspaceReminderTransformer(
 
 private const val MAX_DISTRO_NAME_LENGTH = 80
 
-/** 从 os-release 内容中取发行版名称, 优先 PRETTY_NAME, 其次 NAME + VERSION_ID */
 internal fun parseOsReleaseName(content: String): String? {
     val values = content.lineSequence()
         .map { it.trim() }
@@ -120,7 +110,6 @@ internal fun parseOsReleaseName(content: String): String? {
         }
     val name = values["PRETTY_NAME"]?.takeIf { it.isNotBlank() }
         ?: listOfNotNull(values["NAME"], values["VERSION_ID"]).joinToString(" ")
-    // 内容来自 Rootfs 内的文件, 拼进系统提示前去掉控制字符并限制长度
     return name.filterNot { it.isISOControl() }.trim().take(MAX_DISTRO_NAME_LENGTH).ifBlank { null }
 }
 

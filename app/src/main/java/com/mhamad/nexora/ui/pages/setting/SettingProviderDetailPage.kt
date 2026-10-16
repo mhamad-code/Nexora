@@ -310,7 +310,6 @@ private fun SettingProviderConfigPage(
                     onCollapse = { expanded = false },
                 )
                 .verticalScroll(rememberScrollState())
-                // 底部留出悬浮工具栏的位置
                 .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 128.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
@@ -325,7 +324,6 @@ private fun SettingProviderConfigPage(
                 SettingProviderBalanceOption(
                     provider = internalProvider,
                     balanceOption = internalProvider.balanceOption,
-                    // 余额按已保存的配置查，没开就不留这一行
                     supportingContent = if (provider.balanceOption.enabled) {
                         { ProviderBalanceText(providerSetting = provider) }
                     } else null,
@@ -333,7 +331,6 @@ private fun SettingProviderConfigPage(
                 )
             }
 
-            // 硅基流动图标
             if (provider is ProviderSetting.OpenAI && provider.baseUrl.contains("siliconflow.cn")) {
                 SiliconFlowPowerByIcon(
                     modifier = Modifier
@@ -343,7 +340,6 @@ private fun SettingProviderConfigPage(
             }
         }
 
-        // 键盘弹出时收起，不然会盖住正在输入的那一行
         AnimatedVisibility(
             visible = !WindowInsets.isImeVisible,
             modifier = Modifier
@@ -583,7 +579,6 @@ private fun ModelSettingsForm(
         ) { page ->
             when (ModelFormTab.entries[page]) {
                 ModelFormTab.BASIC -> {
-                    // 基本设置页面
                     Column(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier
@@ -660,7 +655,6 @@ private fun ModelSettingsForm(
                 }
 
                 ModelFormTab.ADVANCED -> {
-                    // 高级设置页面
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -693,7 +687,6 @@ private fun ModelSettingsForm(
                 }
 
                 ModelFormTab.BUILT_IN_TOOLS -> {
-                    // 内置工具页面
                     BuiltInToolsSettings(
                         tools = model.tools,
                         onUpdateTools = { tools ->
@@ -903,7 +896,6 @@ private fun ModelPicker(
                     .imePadding(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                // 标题栏和添加所有按钮
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -1000,7 +992,6 @@ private fun ModelPicker(
                                         if (checked) {
                                             onModelSelected(it)
                                         } else {
-                                            // 从selectedModels中计算出要删除的model，因为删除需要id匹配，而不是ModelId
                                             onModelDeselected(selectedModels.firstOrNull { model -> model.modelId == it.modelId }
                                                 ?: it)
                                         }
@@ -1158,7 +1149,6 @@ fun ModalAbilitySelector(
     }
 }
 
-// 常见的上下文窗口大小，其余的走自定义输入
 private val ContextLengthPresets = listOf(128_000, 200_000, 1_000_000)
 
 @Composable
@@ -1167,14 +1157,12 @@ private fun ModelContextLengthSelector(
     onUpdateContextLength: (Int) -> Unit
 ) {
     var custom by remember { mutableStateOf(contextLength !in ContextLengthPresets) }
-    // 输入过程中允许为空，只有合法的正整数才写回模型
     var customText by remember { mutableStateOf(contextLength.toString()) }
 
     Text(
         stringResource(R.string.setting_provider_page_context_length),
         style = MaterialTheme.typography.titleSmall
     )
-    // null 表示自定义
     ConnectedChoiceButtons(
         options = ContextLengthPresets + null,
         selected = if (custom) null else contextLength,
@@ -1419,7 +1407,6 @@ private fun BuiltInToolsSettings(
             )
         )
 
-        // 弹窗底色和 CardGroup 默认的底色太接近，换一个深一档的
         val itemColors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
         CardGroup {
             availableTools.fastForEach { (tool, info) ->
@@ -1512,7 +1499,7 @@ private fun ProviderOverrideSettings(
                     editingProvider = parentProvider?.copyProvider(
                         id = Uuid.random(),
                         builtIn = false,
-                        models = emptyList(), // 这里必须设置为空，不然会导致循环依赖JSON
+                        models = emptyList(),
                         description = {},
                     )
                     showProviderConfig = true
@@ -1533,7 +1520,6 @@ private fun ProviderOverrideSettings(
                     editingProvider = null
                 },
                 sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden, enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded)),
-                // 和服务商详情页同一个底色，里面的分段表单才分得开
                 containerColor = CustomColors.topBarColors.containerColor,
             ) {
                 var internalProvider by remember(editingProvider) { mutableStateOf(editingProvider!!) }

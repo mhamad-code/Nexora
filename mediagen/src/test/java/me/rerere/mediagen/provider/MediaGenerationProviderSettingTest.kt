@@ -25,7 +25,6 @@ class MediaGenerationProviderSettingTest {
 
         assertEquals(setting, decoded)
         assertEquals(listOf(MediaKind.VIDEO, MediaKind.IMAGE), decoded.models.map { it.kind })
-        // supportedKinds 描述的是适配器，不随配置保存
         assertFalse("supportedKinds" in Json.parseToJsonElement(encoded).jsonObject)
     }
 

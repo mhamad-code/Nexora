@@ -26,7 +26,6 @@ import kotlin.io.encoding.Base64
 import kotlin.uuid.Uuid
 
 /**
- * OpenRouter 的图像接口。带图片输入时是参考图生图，接口同步返回 base64 内容。
  */
 internal class OpenRouterImageGeneration(
     private val client: OkHttpClient,
@@ -38,7 +37,6 @@ internal class OpenRouterImageGeneration(
         model: MediaGenerationModel,
         request: MediaGenerationRequest,
     ): MediaGenerationTask {
-        // 本地图片要读出来编码成 data URI
         val body = withContext(Dispatchers.IO) { buildBody(model, request) }
         val httpRequest = setting.request("/images").postJson(body).build()
         return parseTask(client.executeJson(httpRequest, id), model.modelId)
@@ -75,7 +73,6 @@ internal class OpenRouterImageGeneration(
             )
         }
         return MediaGenerationTask(
-            // 同步接口没有服务端任务 ID
             id = Uuid.random().toString(),
             provider = id,
             model = fallbackModel,
@@ -94,7 +91,6 @@ internal class OpenRouterImageGeneration(
             usage = root.obj("usage")?.let {
                 MediaGenerationUsage(totalTokens = it.long("total_tokens"))
             },
-            // data 里是整张图片的 base64，不放进 metadata
             metadata = JsonObject(root - "data"),
         )
     }

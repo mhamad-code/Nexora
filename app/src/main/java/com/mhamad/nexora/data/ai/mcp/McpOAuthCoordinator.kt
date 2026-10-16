@@ -25,14 +25,11 @@ internal const val MCP_OAUTH_CALLBACK_PORT = 52_134
 internal const val MCP_OAUTH_CALLBACK_PATH = "/oauth/callback"
 internal const val MCP_OAUTH_REDIRECT_URI =
     "http://localhost:$MCP_OAUTH_CALLBACK_PORT$MCP_OAUTH_CALLBACK_PATH"
-// 托管在 GitHub Pages 上的 Client ID Metadata Document，其 redirect_uris 必须与 MCP_OAUTH_REDIRECT_URI 一致
 internal const val MCP_OAUTH_CLIENT_METADATA_URL = "https://rikkahub.github.io/oauth/client.json"
 private val OAUTH_CALLBACK_TIMEOUT = 5.minutes
 
 /**
- * 负责 MCP OAuth 的授权、令牌刷新与持久化。
  *
- * 连接生命周期由配置流的消费者管理；令牌持久化后，配置变化会自然触发连接替换。
  */
 internal class McpOAuthCoordinator(
     private val settingsStore: SettingsStore,
@@ -80,7 +77,6 @@ internal class McpOAuthCoordinator(
     }
 
     /**
-     * 按 serverId 串行刷新。获得锁后重新读取配置，避免并发工具调用重复使用同一个 refresh token。
      */
     suspend fun ensureFreshToken(configInput: McpServerConfig): McpServerConfig {
         val lock = refreshLocks.computeIfAbsent(configInput.id) { Mutex() }
@@ -138,7 +134,6 @@ internal class McpOAuthCoordinator(
         val serverUrl = config.serverUrl
         require(serverUrl.isNotBlank()) { "Server URL 为空，无法授权" }
 
-        // 部分服务器（如 Zomato）不提供 RFC 9728 元数据，按旧版规范退回到服务器 origin 作为授权服务器
         val protectedResource = runCatching { discoveryClient.discoverProtectedResource(serverUrl) }
             .onFailure { Log.i(TAG, "Protected resource discovery failed, fallback to server origin: ${it.message}") }
             .getOrNull()
@@ -170,7 +165,6 @@ internal class McpOAuthCoordinator(
             if (clientId.isNullOrBlank() && metadata.registrationEndpoint == null &&
                 metadata.clientIdMetadataDocumentSupported
             ) {
-                // 无动态注册端点时，使用 Client ID Metadata Document（URL 即 client_id）
                 clientId = MCP_OAUTH_CLIENT_METADATA_URL
                 clientSecret = null
             }

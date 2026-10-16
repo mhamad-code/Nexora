@@ -68,7 +68,6 @@ class MemoryConsolidatorTest {
             val result = pending(messages, consolidatedAt = timeOf(2), updatedAt = timeOf(7))
 
             assertEquals(listOf(2), result.turns.map { it.position })
-            // 进度停在没结束的那一轮前面，它下次还会被找出来
             assertEquals(timeOf(5) - 1, result.consolidatedThrough)
         }
     }
@@ -97,7 +96,6 @@ class MemoryConsolidatorTest {
         assertEquals(listOf("user 4", "reply 5"), result.turns.single().messages.map { it.value.toText() })
     }
 
-    // 15 轮对话，第 n 轮的用户消息在第 2n-1 分钟
     private val longChat = (1..15).flatMap { turn -> listOf(user(turn * 2 - 1), assistant(turn * 2)) }
 
     @Test
@@ -106,7 +104,6 @@ class MemoryConsolidatorTest {
 
         assertEquals(15, first.totalTurns)
         assertEquals((0 until 12).map { it * 2 }, first.turns.map { it.position })
-        // 进度停在第 13 轮前面，没交给模型的 3 轮还在
         assertEquals(timeOf(25) - 1, first.consolidatedThrough)
 
         val second = pending(longChat, consolidatedAt = first.consolidatedThrough!!, updatedAt = timeOf(31))
@@ -120,7 +117,6 @@ class MemoryConsolidatorTest {
     fun `a conversation seen for the first time only looks back one batch`() {
         val start = initialMemoryProgress(longChat, zone)
 
-        // 最近 12 轮从第 4 轮开始
         assertEquals(timeOf(7) - 1, start)
         assertEquals(12, pending(longChat, consolidatedAt = start).totalTurns)
         assertEquals(0L, initialMemoryProgress(emptyList(), zone))
@@ -128,7 +124,6 @@ class MemoryConsolidatorTest {
 
     @Test
     fun `turns sharing one timestamp still move progress forward`() {
-        // 导入的对话可能每条消息都是同一个时间
         val imported = (1..14).flatMap { listOf(user(5, "question $it"), assistant(5)) }
         val start = initialMemoryProgress(imported, zone)
 
@@ -142,14 +137,12 @@ class MemoryConsolidatorTest {
     @Test
     fun `candidates without new turns do not use up the scan limit`() = runBlocking {
         val checked = mutableListOf<Int>()
-        // 前 8 个候选都没有新轮次，后面才是真正待整理的
         val found = collectPending(candidates = (1..20).toList(), limit = 2) { candidate ->
             checked += candidate
             if (candidate > 8) PendingMemoryConversation(Uuid.random(), "memory", turns = candidate) else null
         }
 
         assertEquals(listOf(9, 10), found.map { it.turns })
-        // 凑够就停，不把剩下的候选都读一遍
         assertEquals((1..10).toList(), checked)
     }
 

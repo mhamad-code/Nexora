@@ -91,7 +91,6 @@ fun SettingModelPage(vm: SettingVM = koinViewModel()) {
                 contentPadding = PaddingValues(horizontal = 16.dp),
             )
 
-            // 导航条的位置留在列表的内边距里，内容可以滚到它下面
             val contentPadding = PaddingValues(
                 start = 16.dp,
                 top = 8.dp,
@@ -124,7 +123,6 @@ fun SettingModelPage(vm: SettingVM = koinViewModel()) {
 
 @Composable
 private fun ModelSettingsPage(settings: Settings, vm: SettingVM, contentPadding: PaddingValues) {
-    // CardGroup 里放不了弹窗，各项的选择状态先在这里建好，弹窗统一放在列表后面
     val chatModel = rememberModelListState(
         modelId = settings.chatModelId,
         providers = settings.providers,
@@ -173,7 +171,6 @@ private fun ModelSettingsPage(settings: Settings, vm: SettingVM, contentPadding:
         item {
             val containerColor = MaterialTheme.colorScheme.tertiaryContainer
             val contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-            // 标题和聊天建议都由快速模型生成，相关的选项跟它放在一组
             CardGroup {
                 modelItem(
                     icon = HugeIcons.Zap,
@@ -259,7 +256,6 @@ private fun ModelSettingsPage(settings: Settings, vm: SettingVM, contentPadding:
     }
 }
 
-// 一项默认模型：图标、用途说明，下面是显示当前模型的选择按钮
 private fun CardGroupScope.modelItem(
     icon: ImageVector,
     @StringRes title: Int,

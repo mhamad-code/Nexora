@@ -9,7 +9,6 @@ import me.rerere.mediagen.provider.MediaGenerationProviderSetting
 import okhttp3.OkHttpClient
 
 /**
- * 阿里云百炼：万相 / 千问图像走同步接口直接返回结果，万相视频是异步任务。
  */
 class AliyunMediaGenerationProvider(
     client: OkHttpClient,

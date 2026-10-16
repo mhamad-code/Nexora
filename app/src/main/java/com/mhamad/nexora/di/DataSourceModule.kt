@@ -66,7 +66,6 @@ val dataSourceModule = module {
             .defaultLocale(Locale.getDefault())
             .autoEscaping(false)
             .build()
-        // 消息模板按助手 ID 缓存，内容取自设置，设置变了就让已编译的模板失效
         val settingsStore = get<SettingsStore>()
         get<AppScope>().launch {
             settingsStore.settingsFlow.collect { engine.templateCache.invalidateAll() }
