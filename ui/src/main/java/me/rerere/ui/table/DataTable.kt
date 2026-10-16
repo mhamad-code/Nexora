@@ -29,10 +29,6 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.max
 
 /**
- * DataTable（自定义布局 + 横向滚动 + 行内等高）
- * - 使用 SubcomposeLayout 两阶段测量，避免 Lookahead 下的重复测量异常
- * - 高度自适应内容（不提供纵向滚动）
- * - 宽度可超出视口，外层内置 horizontalScroll
  */
 @Composable
 fun DataTable(
@@ -46,9 +42,7 @@ fun DataTable(
     columnMinWidths: List<Dp> = emptyList(),
     columnMaxWidths: List<Dp> = emptyList(),
     cellAlignment: Alignment = Alignment.CenterStart,
-    // 按列覆盖 cellAlignment，缺省的列沿用 cellAlignment
     columnAlignments: List<Alignment> = emptyList(),
-    // 按单元格覆盖所在列的对齐方式，row 是 rows 的下标；返回 null 时沿用列的对齐方式
     bodyCellAlignment: ((row: Int, column: Int) -> Alignment?)? = null,
     outerBorder: BorderStroke? = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     shape: Shape = MaterialTheme.shapes.small,
@@ -64,7 +58,6 @@ fun DataTable(
                 if (outerBorder != null) Modifier.border(outerBorder, shape) else Modifier
             )
     ) {
-        // 捕获滚动视口的可用宽度，用于在内容较窄时把列宽拉伸铺满
         val viewportMaxWidth = constraints.maxWidth
 
         Box(modifier = Modifier.horizontalScroll(hScroll)) {
@@ -73,7 +66,6 @@ fun DataTable(
             val rowCount = rows.size
             if (columnCount == 0) return@SubcomposeLayout layout(0, 0) {}
 
-            // ---------- 参数 & 中间结果容器 ----------
             val infinity = Constraints.Infinity
             val unbounded = Constraints(0, infinity, 0, infinity)
             val minWidthsPx = IntArray(columnCount) { i -> columnMinWidths.getOrNull(i)?.roundToPx() ?: 0 }
@@ -82,7 +74,6 @@ fun DataTable(
             val headerP1 = arrayOfNulls<Placeable>(columnCount)
             val bodyP1 = arrayOfNulls<Placeable>(rowCount * columnCount)
 
-            // ---------- 第一阶段：自然尺寸测量（估列宽、算行高） ----------
             fun subcomposeHeaderOnce(c: Int): Placeable {
                 val measurables = subcompose("h1_$c") {
                     CellBox(
@@ -139,7 +130,6 @@ fun DataTable(
             }
             val headerHeight = headerP1.maxOf { it?.height ?: 0 }
 
-            // ---------- 列宽拉伸：内容较窄时按比例铺满视口宽度 ----------
             val naturalWidth = colWidths.sum()
             if (stretchToFillWidth &&
                 viewportMaxWidth != Constraints.Infinity &&
@@ -159,7 +149,6 @@ fun DataTable(
                 }
             }
 
-            // ---------- 第二阶段：固定列宽 + 统一行高重新测量 ----------
             fun constraintsFor(colWidth: Int, minH: Int): Constraints {
                 val safeColWidth = colWidth.coerceAtLeast(0)
                 val safeMinH = minH.coerceAtLeast(0)
@@ -208,7 +197,6 @@ fun DataTable(
             val finalWidth = tableWidth.coerceIn(constraints.minWidth, constraints.maxWidth)
             val finalHeight = tableHeight.coerceIn(constraints.minHeight, constraints.maxHeight)
 
-            // ---------- 放置 ----------
             layout(finalWidth, finalHeight) {
                 var x = 0
                 for (c in 0 until columnCount) {
@@ -249,7 +237,6 @@ private fun CellBox(
     }
 }
 
-// -------------------- 示例 --------------------
 @Preview(showBackground = true)
 @Composable
 private fun DataTablePreview() {

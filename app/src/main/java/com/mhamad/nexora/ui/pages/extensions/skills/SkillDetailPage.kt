@@ -124,7 +124,6 @@ fun SkillDetailPage(skillName: String) {
                 .verticalScroll(scrollState)
                 .padding(innerPadding + PaddingValues(16.dp)),
         ) {
-            // 整棵文件树放在一个圆角容器里，行的点击水波纹跟着容器的圆角裁剪
             if (tree.isNotEmpty()) {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
@@ -220,7 +219,6 @@ private fun FileTree(
     }
 }
 
-// 每深一层缩进这么多
 private val TreeIndent = 24.dp
 
 @Composable
@@ -231,7 +229,6 @@ private fun FileItem(
     onEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {
-    // SKILL.md 是技能的入口文件，不能删
     val deletable = !readOnly && skillFile.relativePath != "SKILL.md"
     Row(
         modifier = Modifier

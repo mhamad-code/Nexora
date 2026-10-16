@@ -6,7 +6,6 @@ import androidx.compose.ui.res.stringResource
 import com.mhamad.nexora.R
 import java.util.Locale
 
-// 翻译功能可选的目标语言，消息翻译和翻译页共用
 val TranslationLanguages: List<Locale> = listOf(
     Locale.SIMPLIFIED_CHINESE,
     Locale.ENGLISH,
@@ -19,7 +18,6 @@ val TranslationLanguages: List<Locale> = listOf(
     Locale.forLanguageTag("es-ES"),
 )
 
-// 带国旗 emoji 的语言名，Locale.displayName 拿不到 emoji
 @Composable
 fun translationLanguageName(locale: Locale): String = when (locale) {
     Locale.SIMPLIFIED_CHINESE -> stringResource(R.string.language_simplified_chinese)

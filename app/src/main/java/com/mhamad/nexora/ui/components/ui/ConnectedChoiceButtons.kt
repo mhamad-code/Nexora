@@ -36,14 +36,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEachIndexed
 
-// 连接式单选按钮组，选中项更宽；选项不多（两到四个）时用来代替下拉框
 @Composable
 fun <T> ConnectedChoiceButtons(
     options: List<T>,
     selected: T,
     onSelect: (T) -> Unit,
     modifier: Modifier = Modifier,
-    // 未选中按钮的底色，要和所在容器的底色拉开
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
     minHeight: Dp = 48.dp,
     content: @Composable (option: T, selected: Boolean) -> Unit,
@@ -61,7 +59,6 @@ fun <T> ConnectedChoiceButtons(
     )
 }
 
-// 连接式多选按钮组，每个按钮各自开关
 @Composable
 fun <T> ConnectedMultiChoiceButtons(
     options: List<T>,
@@ -77,7 +74,6 @@ fun <T> ConnectedMultiChoiceButtons(
         isSelected = { it in selected },
         onClick = { option, isSelected -> onToggle(option, !isSelected) },
         role = Role.Checkbox,
-        // 多选时可能同时选中好几个，都变宽没有意义
         growSelected = false,
         modifier = modifier,
         containerColor = containerColor,
@@ -129,7 +125,6 @@ private fun <T> ConnectedButtons(
     }
 }
 
-// 按钮组里的一行文字，选中时前面带图标
 @Composable
 fun ConnectedChoiceLabel(
     text: String,
@@ -154,7 +149,6 @@ fun ConnectedChoiceLabel(
     }
     Text(
         text = text,
-        // 几个按钮并排时较长的译文放不下，自动缩小字号
         autoSize = TextAutoSize.StepBased(minFontSize = 11.sp, maxFontSize = 14.sp),
         maxLines = 1,
         softWrap = false,

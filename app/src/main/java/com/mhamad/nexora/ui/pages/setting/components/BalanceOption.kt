@@ -39,7 +39,6 @@ fun SettingProviderBalanceOption(
     provider: ProviderSetting,
     balanceOption: BalanceOption,
     modifier: Modifier = Modifier,
-    // 标题下方的说明，用来放查到的余额
     supportingContent: (@Composable () -> Unit)? = null,
     onEdit: (BalanceOption) -> Unit,
 ) {

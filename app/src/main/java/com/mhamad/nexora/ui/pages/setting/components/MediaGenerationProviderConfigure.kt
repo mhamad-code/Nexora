@@ -50,7 +50,6 @@ fun MediaGenerationProviderConfigure(
     onValueChange: (MediaGenerationProviderSetting) -> Unit
 ) {
     val models = setting.models
-    // 按枚举顺序排列，保证按钮组的顺序稳定
     val kinds = MediaKind.entries.filter { it in setting.supportedKinds }
 
     fun updateModels(models: List<MediaGenerationModel>) {
@@ -62,7 +61,6 @@ fun MediaGenerationProviderConfigure(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
         CardGroup {
-            // 类型在新建时选定，之后不能改
             item(
                 headlineContent = { Text(stringResource(R.string.setting_media_page_provider_type)) },
                 trailingContent = { CardGroupValue(setting.typeName) },
@@ -141,7 +139,6 @@ fun MediaGenerationProviderConfigure(
                             Icon(HugeIcons.Delete01, stringResource(R.string.delete))
                         }
                     }
-                    // 只支持一种类型的厂商不需要选择
                     if (kinds.size > 1) {
                         ConnectedChoiceButtons(
                             options = kinds,

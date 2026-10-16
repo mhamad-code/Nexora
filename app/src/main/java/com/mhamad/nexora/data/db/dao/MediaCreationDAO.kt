@@ -15,7 +15,6 @@ import com.mhamad.nexora.data.db.entity.MediaCreationSessionWithStats
 @Dao
 interface MediaCreationDAO {
     /**
-     * cover_outputs 是时间线上最新一项成功的生成的产出（JSON），取的是那一项当前显示的版本。
      */
     @Query(
         """
@@ -70,7 +69,6 @@ interface MediaCreationDAO {
     suspend fun deleteSession(id: String)
 
     /**
-     * 会话的时间线：每一项取它选中的记录，最新的一项排在最前。同一项里的版本按创建顺序编号。
      */
     @Query(
         """
@@ -87,7 +85,6 @@ interface MediaCreationDAO {
     )
     fun nodePagingSource(sessionId: String): PagingSource<Int, MediaCreationRecordWithVersion>
 
-    /** 一项在 [nodePagingSource] 里的位置，也就是同一个会话里排在它前面的项数；这一项不存在时返回 0。 */
     @Query(
         """
         SELECT COUNT(*) FROM media_creation_node n
@@ -109,7 +106,6 @@ interface MediaCreationDAO {
     @Query("DELETE FROM media_creation_node WHERE id = :id")
     suspend fun deleteNode(id: String)
 
-    /** 一项的所有版本，按创建顺序。 */
     @Query("SELECT id FROM media_creation_record WHERE node_id = :nodeId ORDER BY create_at, rowid")
     suspend fun getVersionIds(nodeId: String): List<String>
 

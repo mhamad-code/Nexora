@@ -59,11 +59,9 @@ class WebServerService : Service() {
                 serviceScope.launch {
                     settingsStore.update { it.copy(webServerEnabled = false) }
                 }
-                // 不立即 stopSelf，等状态流检测到停止后再结束
             }
 
             null -> {
-                // 兜底：intent 为 null 时根据设置决定是否启动
                 if (!startForegroundCompat()) {
                     stopSelf()
                     return START_NOT_STICKY
@@ -104,8 +102,6 @@ class WebServerService : Service() {
             }
             true
         } catch (e: Exception) {
-            // 部分 OEM ROM (如 realme UI/ColorOS) 会在系统侧拒绝 FGS 类型权限，
-            // 即使 Manifest 已声明 FOREGROUND_SERVICE_SPECIAL_USE 也会抛 SecurityException
             Log.e(TAG, "Failed to start foreground service", e)
             webServerManager.reportError("Failed to start foreground service: ${e.message}")
             false

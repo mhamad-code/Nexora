@@ -99,10 +99,8 @@ fun ProviderSetting.encodeForShare(): String {
 fun decodeProviderSetting(value: String): ProviderSetting {
     require(value.startsWith("ai-provider:v1:")) { "Invalid provider setting string" }
 
-    // 去掉前缀
     val base64Str = value.removePrefix("ai-provider:v1:")
 
-    // Base64解码
     val jsonBytes = Base64.decode(base64Str)
     val jsonStr = jsonBytes.decodeToString()
 

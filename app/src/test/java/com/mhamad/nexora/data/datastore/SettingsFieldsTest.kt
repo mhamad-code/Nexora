@@ -34,7 +34,6 @@ class SettingsFieldsTest {
 
     @Test
     fun `settings survive a round trip through preferences`() {
-        // 样本里和默认值相同的字段测不出读写是否对得上
         val defaults = emptyPreferences().toSettings()
         assertEquals(
             emptyList<String>(),
@@ -46,7 +45,6 @@ class SettingsFieldsTest {
         assertEquals(SAMPLE, preferences.toSettings())
     }
 
-    // 这里的 key 名和取值就是用户盘上的格式，改动它们等于丢掉已有的设置
     @Test
     fun `stored format stays compatible with existing data`() {
         val stored = mutablePreferencesOf().apply { putSettings(SAMPLE) }.asMap().mapKeys { it.key.name }
@@ -98,7 +96,6 @@ class SettingsFieldsTest {
     @Test
     fun `only changed fields are written`() {
         val preferences = mutablePreferencesOf().apply { putSettings(SAMPLE) }
-        // 盘上的值故意和已落盘的那份不一致：没变的字段如果也被重写，它就会变回去
         preferences[SettingsStore.TITLE_PROMPT] = "on disk"
 
         preferences.putSettings(SAMPLE.copy(themeId = "changed"), persisted = SAMPLE)
@@ -110,7 +107,6 @@ class SettingsFieldsTest {
 
 private fun id(n: Int) = Uuid.parse("00000000-0000-0000-0000-%012d".format(n))
 
-// 每个字段都取了和默认值不同的值
 private val SAMPLE = Settings(
     dynamicColor = false,
     themeId = "custom",

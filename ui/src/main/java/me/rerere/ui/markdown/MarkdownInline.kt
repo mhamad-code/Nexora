@@ -25,7 +25,6 @@ import androidx.compose.ui.util.fastForEach
 internal class MarkdownContext(
     val theme: MarkdownTheme,
     val components: MarkdownComponents,
-    /** 为 null 时链接交给系统的 UriHandler 打开 */
     val linkListener: LinkInteractionListener?,
 )
 
@@ -33,7 +32,6 @@ internal val LocalMarkdownContext = staticCompositionLocalOf<MarkdownContext> {
     error("LocalMarkdownContext is only available inside Markdown()")
 }
 
-/** 把一组行内节点渲染成一个 Text */
 @Composable
 internal fun InlineText(content: List<MarkdownInline>, modifier: Modifier = Modifier) {
     val context = LocalMarkdownContext.current
@@ -47,7 +45,6 @@ internal fun InlineText(content: List<MarkdownInline>, modifier: Modifier = Modi
         text = rendered.text,
         modifier = modifier,
         inlineContent = rendered.inlineContent,
-        // 行内公式可能比一行文字高，固定行高会让它和上下行叠在一起
         style = if (rendered.hasMathWidget) style.copy(lineHeight = TextUnit.Unspecified) else style,
     )
 }
@@ -60,7 +57,6 @@ private class RenderedInlineText(
 
 private val MATH_SOURCE_STYLE = SpanStyle(fontFamily = FontFamily.Monospace)
 
-// 开引号 -> 闭引号。单引号常被当作撇号（don't、it’s）使用，不参与配对
 private val QUOTE_PAIRS = mapOf('"' to '"', '“' to '”', '「' to '」', '『' to '』')
 
 private class InlineTextBuilder(
@@ -71,7 +67,6 @@ private class InlineTextBuilder(
     private val inlineContent = mutableMapOf<String, InlineTextContent>()
     private var hasMathWidget = false
 
-    // 还没闭合的引号：等待的闭引号，以及开引号在输出文本里的位置。引号可以跨越加粗、链接等节点
     private var pendingQuoteClose: Char? = null
     private var pendingQuoteStart = 0
 
@@ -89,7 +84,6 @@ private class InlineTextBuilder(
             is MarkdownInline.Code -> builder.withStyle(context.theme.inlineCode) { append(node.code) }
             is MarkdownInline.Link -> appendLink(node)
             is MarkdownInline.Math -> appendMath(node)
-            // 图片在分段时已经被拆出去单独渲染，走到这里只剩替代文本可用
             is MarkdownInline.Image -> builder.append(node.alt.orEmpty())
         }
     }
@@ -106,7 +100,6 @@ private class InlineTextBuilder(
                     pendingQuoteStart = offset + index
                 }
             } else if (char == close) {
-                // 只高亮已经闭合的引号，避免流式输出时或孤立的引号把后面整段都染色
                 builder.addStyle(quoteStyle, pendingQuoteStart, offset + index + 1)
                 pendingQuoteClose = null
             }
@@ -135,7 +128,6 @@ private class InlineTextBuilder(
         }
         hasMathWidget = true
         widgets.forEachIndexed { index, widget ->
-            // 零宽空格给拆开的公式提供换行点
             if (index > 0) builder.append('​')
             appendWidget(widget, alternateText = math.formula)
         }
@@ -144,7 +136,6 @@ private class InlineTextBuilder(
     private fun appendWidget(widget: MarkdownInlineWidget, alternateText: String) {
         val id = "markdown:${inlineContent.size}"
         inlineContent[id] = widget.toInlineTextContent()
-        // alternateText 不允许为空
         builder.appendInlineContent(id, alternateText.ifEmpty { "�" })
     }
 }

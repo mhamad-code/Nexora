@@ -18,13 +18,11 @@ import androidx.compose.ui.res.stringResource
 import me.rerere.ui.R
 
 /**
- * 输入要写到画纸上的文字。单独弹一个框来输，而不是直接在画纸上打字：键盘会盖住画纸的下半边。
  */
 @Composable
 internal fun SketchTextInput(onConfirm: (String) -> Unit, onDismiss: () -> Unit) {
     var text by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
-    // 弹出来就能直接打字
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
     AlertDialog(
         onDismissRequest = onDismiss,

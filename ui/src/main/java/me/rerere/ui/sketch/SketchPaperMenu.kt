@@ -22,7 +22,6 @@ import me.rerere.ui.R
 import kotlin.math.abs
 
 /**
- * 选画纸：空白画纸的比例，或者垫一张图片在上面画。垫了图片时画纸的比例跟着图片走。
  */
 @Composable
 internal fun SketchPaperMenu(state: SketchState, onChooseImage: () -> Unit) {

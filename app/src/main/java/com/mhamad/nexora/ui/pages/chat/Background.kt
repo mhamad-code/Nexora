@@ -33,7 +33,6 @@ fun AssistantBackground(setting: Settings, modifier: Modifier) {
                     .alpha(backgroundOpacity)
             )
 
-            // 全屏渐变遮罩
             Box(
                 modifier = Modifier
                     .fillMaxSize()

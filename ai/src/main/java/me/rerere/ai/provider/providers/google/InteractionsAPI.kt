@@ -74,8 +74,6 @@ private const val TAG = "InteractionsAPI"
 /**
  * Gemini Interactions API (`POST /v1beta/interactions`)。
  *
- * 对话历史由客户端管理（分支、编辑、重新生成），因此始终使用无状态模式：`store=false`，
- * 每次请求在 `input` 中回传完整的 step 列表，而不是依赖 `previous_interaction_id`。
  */
 internal class InteractionsAPI(
     private val client: OkHttpClient,
@@ -166,7 +164,6 @@ internal class InteractionsAPI(
         awaitClose {
             eventSource.cancel()
         }
-        // trySend 在缓冲满时会静默丢弃 delta，导致回复中间缺字 (#1295)，因此缓冲必须无界
     }.buffer(Channel.UNLIMITED).flowOn(Dispatchers.IO)
 
     private fun buildRequest(
@@ -224,7 +221,6 @@ internal class InteractionsAPI(
             }
         }
 
-        // Interactions API 的 tools 是扁平数组，函数工具和内置工具写在同一个 key 下
         val useFunctionTools =
             params.tools.isNotEmpty() && params.model.abilities.contains(ModelAbility.TOOL)
         val builtInTools = params.model.tools.mapNotNull { builtInTool ->
@@ -252,10 +248,8 @@ internal class InteractionsAPI(
             }
         }
 
-        // safety_settings 只在 Vertex 上可用，Gemini API 的 Interactions 会直接拒绝该参数
     }.mergeCustomBody(params.customBody)
 
-    // Interactions API 只接受 thinking_level，没有 thinkingBudget
     private fun thinkingLevel(params: TextGenerationParams): String? = when (params.reasoningLevel) {
         ReasoningLevel.AUTO -> null
         ReasoningLevel.OFF -> {
@@ -307,7 +301,6 @@ internal class InteractionsAPI(
                 is PartGroup.Content -> group.parts.forEach { part ->
                     when (part) {
                         is UIMessagePart.Reasoning -> {
-                            // 没有 Interactions 签名的思考来自其他协议，无法作为 thought step 回传
                             val signature = part.metadataAs<GoogleInteractionsMetadata>()?.signature
                                 ?: return@forEach
                             flushContent()
@@ -342,7 +335,6 @@ internal class InteractionsAPI(
 
                 is PartGroup.Tools -> {
                     flushContent()
-                    // 同一批并发工具调用需先输出全部 function_call，再输出对应结果
                     group.tools.forEach { tool ->
                         add(buildJsonObject {
                             put("type", "function_call")
@@ -394,7 +386,6 @@ internal class InteractionsAPI(
                     put("uri", encoded.base64)
                 } else {
                     put("mime_type", encoded.mimeType)
-                    // data URL 会原样返回，这里只取 base64 数据部分
                     put("data", encoded.base64.substringAfter(";base64,"))
                 }
             }
@@ -422,7 +413,6 @@ internal class InteractionsAPI(
     private fun UIMessagePart.ServerTool.toInteractionsServerToolSteps(): List<JsonObject> {
         val metadata = metadataAs<ServerToolMetadata>() ?: return emptyList()
         if (metadata.protocol != ServerToolProtocol.GOOGLE_INTERACTIONS) return emptyList()
-        // call 与 result 必须成对回传，流被中断导致缺少结果时整体丢弃
         val call = metadata.call ?: return emptyList()
         val result = metadata.result ?: return emptyList()
         return listOf(call, result)
@@ -541,7 +531,6 @@ internal fun JsonObject.stringOrNull(key: String): String? =
 internal fun interactionsSignatureMetadata(signature: String?): JsonObject? =
     signature?.takeIf { it.isNotEmpty() }?.let { GoogleInteractionsMetadata(signature = it).toMetadata() }
 
-// function_call / function_result 由客户端执行，其余 *_call / *_result 都是服务端工具
 internal fun isInteractionsServerToolCall(type: String): Boolean =
     type.endsWith("_call") && type != "function_call"
 
@@ -568,7 +557,6 @@ internal fun parseInteractionsUsage(usage: JsonObject?): TokenUsage? {
     fun count(key: String) = usage[key]?.jsonPrimitiveOrNull?.intOrNull ?: 0
     return TokenUsage(
         promptTokens = count("total_input_tokens"),
-        // total_output_tokens 不包含思考 token
         completionTokens = count("total_output_tokens") + count("total_thought_tokens"),
         totalTokens = count("total_tokens"),
         cachedTokens = count("total_cached_tokens"),

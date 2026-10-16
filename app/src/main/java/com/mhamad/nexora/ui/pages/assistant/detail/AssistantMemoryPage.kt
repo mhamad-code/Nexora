@@ -68,7 +68,6 @@ import org.koin.core.parameter.parametersOf
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-// 记忆文件放第一页：从侧边栏的整理入口进来时能直接看到整理状态
 private enum class MemoryTab(
     override val icon: ImageVector,
     @param:StringRes private val labelRes: Int,
@@ -286,7 +285,6 @@ private fun MemorySettingsTab(
 @Composable
 private fun MemoryFilesTab(
     memories: List<MemoryFile>,
-    // 为 null 时不显示整理入口
     consolidation: MemoryConsolidationStatus?,
     onOrganizeMemory: () -> Unit,
     onOpenMemory: (path: String) -> Unit,
@@ -380,7 +378,6 @@ private fun MemoryFilesTab(
     )
 }
 
-/** 后台整理的状态和手动入口 */
 @Composable
 private fun MemoryConsolidationSection(
     status: MemoryConsolidationStatus,
@@ -427,10 +424,8 @@ private fun memoryConsolidationSummary(status: MemoryConsolidationStatus): Strin
     }
 }
 
-// 按整秒显示成 "42s"、"1m 5s"
 private fun durationTextOf(duration: Duration): String = duration.inWholeSeconds.coerceAtLeast(1).seconds.toString()
 
-// 根目录下是 profile 和 preferences，都是关于用户本人的；记忆格式约定的几个目录有译名，其余的从目录名推
 @Composable
 private fun memorySectionTitle(directory: String): String = when (directory) {
     "/" -> stringResource(R.string.assistant_page_memory_section_you)
@@ -440,7 +435,6 @@ private fun memorySectionTitle(directory: String): String = when (directory) {
     else -> memoryTitleOf(directory.removePrefix("/"))
 }
 
-// 一周内显示"41 分钟前"这样的相对时间，更早的显示日期
 private fun relativeTimeOf(time: Long): String = DateUtils.getRelativeTimeSpanString(
     time,
     System.currentTimeMillis(),

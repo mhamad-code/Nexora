@@ -122,7 +122,6 @@ internal fun rememberChatAttachmentPickerActions(
                     val tempFile = File(context.appTempFolder, "pick_temp_${System.currentTimeMillis()}.jpg")
                     runCatching {
                         val source = selectedUris.first()
-                        // HEIF/HEIC（尤其 HDR HEIF）交给 UCrop 前先解码转为 JPEG，规避裁剪解码失败
                         val converted = ImageUtils.isHeifImage(context, source) &&
                             ImageUtils.convertHeifToJpeg(context, source, tempFile)
                         if (!converted) {
@@ -217,7 +216,6 @@ internal fun rememberChatAttachmentPickerActions(
     )
 }
 
-/** 把画板的结果存成聊天附件。 */
 internal suspend fun FilesManager.createChatFileBySketch(result: SketchResult): Uri? = withContext(Dispatchers.IO) {
     createChatFilesByByteArrays(
         byteArrays = listOf(result.encode()),

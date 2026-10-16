@@ -488,7 +488,6 @@ private fun AssistantPromptContent(
                         onExpandedChange = {
                             expandedIds = if (it) expandedIds + regex.id else expandedIds - regex.id
                         },
-                        // 展开后内部是输入框，长按拖拽会与文本选择冲突
                         modifier = longPressReorder(
                             isDragging = isDragging,
                             enabled = !expanded && assistant.regexes.size > 1,

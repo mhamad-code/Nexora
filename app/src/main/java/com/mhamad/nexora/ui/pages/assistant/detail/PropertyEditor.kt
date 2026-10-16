@@ -53,7 +53,6 @@ private val COMMON_HEADER_NAMES = listOf(
     "OpenAI-Project",
 )
 
-// 按已输入内容过滤常用请求头，没有匹配(或已完整输入)时展示全部
 private fun commonHeaderNames(input: String): List<String> {
     val keyword = input.trim()
     val matched = COMMON_HEADER_NAMES.filter {

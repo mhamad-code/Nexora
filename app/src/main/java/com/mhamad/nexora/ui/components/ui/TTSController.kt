@@ -57,7 +57,6 @@ fun TTSController() {
 
     LaunchedEffect(isSpeaking) {
         if (isSpeaking) {
-            // 如果开启，显示悬浮窗
             isVisible = true
         }
     }

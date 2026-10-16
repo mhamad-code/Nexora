@@ -12,7 +12,6 @@ import com.mhamad.nexora.ui.components.richtext.MarkdownBlock
 import kotlin.uuid.Uuid
 
 /**
- * 推荐的提供商列表，在提供商设置页右上角的推荐 Sheet 中展示。
  */
 val RECOMMENDED_PROVIDERS: List<ProviderSetting> = listOf(
     ProviderSetting.OpenAI(

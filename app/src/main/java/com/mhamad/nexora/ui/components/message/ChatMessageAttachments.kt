@@ -34,8 +34,6 @@ import androidx.core.net.toFile
 import androidx.core.net.toUri
 
 /**
- * 按压进度：按下趋向 1，松开回到 0，用来让容器的圆角在按下时收紧。
- * 回弹时可能略微超出 0..1
  */
 @Composable
 internal fun animatePressProgress(interactionSource: InteractionSource): State<Float> {
@@ -54,7 +52,6 @@ internal fun Context.openLocalFile(url: String) {
     startActivity(Intent.createChooser(intent, null))
 }
 
-// 视频、音频附件：和图片缩略图等高的色块
 @Composable
 internal fun ChatMessageMediaTile(
     icon: ImageVector,
@@ -80,7 +77,6 @@ internal fun ChatMessageMediaTile(
     }
 }
 
-// 文件胶囊：文档附件、工作区里改过的文件
 @Composable
 internal fun ChatMessageFileChip(
     text: String,

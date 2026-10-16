@@ -220,7 +220,6 @@ class RouteActivity : ComponentActivity() {
 
     private fun handleIntent(intent: Intent) {
         val backStack = navStack ?: run {
-            // Compose 尚未创建导航栈，待就绪后处理。
             pendingIntents.addLast(intent)
             return
         }
@@ -245,7 +244,6 @@ class RouteActivity : ComponentActivity() {
         }
     }
 
-    // 快捷方式没有指定会话，打开一个空会话
     private fun openNewMediaCreation(backStack: MutableList<NavKey>) {
         lifecycleScope.launch {
             val destination = Screen.MediaCreation(mediaCreationRepository.newSession().id.toString())
@@ -253,7 +251,6 @@ class RouteActivity : ComponentActivity() {
         }
     }
 
-    // 媒体创作的通知带着会话 ID，点击后直接打开那个会话
     private fun mediaCreationDestination(intent: Intent): Screen? {
         val sessionId = intent.getStringExtra(MediaCreationForegroundService.EXTRA_MEDIA_SESSION_ID) ?: return null
         return runCatching { Uuid.parse(sessionId) }.getOrNull()?.let { Screen.MediaCreation(it.toString()) }
@@ -272,8 +269,8 @@ class RouteActivity : ComponentActivity() {
                 when (event) {
                     is AppEvent.Speak -> tts.speak(event.text)
                     is AppEvent.OpenUsageAccessSettings -> this@RouteActivity.openUsageAccessSettings()
-                    is AppEvent.ChatGenerationUpdate -> Unit // 由 ChatNotificationManager 消费
-                    is AppEvent.ChatGenerationEnded -> Unit // 由 ChatNotificationManager 消费
+                    is AppEvent.ChatGenerationUpdate -> Unit
+                    is AppEvent.ChatGenerationEnded -> Unit
                 }
             }
         }
@@ -654,7 +651,6 @@ sealed interface Screen : NavKey {
     @Serializable
     data class AssistantMemory(val id: String) : Screen
 
-    /** 记忆库 [memoryId] 里的一个文件，[path] 为 null 时新建 */
     @Serializable
     data class MemoryFile(val memoryId: String, val path: String? = null) : Screen
 

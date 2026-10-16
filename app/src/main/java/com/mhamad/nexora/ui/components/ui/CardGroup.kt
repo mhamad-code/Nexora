@@ -60,7 +60,6 @@ private data class CardGroupItem(
     val leadingContent: (@Composable () -> Unit)?,
     val trailingContent: (@Composable () -> Unit)?,
     val colors: ListItemColors?,
-    // 不为空时是表单项，标题行下方接这块内容
     val formContent: (@Composable ColumnScope.() -> Unit)? = null,
 )
 
@@ -80,7 +79,6 @@ interface CardGroupScope {
         headlineContent: @Composable () -> Unit,
     )
 
-    // 表单项：标题行下方带一块自定义内容（输入框、滑块等），不传标题时整项都是自定义内容
     fun formItem(
         modifier: Modifier = Modifier,
         headlineContent: (@Composable () -> Unit)? = null,
@@ -142,7 +140,6 @@ private class CardGroupScopeImpl : CardGroupScope {
     }
 }
 
-// 带开关的项，点整行也能切换
 fun CardGroupScope.switchItem(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
@@ -164,14 +161,12 @@ fun CardGroupScope.switchItem(
     headlineContent = headlineContent,
 )
 
-// 分组里第 index 项的形状，给不方便走 CardGroup 的列表（比如可拖拽排序的）用
 fun cardGroupItemShape(index: Int, count: Int): Shape {
     val top = if (index == 0) CardGroupCorner else CardGroupInnerCorner
     val bottom = if (index == count - 1) CardGroupCorner else CardGroupInnerCorner
     return RoundedCornerShape(topStart = top, topEnd = top, bottomStart = bottom, bottomEnd = bottom)
 }
 
-// 列表项开头带圆形底色的图标
 @Composable
 fun CardGroupIcon(
     icon: ImageVector,
@@ -202,7 +197,6 @@ fun CardGroupIcon(
     }
 }
 
-// 标题行右侧显示当前取值的小标签，比如滑块的数值
 @Composable
 fun CardGroupValue(
     text: String,
@@ -217,7 +211,6 @@ fun CardGroupValue(
         Text(
             text = text,
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-            // 等宽数字，拖动滑块时标签宽度不跳
             style = MaterialTheme.typography.labelLarge.copy(fontFeatureSettings = "tnum"),
             maxLines = 1,
         )
@@ -242,7 +235,6 @@ private fun CardGroupFormItem(
         ) {
             if (item.headlineContent != null || item.leadingContent != null || item.trailingContent != null) {
                 Row(
-                    // 和 ListItem 一致：带说明文字时，两侧内容靠上对齐
                     verticalAlignment = if (item.supportingContent != null) Alignment.Top else Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {

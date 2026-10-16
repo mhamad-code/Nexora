@@ -34,11 +34,9 @@ import androidx.compose.ui.unit.dp
 private val ColorSliderThumbRadius = 14.dp
 
 /**
- * 用色相、饱和度、明度三条滑杆调自定义颜色，拖动时画笔颜色跟着变。
  */
 @Composable
 internal fun SketchColorPicker(state: SketchState, modifier: Modifier = Modifier) {
-    // 三个分量各自记着：颜色调成黑白灰之后，从颜色本身已经反推不出色相了
     val hsv = remember {
         FloatArray(3).also {
             android.graphics.Color.colorToHSV((state.customColor ?: SketchDefaults.CustomColor).toArgb(), it)
@@ -88,7 +86,6 @@ internal fun SketchColorPicker(state: SketchState, modifier: Modifier = Modifier
     }
 }
 
-// 轨道画成渐变：拖到哪里就是哪里的颜色
 @Composable
 private fun ColorSlider(
     value: Float,
@@ -112,7 +109,6 @@ private fun ColorSlider(
                 }
             }
             .pointerInput(valueRange) {
-                // 两端各留出滑块的半径，滑块不会滑到轨道外面
                 val inset = ColorSliderThumbRadius.toPx()
                 fun update(x: Float) {
                     val fraction = ((x - inset) / (size.width - 2 * inset)).coerceIn(0f, 1f)

@@ -81,7 +81,6 @@ fun AssistantMcpPage(id: String) {
                 end = innerPadding.calculateEndPadding(layoutDirection) + 16.dp,
                 bottom = innerPadding.calculateBottomPadding() + 16.dp,
             ),
-            // 页面背景比 sheet 深，列表项用更亮的容器色才分得开
             colors = ListItemDefaults.segmentedColors(
                 containerColor = MaterialTheme.colorScheme.surfaceBright,
             ),

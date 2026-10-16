@@ -114,8 +114,6 @@ internal object AwsSignatureV4 {
     }
 
     /**
-     * 生成带签名的临时 GET 地址。签名放在查询参数里，拿到地址的人在 [expires] 内不需要凭据就能下载，
-     * 过期后存储服务返回 403；对象本身不受影响。
      */
     fun presignGetUrl(
         config: S3Config,
@@ -134,7 +132,6 @@ internal object AwsSignatureV4 {
         val encodedPath = canonicalUri(config, path).urlEncodePath()
         val credentialScope = "$dateStamp/${config.region}/$SERVICE/aws4_request"
 
-        // 只签 host：拉取方不会带任何额外请求头
         val canonicalQueryString = mapOf(
             "X-Amz-Algorithm" to ALGORITHM,
             "X-Amz-Credential" to "${config.accessKeyId}/$credentialScope",

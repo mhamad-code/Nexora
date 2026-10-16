@@ -122,7 +122,6 @@ fun ChatInput(
     state: ChatInputState,
     loading: Boolean,
     settings: Settings,
-    // 会话视角下的助手和模型：会话开始后以会话上固定的配置为准
     assistant: Assistant,
     chatModel: Model?,
     hazeState: HazeState,
@@ -207,7 +206,6 @@ fun ChatInput(
         }
     }
 
-    // 底部渐变遮罩：从输入区顶部一直过渡到屏幕底部（键盘弹出时到键盘上沿），避免消息透到系统导航栏
     val scrimColor = MaterialTheme.colorScheme.background
     val imeInsets = WindowInsets.ime
     Surface(

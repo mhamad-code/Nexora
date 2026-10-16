@@ -61,7 +61,6 @@ fun ReminderTab(vm: BackupVM) {
                         )
                     },
                 ) {
-                    // 五个按钮并排，按钮里只放数字，带单位的完整取值显示在标题行右侧
                     ConnectedChoiceButtons(
                         options = ReminderIntervals,
                         selected = config.intervalDays,

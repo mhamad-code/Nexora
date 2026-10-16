@@ -26,13 +26,8 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapNotNull
 
 /**
- * 渲染 Markdown 文本，支持 GFM（表格、任务列表、删除线）、LaTeX 公式和内嵌 HTML。
  *
- * 组件不依赖任何业务逻辑：代码高亮、图片加载、公式排版等通过 [components] 接入，视觉参数通过 [theme] 调整。
- * [content] 可以高频变化（流式输出），解析在后台线程进行，内容没变的块不会重组。
  *
- * @param softBreakAsLineBreak 段落内的单个换行是否渲染为换行
- * @param onLinkClick 链接点击回调，为 null 时交给系统的 UriHandler 打开
  */
 @Composable
 fun Markdown(
@@ -54,7 +49,6 @@ fun Markdown(
     )
 }
 
-/** 渲染已经解析好的 [document]，适合自己控制解析时机的场景（例如提前在后台调用 [parseMarkdown]） */
 @Composable
 fun Markdown(
     document: MarkdownDocument,
@@ -86,10 +80,7 @@ fun Markdown(
 }
 
 /**
- * 解析 [content] 并在它变化时更新。
  *
- * 首次解析是同步的，保证第一帧就有内容；之后的更新在后台线程进行。
- * 更新比解析快时只解析最新的内容，中间的版本直接跳过。
  */
 @Composable
 fun rememberMarkdownDocument(content: String, softBreakAsLineBreak: Boolean = true): MarkdownDocument {

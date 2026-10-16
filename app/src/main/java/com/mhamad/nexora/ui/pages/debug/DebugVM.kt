@@ -41,7 +41,6 @@ class DebugVM(
     private val _conversationCount = MutableStateFlow<Int?>(null)
     val conversationCount: StateFlow<Int?> = _conversationCount.asStateFlow()
 
-    // 聊天记录中引用的助手 ID -> 对话数
     private val _conversationAssistants = MutableStateFlow<Map<Uuid, Int>?>(null)
     val conversationAssistants: StateFlow<Map<Uuid, Int>?> = _conversationAssistants.asStateFlow()
 
@@ -63,8 +62,6 @@ class DebugVM(
     }
 
     /**
-     * 为聊天记录中引用、但设置里已不存在的助手 ID 创建占位助手，使这些聊天记录重新可见
-     * @return 恢复的助手数量, settings 未加载时返回 null
      */
     suspend fun recoverAssistantsFromConversations(): Int? {
         val settings = settingsStore.settingsFlow.value
@@ -91,8 +88,6 @@ class DebugVM(
     }
 
     /**
-     * 创建一个超大的对话用于测试 CursorWindow 限制
-     * @param sizeMB 目标大小（MB）
      */
     fun createOversizedConversation(sizeMB: Int = 3) {
         viewModelScope.launch {
@@ -100,10 +95,8 @@ class DebugVM(
             val messageNodes = mutableListOf<MessageNode>()
             var currentSize = 0
 
-            // 生成大量消息直到达到目标大小
             var index = 0
             while (currentSize < targetSize) {
-                // 生成一个包含大量文本的消息（约 100KB 每条）
                 val largeText = buildString {
                     repeat(100) {
                         append("这是一段很长的测试文本，用于测试 CursorWindow 的大小限制。")
@@ -129,7 +122,7 @@ class DebugVM(
                 messageNodes.add(MessageNode.of(userMessage))
                 messageNodes.add(MessageNode.of(assistantMessage))
 
-                currentSize += largeText.length * 2 * 2 // 大约估算
+                currentSize += largeText.length * 2 * 2
                 index++
             }
 

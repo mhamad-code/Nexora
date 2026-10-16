@@ -115,11 +115,9 @@ fun SettingMcpDetailPage(id: Uuid, vm: SettingVM = koinViewModel()) {
     val pager = rememberPagerState { McpDetailTab.entries.size }
     val toaster = LocalToaster.current
     val context = LocalContext.current
-    // 草稿放在页面这一层，切到工具页再切回来不会丢掉没保存的修改
     var draft by remember { mutableStateOf(config) }
 
     val onSave = {
-        // 只合并基础设置里能改的字段，工具列表和 OAuth 状态以后台同步写回的为准
         vm.updateSettings { latest ->
             latest.copy(
                 mcpServers = latest.mcpServers.map { server ->
@@ -257,7 +255,6 @@ private fun McpBasicSettingsTab(
             ),
         )
 
-        // 键盘弹出时收起，不然会盖住正在输入的那一行
         AnimatedVisibility(
             visible = !WindowInsets.isImeVisible,
             modifier = Modifier
@@ -328,11 +325,9 @@ private fun McpCommonOptionsConfigure(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            // 底部留出悬浮工具栏的位置
             .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 128.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // 启用/禁用开关
         FormItem(
             label = {
                 Text(stringResource(R.string.setting_mcp_page_enable))
@@ -369,7 +364,6 @@ private fun McpCommonOptionsConfigure(
 
         HorizontalDivider()
 
-        // 名称输入框
         FormItem(
             label = {
                 Text(stringResource(R.string.setting_mcp_page_name))
@@ -406,7 +400,6 @@ private fun McpCommonOptionsConfigure(
 
         HorizontalDivider()
 
-        // 传输类型选择
         FormItem(
             label = {
                 Text(stringResource(R.string.setting_mcp_page_transport_type))
@@ -466,7 +459,6 @@ private fun McpCommonOptionsConfigure(
 
         HorizontalDivider()
 
-        // 服务器地址配置
         FormItem(
             label = {
                 Text(stringResource(R.string.setting_mcp_page_server_url))
@@ -508,7 +500,6 @@ private fun McpCommonOptionsConfigure(
 
         HorizontalDivider()
 
-        // 请求头配置
         FormItem(
             label = {
                 Text(stringResource(R.string.setting_mcp_page_custom_headers))
@@ -687,7 +678,6 @@ private fun McpToolCard(
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            // 第一行：工具名字和3个按钮
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -700,7 +690,6 @@ private fun McpToolCard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                // 需要审批开关
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -715,7 +704,6 @@ private fun McpToolCard(
                         size = SwitchSize.Small
                     )
                 }
-                // 启用开关
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -730,7 +718,6 @@ private fun McpToolCard(
                         size = SwitchSize.Small
                     )
                 }
-                // 展开/收起按钮
                 IconButton(
                     onClick = { expanded = !expanded },
                     modifier = Modifier.size(32.dp)
@@ -742,9 +729,7 @@ private fun McpToolCard(
                     )
                 }
             }
-            // 展开后显示描述和参数
             if (expanded) {
-                // 描述
                 if (!tool.description.isNullOrBlank()) {
                     Text(
                         text = tool.description,
@@ -752,7 +737,6 @@ private fun McpToolCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f),
                     )
                 }
-                // 参数标签
                 tool.inputSchema?.let { it as? InputSchema.Obj }?.let { schema ->
                     if (schema.properties.isNotEmpty()) {
                         FlowRow(

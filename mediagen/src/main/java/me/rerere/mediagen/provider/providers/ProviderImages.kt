@@ -11,13 +11,10 @@ internal fun imageMimeType(format: String?, fallback: String): String = when (fo
     else -> fallback
 }
 
-// 结果地址通常带签名参数，扩展名在 path 末尾
 internal fun String.urlFileExtension(): String? =
     substringBefore('?').substringAfterLast('/').substringAfterLast('.', "").takeIf(String::isNotEmpty)
 
 /**
- * 把图片输入转成 JSON 接口可直接引用的地址：公网地址和 data URI 原样返回，本地文件读出后编码成 data URI。
- * 会读取整个文件，需要在 IO 线程调用。
  */
 internal fun MediaGenerationInput.Image.toUrlOrDataUri(): String {
     if (REMOTE_PREFIXES.any { url.startsWith(it, ignoreCase = true) }) return url

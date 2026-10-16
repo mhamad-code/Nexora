@@ -128,7 +128,6 @@ class ConversationConfigTest {
         )
 
         assertEquals(modelB.id, withoutModelA.getChatModelOf(bound)?.id)
-        // 会话上固定的内置搜索开关属于被删掉的模型，不能套到退回的模型上
         assertEquals(modelB, withoutModelA.getChatModelOf(bound))
     }
 
@@ -182,7 +181,6 @@ class ConversationConfigTest {
 
         assertEquals(ReasoningLevel.LOW, conversation.config?.reasoningLevel)
         assertEquals(setOf(newInjection), conversation.modeInjectionIds)
-        // 不随会话固定的字段仍然写回助手
         assertEquals(assistant.copy(quickMessageIds = updated.quickMessageIds), stored)
     }
 
@@ -216,7 +214,6 @@ class ConversationConfigTest {
 
         val bound = conversation.bindConfig(settings())
 
-        // 会话自己绑定过的保留，没绑定过的继承助手
         assertEquals(setOf(conversationInjection), bound.modeInjectionIds)
         assertEquals(setOf(lorebook), bound.lorebookIds)
     }

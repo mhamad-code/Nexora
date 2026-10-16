@@ -41,9 +41,7 @@ import me.rerere.workspace.WorkspaceStorageArea
 import org.koin.compose.koinInject
 
 /**
- * 工作区文本文件编辑/预览页.
  *
- * FILES 区文件可编辑并保存; LINUX (rootfs) 区文件仅只读预览 (readOnly), 避免误改系统文件.
  */
 @Composable
 fun WorkspaceFileEditorPage(
@@ -60,8 +58,6 @@ fun WorkspaceFileEditorPage(
     val supportsPreview = extension in setOf("html", "htm", "svg")
     var showPreview by rememberSaveable(id, area, path) { mutableStateOf(supportsPreview) }
 
-    // 不能用 rememberTextFieldState: 它会把全文存进 saved state Bundle, 大文件切后台时触发 TransactionTooLargeException (#1953).
-    // 内容本就由下方 LaunchedEffect 从磁盘加载, 无需 saveable.
     val textState = remember(id, area, path) { TextFieldState() }
     var loading by remember { mutableStateOf(true) }
     var loadError by remember { mutableStateOf<String?>(null) }

@@ -100,7 +100,6 @@ fun ChainOfThoughtScope.ChatMessageToolStep(
     onToolApproval: ((toolCallId: String, approved: Boolean, reason: String) -> Unit)? = null,
     onToolAnswer: ((toolCallId: String, answer: String) -> Unit)? = null,
 ) {
-    // ask_user 是交互式问答流程, 不走注册式渲染框架
     if (tool.toolName == ASK_USER_TOOL_NAME) {
         AskUserToolStep(tool = tool, loading = loading, onToolAnswer = onToolAnswer)
         return
@@ -118,7 +117,6 @@ fun ChainOfThoughtScope.ChatMessageToolStep(
             null
         }
     }
-    // 输出不是 JSON (例如超长被截断后只剩文本预览) 时, 定制渲染器读不到任何字段, 详情改用默认渲染展示原文
     val outputUnparsable = tool.isExecuted && outputJson == null
     val context = remember(tool, loading, assistant) {
         ToolUIContext(
@@ -137,7 +135,6 @@ fun ChainOfThoughtScope.ChatMessageToolStep(
     val isDenied = tool.approvalState is ToolApprovalState.Denied
     val images = tool.output.filterIsInstance<UIMessagePart.Image>()
 
-    // 摘要由注册的渲染器决定; 图片输出与拒绝原因为所有工具通用
     val hasExtraContent = renderer.hasSummary(context) || isDenied || images.isNotEmpty()
 
     ControlledChainOfThoughtStep(

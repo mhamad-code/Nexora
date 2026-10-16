@@ -4,13 +4,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 
 /**
- * 与供应商无关的媒体生成请求，图像和视频共用。
  *
- * [resolution] 对视频是清晰度档位（如 `1080P`），对图像是像素尺寸（如 `1536x1024`）；[count] 是期望的
- * 产出数量。适配器不支持的公共字段会在提交前直接报错，而不是静默忽略。
  *
- * [extraParameters] 用于尚未进入公共抽象的供应商参数。适配器会先写入这些参数，再用公共字段
- * 覆盖同名项，避免调用方绕过公共字段的统一语义。
  */
 @Serializable
 data class MediaGenerationRequest(

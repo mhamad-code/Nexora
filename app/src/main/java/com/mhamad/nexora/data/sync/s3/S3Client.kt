@@ -301,7 +301,6 @@ class S3Client(
     }
 
     /**
-     * 带签名的临时下载地址，桶不需要公开读取。[expires] 最长 7 天。
      */
     fun presignGetUrl(key: String, expires: Duration): String {
         return AwsSignatureV4.presignGetUrl(

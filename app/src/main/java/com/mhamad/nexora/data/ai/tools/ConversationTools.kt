@@ -119,8 +119,6 @@ private const val READ_MAX_LIMIT = 40
 private const val READ_MESSAGE_LENGTH = 12_000
 
 /**
- * 给后台记忆整理用的对话查询工具，只能看到 [assistantIds] 这些助手的对话：
- * 独立记忆库的助手不该读到别的助手的对话内容。
  */
 fun createMemoryConversationTools(
     conversationRepo: ConversationRepository,
@@ -185,6 +183,5 @@ fun createMemoryConversationTools(
     ),
 )
 
-/** 当前分支上用户和助手的消息，位置编号以这个列表为准 */
 internal fun Conversation.dialogueMessages(): List<UIMessage> =
     currentMessages.filter { it.role == MessageRole.USER || it.role == MessageRole.ASSISTANT }

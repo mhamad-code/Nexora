@@ -68,7 +68,6 @@ internal fun MediaFileInputRow(
         }
     }
 
-    // 正在哪张图片上画，非空时显示画板
     val scope = rememberCoroutineScope()
     var drawingOn by remember { mutableStateOf<UIMessagePart.Image?>(null) }
     drawingOn?.let { part ->
@@ -79,7 +78,6 @@ internal fun MediaFileInputRow(
                 drawingOn = null
                 scope.launch {
                     val uri = filesManager.createChatFileBySketch(result) ?: return@launch
-                    // 画好的图换掉原来那张，位置不变；等保存的这会儿原图已经被移走的话就不加了
                     if (part !in state.messageContent) {
                         filesManager.deleteChatFiles(listOf(uri))
                         return@launch

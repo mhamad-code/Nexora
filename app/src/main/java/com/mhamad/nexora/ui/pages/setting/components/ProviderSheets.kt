@@ -33,7 +33,6 @@ import com.mhamad.nexora.R
 import com.mhamad.nexora.ui.components.ui.AutoAIIcon
 import com.mhamad.nexora.ui.components.ui.cardGroupItemShape
 
-// 新建服务商时先选类型的面板
 @Composable
 internal fun <T> ProviderTypeSheet(
     title: String,
@@ -94,7 +93,6 @@ internal fun <T> ProviderTypeSheet(
     }
 }
 
-// 新建 / 编辑服务商的面板：标题、表单、底部的取消和确认；确认之前改动只留在面板里
 @Composable
 internal fun <T> ProviderEditSheet(
     title: String,

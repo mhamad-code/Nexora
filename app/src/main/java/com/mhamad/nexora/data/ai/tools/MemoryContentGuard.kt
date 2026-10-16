@@ -6,9 +6,7 @@ private val paymentCardRegex = Regex("""(?<![\d-])\d(?:[ -]?\d){14,18}(?![\d-])"
 private val ssnRegex = Regex("""(?<![\d-])(?!000|666|9\d\d)\d{3}-(?!00)\d{2}-(?!0000)\d{4}(?![\d-])""")
 
 /**
- * 记忆写入前的兜底拦截：证件号、卡号不能只靠提示词约束。
  *
- * @return 命中时返回内容类别的描述，否则返回 null
  */
 internal fun findForbiddenMemoryContent(text: String): String? = when {
     chineseIdRegex.findAll(text).any { isValidChineseId(it.value) } -> "an ID number"

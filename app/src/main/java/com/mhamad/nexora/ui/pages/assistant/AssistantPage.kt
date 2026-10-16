@@ -95,17 +95,12 @@ fun AssistantPage(vm: AssistantVM = koinViewModel()) {
     val navController = LocalNavController.current
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
-    // 搜索关键词状态
     var searchQuery by remember { mutableStateOf("") }
-    // 标签过滤状态
     var selectedTagIds by remember { mutableStateOf(emptySet<Uuid>()) }
-    // 待删除的助手
     var deleteTarget by remember { mutableStateOf<Assistant?>(null) }
-    // 待复制的助手(仅在有独立记忆时需要询问是否一并复制)
     var cloneTarget by remember { mutableStateOf<Assistant?>(null) }
     var cloneWithMemories by remember { mutableStateOf(false) }
 
-    // 根据搜索关键词和选中的标签过滤助手
     val filteredAssistants = remember(settings.assistants, selectedTagIds, searchQuery) {
         settings.assistants.filter { assistant ->
             val matchesSearch = searchQuery.isBlank() ||
@@ -159,7 +154,6 @@ fun AssistantPage(vm: AssistantVM = koinViewModel()) {
                 }
             }
 
-            // 搜索框
             TextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
@@ -187,7 +181,6 @@ fun AssistantPage(vm: AssistantVM = koinViewModel()) {
                 ),
             )
 
-            // 标签过滤器
             AssistantTagsFilterRow(
                 settings = settings,
                 vm = vm,
@@ -221,7 +214,6 @@ fun AssistantPage(vm: AssistantVM = koinViewModel()) {
                                 navController.navigate(Screen.AssistantDetail(id = assistant.id.toString()))
                             },
                             onCopy = {
-                                // 全局记忆是共享的, 复制后的助手本来就能读到, 无需询问
                                 if (!assistant.useGlobalMemory && memories.isNotEmpty()) {
                                     cloneWithMemories = false
                                     cloneTarget = assistant

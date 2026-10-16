@@ -86,7 +86,6 @@ class QwenTTSProvider : TTSProvider<TTSProviderSetting.Qwen> {
                     }
                 }
 
-                // 兼容最后一个 SSE event 后没有空行、直接 EOF 的响应。
                 if (currentData.isNotEmpty()) {
                     parseSSEData(currentData.toString(), providerSetting)?.let { emit(it) }
                 }

@@ -31,7 +31,7 @@ class CustomJsSearchServiceTest {
             assertEquals("{\"query\":\"你好\\n\\\"\\u0001😀\",\"limit\":3}", body)
             Response.Builder().request(request).protocol(Protocol.HTTP_1_1)
                 .code(200).message("OK")
-                .body("""{"results":[{"title":"结果😀","url":"https://example.com","snippet":"内容"}]}""".toResponseBody())
+                .body("""{"results":[{"title":"结果😀","url":"https:
                 .build()
         }.build()
         try {
