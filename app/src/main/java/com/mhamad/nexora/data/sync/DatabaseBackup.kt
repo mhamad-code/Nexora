@@ -1,10 +1,8 @@
 package com.mhamad.nexora.data.sync
 
-import android.content.Context
 import androidx.sqlite.db.SupportSQLiteDatabase
 import io.requery.android.database.sqlite.SQLiteDatabase
 import io.requery.android.database.sqlite.SQLiteDatabaseConfiguration
-import com.mhamad.nexora.data.db.SQLiteConfiguration
 import java.io.File
 
 internal object DatabaseBackup {
@@ -19,12 +17,9 @@ internal object DatabaseBackup {
     }
 
     /** Only opens the staged copy. The caller must place its matching WAL beside it first. */
-    fun normalize(context: Context, databaseFile: File) {
+    fun normalize(databaseFile: File) {
         require(databaseFile.isFile && databaseFile.length() > 0) { "Backup database is missing or empty" }
-        val configuration = SQLiteConfiguration.configure(
-            context,
-            SQLiteDatabaseConfiguration(databaseFile.absolutePath, SQLiteDatabase.OPEN_READWRITE)
-        )
+        val configuration = SQLiteDatabaseConfiguration(databaseFile.absolutePath, SQLiteDatabase.OPEN_READWRITE)
         SQLiteDatabase.openDatabase(configuration, null) {
             error("Backup database is corrupt")
         }.use { database ->

@@ -124,7 +124,7 @@ class BackupManager(
                     require(restoredEntries > 0) { "No selected data found in the backup" }
                     require(!stagedWal.exists() || stagedDatabase.exists()) { "Backup WAL has no matching database" }
                     if (stagedDatabase.exists()) {
-                        DatabaseBackup.normalize(context, stagedDatabase)
+                        DatabaseBackup.normalize(stagedDatabase)
                         // Reject unsupported schemas before publishing; run supported old migrations on the copy.
                         val room = AppDatabaseFactory.create(context, stagedDatabase.absolutePath)
                         try {

@@ -51092,11 +51092,6 @@ SPLcom/mhamad/nexora/data/db/fts/MessageFtsManagerKt;->extractFtsText(Lme/rerere
 Lcom/mhamad/nexora/data/db/fts/MessageFtsManagerKt$$ExternalSyntheticLambda0;
 SPLcom/mhamad/nexora/data/db/fts/MessageFtsManagerKt$$ExternalSyntheticLambda0;-><init>()V
 SPLcom/mhamad/nexora/data/db/fts/MessageFtsManagerKt$$ExternalSyntheticLambda0;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
-Lcom/mhamad/nexora/data/db/fts/SimpleDictManager;
-SPLcom/mhamad/nexora/data/db/fts/SimpleDictManager;-><clinit>()V
-SPLcom/mhamad/nexora/data/db/fts/SimpleDictManager;-><init>()V
-SPLcom/mhamad/nexora/data/db/fts/SimpleDictManager;->copyAssetDir(Landroid/content/Context;Ljava/lang/String;Ljava/io/File;)V
-SPLcom/mhamad/nexora/data/db/fts/SimpleDictManager;->extractDict(Landroid/content/Context;)Ljava/io/File;
 Lcom/mhamad/nexora/data/db/migrations/Migration_11_12Kt;
 SPLcom/mhamad/nexora/data/db/migrations/Migration_11_12Kt;-><clinit>()V
 SPLcom/mhamad/nexora/data/db/migrations/Migration_11_12Kt;->getMigration_11_12()Landroidx/room/migration/Migration;
