@@ -1,0 +1,38 @@
+{
+  "conversations": {
+    "meta": {
+      "title": "RikkaHub ويب",
+      "description": "عميل RikkaHub على الويب"
+    },
+    "preview": {
+      "empty_message": "رسالة فارغة",
+      "image": "[صورة]",
+      "video": "[فيديو]",
+      "audio": "[صوت]",
+      "document": "[مستند]",
+      "document_with_name": "[مستند] {{name}}",
+      "thinking": "[يفكر]",
+      "tool_call": "[استدعاء أداة]",
+      "tool_with_name": "[أداة] {{name}}"
+    },
+    "errors": {
+      "load_detail_failed": "فشل تحميل تفاصيل المحادثة"
+    },
+    "empty_state": {
+      "select_title": "اختر محادثة",
+      "select_description": "اختر محادثة من الشريط الجانبي لعرض الرسائل",
+      "loading_title": "جارٍ التحميل...",
+      "loading_description": "جارٍ تحميل تفاصيل المحادثة",
+      "error_title": "فشل التحميل",
+      "no_message_title": "لا توجد رسائل بعد",
+      "no_message_description": "هذه المحادثة لا تحتوي على أي رسائل بعد"
+    },
+    "welcome_prompt": "كيف يمكنني مساعدتك؟",
+    "user": {
+      "default_name": "المستخدم"
+    },
+    "header": {
+      "select_conversation": "اختر محادثة"
+    }
+  }
+}

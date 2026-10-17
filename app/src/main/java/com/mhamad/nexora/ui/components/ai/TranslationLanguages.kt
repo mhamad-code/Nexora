@@ -7,9 +7,7 @@ import com.mhamad.nexora.R
 import java.util.Locale
 
 val TranslationLanguages: List<Locale> = listOf(
-    Locale.SIMPLIFIED_CHINESE,
     Locale.ENGLISH,
-    Locale.TRADITIONAL_CHINESE,
     Locale.JAPANESE,
     Locale.KOREAN,
     Locale.FRENCH,
@@ -20,9 +18,7 @@ val TranslationLanguages: List<Locale> = listOf(
 
 @Composable
 fun translationLanguageName(locale: Locale): String = when (locale) {
-    Locale.SIMPLIFIED_CHINESE -> stringResource(R.string.language_simplified_chinese)
     Locale.ENGLISH -> stringResource(R.string.language_english)
-    Locale.TRADITIONAL_CHINESE -> stringResource(R.string.language_traditional_chinese)
     Locale.JAPANESE -> stringResource(R.string.language_japanese)
     Locale.KOREAN -> stringResource(R.string.language_korean)
     Locale.FRENCH -> stringResource(R.string.language_french)

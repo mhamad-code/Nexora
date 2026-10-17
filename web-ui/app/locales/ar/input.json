@@ -1,0 +1,118 @@
+{
+  "mcp": {
+    "title": "MCP",
+    "description": "اختر خوادم MCP المتاحة لهذا المساعد",
+    "update_failed": "فشل تحديث إعدادات MCP",
+    "unnamed_server": "خادم MCP غير مسمّى",
+    "tools_enabled": "{{enabled}}/{{total}} أدوات مُمكّنة",
+    "empty": "لا توجد خوادم MCP متاحة"
+  },
+  "injection": {
+    "title": "الإضافات",
+    "description": "فعّل الرسائل السريعة، حقن الوضع وكتب الخلفية للمساعد الحالي",
+    "update_failed": "فشل تحديث الإضافات",
+    "tab_quickmessages": "الرسائل السريعة",
+    "tab_mode": "حقن الوضع",
+    "tab_lorebook": "كتاب الخلفية",
+    "unnamed_mode": "حقن وضع غير مسمّى",
+    "unnamed_lorebook": "كتاب خلفية غير مسمّى",
+    "unnamed_quickmessage": "رسالة سريعة غير مسمّاة",
+    "disabled": "معطّل",
+    "empty_mode": "لا توجد حقن أوضاع متاحة",
+    "empty_lorebook": "لا توجد كتب خلفية متاحة",
+    "empty_quickmessages": "لا توجد رسائل سريعة متاحة"
+  },
+  "reasoning": {
+    "title": "الاستدلال",
+    "description": "اضبط شدة الاستدلال والميزانية لهذا المساعد",
+    "faster": "أسرع",
+    "smarter": "أذكى",
+    "update_failed": "فشل تحديث ميزانية الاستدلال",
+    "custom_budget": "ميزانية استدلال مخصّصة",
+    "custom_budget_placeholder": "أدخل ميزانية الرموز",
+    "invalid_integer": "يرجى إدخال عدد صحيح صالح",
+    "apply": "تطبيق",
+    "examples": "أمثلة: 0 (إيقاف)، -1 (تلقائي)، 1024، 16000، 32000",
+    "presets": {
+      "off": {
+        "label": "إيقاف",
+        "description": "عطّل الاستدلال وأجب مباشرة."
+      },
+      "auto": {
+        "label": "تلقائي",
+        "description": "دع النموذج يحدد مستوى الاستدلال تلقائيًا."
+      },
+      "low": {
+        "label": "خفيف",
+        "description": "استخدم قدرًا بسيطًا من الاستدلال للإجابة."
+      },
+      "medium": {
+        "label": "متوسط",
+        "description": "استخدم مزيدًا من الاستدلال للإجابة."
+      },
+      "high": {
+        "label": "قوي",
+        "description": "استخدم استدلالًا مكثفًا للإجابة."
+      },
+      "xhigh": {
+        "label": "عالي جدًا",
+        "description": "استخدم جهد استدلال مرتفع جدًا للإجابة."
+      },
+      "max": {
+        "label": "أقصى",
+        "description": "استخدم أقصى قدر من الاستدلال للإجابة."
+      }
+    }
+  },
+  "model_list": {
+    "ability_tool": "الأدوات",
+    "ability_reasoning": "الاستدلال",
+    "select_model": "اختر النموذج",
+    "switch_model_failed": "فشل تبديل النموذج",
+    "update_favorites_failed": "فشل تحديث المفضلات",
+    "title": "اختر النموذج",
+    "description": "غيّر نموذج المحادثة المستخدم بواسطة هذا المساعد",
+    "search_placeholder": "ابحث عن نماذج",
+    "empty": "لا توجد نماذج متاحة",
+    "favorites": "المفضلات"
+  },
+  "search": {
+    "default_service_label": "بحث",
+    "update_search_failed": "فشل تحديث بحث الويب",
+    "switch_service_failed": "فشل تبديل خدمة البحث",
+    "update_builtin_failed": "فشل تحديث البحث المدمج",
+    "title": "بحث الويب",
+    "description": "اضبط بحث الويب وخدمات البحث",
+    "builtin_title": "بحث مدمج بالنموذج",
+    "builtin_desc": "استخدم قدرة البحث الأصلية للنموذج",
+    "web_title": "بحث الويب",
+    "status_enabled": "مفعل",
+    "status_disabled": "معطّل",
+    "unknown": "غير معروف",
+    "empty": "لا توجد خدمات بحث متاحة",
+    "builtin_notice": "تم تفعيل البحث المدمج بالنموذج. إعدادات خدمة البحث في التطبيق لن تؤثر."
+  },
+  "chat": {
+    "attachment_image": "صورة",
+    "attachment_video": "فيديو",
+    "attachment_audio": "صوت",
+    "attachment_file": "مرفق",
+    "quick_message_default_title": "رسالة سريعة",
+    "upload_failed": "فشل الرفع",
+    "send_failed": "فشل الإرسال",
+    "drop_to_upload": "اسحب الملفات هنا لرفعها",
+    "editing_tip": "تعديل الرسالة — الإرسال سينشئ فرعًا جديدًا",
+    "cancel_edit": "إلغاء التعديل",
+    "delete_attachment_failed": "فشل حذف المرفق",
+    "upload_image": "رفع صورة",
+    "upload_document": "رفع مستند",
+    "export_conversation": "تصدير المحادثة كـ Markdown",
+    "export_conversation_with_reasoning": "تصدير المحادثة كـ Markdown (مع الاستدلال)",
+    "unsupported_file_skipped": "تم تجاهل {{count}} ملف/ملفات بسبب تنسيق غير مدعوم",
+    "placeholder_ready": "اكتب رسالة...",
+    "placeholder_not_ready": "يرجى اختيار محادثة أولًا",
+    "send_hint_enter": "اضغط Enter للإرسال، Shift + Enter لسطر جديد",
+    "send_hint_newline": "اضغط Shift + Enter للإرسال، Enter لسطر جديد",
+    "long_text_as_file": "تم تحويل النص الطويل إلى مرفق ملف"
+  }
+}
