@@ -1,11 +1,11 @@
 name: Build Nexora
 
 on:
-  # 也支持手动触发
+  # يدعم أيضًا التشغيل اليدوي
   workflow_dispatch:
 
 jobs:
-  # 检查过去 24 小时内是否有新提交，没有则跳过构建，避免重复打包
+  # تحقق من السجل السابق 24 هل هناك التزام جديد خلال الساعات،إن لم يكن موجوداً فتخطَّ البناء،تجنّب حزم العناصر مكررًا
   check:
     runs-on: ubuntu-latest
     outputs:
@@ -15,17 +15,17 @@ jobs:
       - name: Check for recent commits
         id: check
         run: |
-          # 手动触发时无条件构建
+          # بناء بدون شرط عند التشغيل اليدوي
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "should_build=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          # 定时触发：仅当过去 24 小时内有新提交才构建
+          # تنبيه مجدول:فقط عندما يكون في الماضي 24 يبنى فقط إذا كان هناك التزام جديد خلال الساعات
           if [ -n "$(git log --since='24 hours ago' --oneline)" ]; then
             echo "should_build=true" >> "$GITHUB_OUTPUT"
           else
             echo "should_build=false" >> "$GITHUB_OUTPUT"
-            echo "过去 24 小时无新提交，跳过构建"
+            echo "الماضي 24 لا توجد التزامات جديدة خلال الساعات،تخطي البناء"
           fi
 
   build:
@@ -33,25 +33,25 @@ jobs:
     if: needs.check.outputs.should_build == 'true'
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # 发布 Release 需要写权限
+      contents: write   # نشر Release يتطلب أذونات كتابة
 
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          submodules: recursive # 拉取子模块
+          submodules: recursive # سحب الوحدات الفرعية
 
-      # 与 Android Studio 自带的 JetBrains Runtime 21 保持一致
+      # و Android Studio مرفق JetBrains Runtime 21 الحفاظ على الاتساق
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'jetbrains'
           java-version: '21'
         env:
-          # jetbrains 安装器通过 GitHub API 查询版本，带上 token 避免被限流
+          # jetbrains المثبت عبر GitHub API التحقق من الإصدار،أرفق token تجنّب التقييد بمعدل الطلبات
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # web 模块的 preBuild 会执行 `pnpm run build` 构建前端，必须准备好 Node + pnpm
+      # web الخاص بالوحدة preBuild سينفذ `pnpm run build` بناء الواجهة الأمامية،يجب أن تكون جاهزًا Node + pnpm
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -64,7 +64,7 @@ jobs:
           cache: pnpm
           cache-dependency-path: web-ui/pnpm-lock.yaml
 
-      # gradle 的 buildWebUi 任务只跑 build 不跑 install，需在此提前安装依赖
+      # gradle ـ buildWebUi تشغيل المهمة فقط build لا يتم التشغيل install،تتطلب تثبيت الاعتماديات مسبقًا هنا
       - name: Install web-ui dependencies
         working-directory: web-ui
         run: pnpm install --frozen-lockfile
@@ -79,13 +79,13 @@ jobs:
 
       - name: Prepare build files
         run: |
-          # 解码base64编码的keystore文件
+          # فك الترميزbase64مشفَّرkeystoreملف
           echo "${{ secrets.KEY_BASE64 }}" | base64 -d > app/app.key
 
-          # 写入签名配置到local.properties
+          # كتابة إعداد التوقيع إلىlocal.properties
           echo "${{ secrets.SIGNING_CONFIG }}" > local.properties
 
-          # 写入Google Services配置
+          # كتابةGoogle Servicesتكوين
 
       - name: Validate google-services
         run: |
@@ -97,7 +97,7 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleRelease
 
-      # 把 APK 直接发布为 Prerelease，用户点链接即可下载单个 apk，无需登录、无需解压
+      # ضع APK انشر مباشرة كـ Prerelease،ينقر المستخدم الرابط لتنزيل عنصر واحد apk،لا حاجة لتسجيل الدخول،لا حاجة لفك الضغط
       - name: Publish nightly prerelease
         uses: softprops/action-gh-release@v2
         if: success()

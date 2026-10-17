@@ -23,16 +23,16 @@ val RECOMMENDED_PROVIDERS: List<ProviderSetting> = listOf(
         description = {
             Text(
                 text = buildAnnotatedString {
-                    append("提供 OpenAI、Claude、Google Gemini 等主流模型的高并发和稳定服务")
+                    append("تقديم OpenAI،Claude،Google Gemini خدمة عالية التوازي وثابتة لنماذج رئيسية مثل")
                     appendLine()
-                    append("官网：")
+                    append("الموقع الرسمي:")
                     withLink(LinkAnnotation.Url("https://aihubmix.com")) {
                         withStyle(SpanStyle(MaterialTheme.colorScheme.primary)) {
                             append("https://aihubmix.com")
                         }
                     }
                     appendLine()
-                    append("充值: ")
+                    append("شحن رصيد: ")
                     withLink(LinkAnnotation.Url("https://console.aihubmix.com/topup")) {
                         withStyle(SpanStyle(MaterialTheme.colorScheme.primary)) {
                             append("https://console.aihubmix.com/topup")
@@ -44,16 +44,16 @@ val RECOMMENDED_PROVIDERS: List<ProviderSetting> = listOf(
     ),
     ProviderSetting.OpenAI(
         id = Uuid.parse("aecf04fd-cb5c-4582-aed2-e8bf393923fd"),
-        name = "随想AI网关",
+        name = "تأملAIالبوابة",
         baseUrl = "https://sui-xiang.com/v1",
         apiKey = "",
         enabled = true,
         description = {
             Text(
                 text = buildAnnotatedString {
-                    append("可靠高效的 API 中继服务，提供 Claude、Codex、Gemini 等中继服务。注重隐私·无数据倒卖·无模型掺水，充值额度 1:1，按量付费。多线路冗余、跨区域容灾、自动故障切换，长链路 SSE 不中断。")
+                    append("موثوق وفعال API خدمة الترحيل،تقديم Claude،Codex،Gemini خدمات وسيطة مثل.الاهتمام بالخصوصية·لا إعادة بيع للبيانات·لا تلاعب بالنماذج،مبلغ الشحن 1:1،الدفع حسب الاستخدام.تعدد خطوط الارتباط المزعوم،استرداد الكوارث عبر المناطق،تبديل تلقائي عند العطل،ارتباط طويل المدى SSE من دون انقطاع.")
                     appendLine()
-                    append("官网：")
+                    append("الموقع الرسمي:")
                     withLink(LinkAnnotation.Url("https://sui-xiang.com")) {
                         withStyle(SpanStyle(MaterialTheme.colorScheme.primary)) {
                             append("https://sui-xiang.com")

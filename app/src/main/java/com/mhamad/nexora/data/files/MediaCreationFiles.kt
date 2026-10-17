@@ -28,7 +28,7 @@ object MediaCreationFiles {
         while (maxOf(bounds.outWidth, bounds.outHeight) / sampleSize > MAX_IMAGE_SIZE) sampleSize *= 2
         val options = BitmapFactory.Options().apply { inSampleSize = sampleSize }
         val decoded = context.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, options) }
-            ?: error("无法读取图片")
+            ?: error("تعذر قراءة الصورة")
         val bitmap = ImageUtils.correctImageOrientation(context, uri, decoded)
         try {
             val (format, extension) = if (bitmap.hasAlpha()) {
@@ -53,7 +53,7 @@ object MediaCreationFiles {
         }
         dir.mkdirs()
         val file = File(dir, "${Uuid.random()}.$extension")
-        val input = context.contentResolver.openInputStream(uri) ?: error("无法读取视频")
+        val input = context.contentResolver.openInputStream(uri) ?: error("تعذر قراءة الفيديو")
         input.use { source -> file.outputStream().use { source.copyTo(it) } }
         return file
     }

@@ -65,7 +65,7 @@ class MiniMaxMediaGenerationProviderTest {
         val model = setting.models.single()
 
         val statuses = manager
-            .generate(setting, model, MediaGenerationRequest(prompt = "跑车"), interval = 1.milliseconds)
+            .generate(setting, model, MediaGenerationRequest(prompt = "سيارة رياضية"), interval = 1.milliseconds)
             .toList()
             .map { it.status }
 

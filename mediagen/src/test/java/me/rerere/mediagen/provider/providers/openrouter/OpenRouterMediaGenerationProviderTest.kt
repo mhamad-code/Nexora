@@ -53,7 +53,7 @@ class OpenRouterMediaGenerationProviderTest {
         val body = generation.buildBody(
             model = imageModel,
             request = MediaGenerationRequest(
-                prompt = "一只猫",
+                prompt = "قط",
                 inputs = listOf(
                     MediaGenerationInput.Image("https://example.com/a.png"),
                     MediaGenerationInput.Image(local.absolutePath),
@@ -70,7 +70,7 @@ class OpenRouterMediaGenerationProviderTest {
         )
 
         assertEquals(JsonPrimitive("openai/gpt-image-2"), body["model"])
-        assertEquals(JsonPrimitive("一只猫"), body["prompt"])
+        assertEquals(JsonPrimitive("قط"), body["prompt"])
         assertEquals(JsonPrimitive(2), body["n"])
         assertEquals(JsonPrimitive("2K"), body["resolution"])
         assertNull(body["size"])
@@ -147,7 +147,7 @@ class OpenRouterMediaGenerationProviderTest {
         val body = generation.buildCreateBody(
             model = videoModel,
             request = MediaGenerationRequest(
-                prompt = "镜头缓慢推进",
+                prompt = "تحريك الكاميرا للأمام ببطء",
                 inputs = listOf(
                     MediaGenerationInput.Image("https://example.com/first.png", ImageRole.FIRST_FRAME),
                     MediaGenerationInput.Image("https://example.com/last.png", ImageRole.LAST_FRAME),
@@ -165,7 +165,7 @@ class OpenRouterMediaGenerationProviderTest {
         )
 
         assertEquals(JsonPrimitive("google/veo-3.1"), body["model"])
-        assertEquals(JsonPrimitive("镜头缓慢推进"), body["prompt"])
+        assertEquals(JsonPrimitive("تحريك الكاميرا للأمام ببطء"), body["prompt"])
         assertEquals(JsonPrimitive("1080p"), body["resolution"])
         assertEquals(JsonPrimitive("16:9"), body["aspect_ratio"])
         assertEquals(JsonPrimitive(8), body["duration"])

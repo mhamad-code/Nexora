@@ -9,7 +9,7 @@ export interface UseCurrentModelResult {
   currentProvider: ProviderProfile | null;
 }
 
-/** 会话开始后用会话上固定的模型，否则用助手当前的模型 */
+/** استخدم النموذج المثبت على الجلسة بعد البدء،وإلا استخدم نموذج المساعد الحالي */
 export function useCurrentModel(conversation?: ConversationDto | null): UseCurrentModelResult {
   const { settings, currentAssistant } = useCurrentAssistant();
 
@@ -18,7 +18,7 @@ export function useCurrentModel(conversation?: ConversationDto | null): UseCurre
 
   return React.useMemo(() => {
     if (settings) {
-      // 固定的模型被删除后退回助手当前的模型
+      // بعد حذف النموذج المثبت، العودة إلى نموذج المساعد الحالي
       for (const modelId of [conversationModelId, assistantModelId]) {
         if (!modelId) continue;
         for (const provider of settings.providers) {

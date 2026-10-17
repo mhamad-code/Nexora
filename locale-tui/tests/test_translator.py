@@ -25,24 +25,24 @@ def translator():
 
 @pytest.mark.asyncio
 async def test_prompt_translates_to_tishici(translator):
-    """'prompt' 在 AI/LLM 上下文中应翻译为'提示词'而非'提示'。"""
+    """'prompt' في AI/LLM في السياق يُترجم إلى'كلمة تلميح'بدلًا من'تلميح'."""
     result = await translator.translate_batch(
         {"system_prompt": "System Prompt", "prompt_template": "Prompt Template"},
         "Chinese (Simplified)",
     )
     assert "system_prompt" in result
     assert "prompt_template" in result
-    assert "提示词" in result["system_prompt"], (
-        f"Expected '提示词' in system_prompt translation, got: {result['system_prompt']!r}"
+    assert "كلمة تلميح" in result["system_prompt"], (
+        f"Expected 'كلمة تلميح' in system_prompt translation, got: {result['system_prompt']!r}"
     )
-    assert "提示词" in result["prompt_template"], (
-        f"Expected '提示词' in prompt_template translation, got: {result['prompt_template']!r}"
+    assert "كلمة تلميح" in result["prompt_template"], (
+        f"Expected 'كلمة تلميح' in prompt_template translation, got: {result['prompt_template']!r}"
     )
 
 
 @pytest.mark.asyncio
 async def test_placeholder_preserved(translator):
-    """Android 占位符 %1$s / %s 不应被翻译或修改。"""
+    """Android عنصر نائب %1$s / %s لا ينبغي ترجمته أو تعديله."""
     result = await translator.translate_batch(
         {"welcome_user": "Welcome, %1$s!", "items_count": "You have %d items"},
         "Chinese (Simplified)",
@@ -57,7 +57,7 @@ async def test_placeholder_preserved(translator):
 
 @pytest.mark.asyncio
 async def test_brand_name_not_translated(translator):
-    """品牌名 'OpenAI'、'Anthropic'、'Google' 不应被翻译。"""
+    """اسم العلامة التجارية 'OpenAI'،'Anthropic'،'Google' لا ينبغي ترجمته."""
     result = await translator.translate_batch(
         {"provider_openai": "OpenAI Provider", "provider_anthropic": "Anthropic Provider"},
         "Chinese (Simplified)",
@@ -72,7 +72,7 @@ async def test_brand_name_not_translated(translator):
 
 @pytest.mark.asyncio
 async def test_token_not_over_translated(translator):
-    """'Token' 在 LLM 上下文中应保留英文或译为 'Token'，不应译为'令牌'等无关词。"""
+    """'Token' في LLM في السياق احتفظ بالإنجليزية أو ترجم إلى 'Token'،لا يُترجم إلى'رمز مميز'كلمات غير ذات صلة مثل."""
     result = await translator.translate_batch(
         {"token_usage": "Token Usage", "max_tokens": "Max Tokens"},
         "Chinese (Simplified)",
@@ -86,7 +86,7 @@ async def test_token_not_over_translated(translator):
 
 @pytest.mark.asyncio
 async def test_keys_preserved_in_response(translator):
-    """返回 JSON 的 key 必须与输入一一对应。"""
+    """عودة JSON ـ key يجب أن تتطابق واحدًا لواحد مع الإدخال."""
     entries = {
         "setting_title": "Settings",
         "cancel_button": "Cancel",
@@ -100,7 +100,7 @@ async def test_keys_preserved_in_response(translator):
 
 @pytest.mark.asyncio
 async def test_non_empty_translations(translator):
-    """每个 key 翻译结果不能为空字符串。"""
+    """لكل key نتيجة الترجمة لا يمكن أن تكون سلسلة فارغة."""
     entries = {"app_name": "RikkaHub", "loading": "Loading..."}
     result = await translator.translate_batch(entries, "Chinese (Simplified)")
     for key, val in result.items():

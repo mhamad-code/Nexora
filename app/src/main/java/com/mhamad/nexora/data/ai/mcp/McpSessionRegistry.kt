@@ -357,7 +357,7 @@ internal class McpSessionRegistry(
                     session.client = null
                     session.connectedConfig = null
                     failedClient?.let { closeClient(it, session.config.commonOptions.name) }
-                    statusStore.update(configId, McpStatus.Error("连接断开，已达最大重连次数"))
+                    statusStore.update(configId, McpStatus.Error("انقطع الاتصال،تم الوصول إلى أقصى عدد محاولات إعادة الاتصال"))
                     return@withLock
                 }
 

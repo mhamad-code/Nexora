@@ -63,7 +63,7 @@ class SkillsVM(
                 val fileName = FileUtils.getFileNameFromUri(appContext, uri).orEmpty()
                 val bytes = appContext.contentResolver.openInputStream(uri)?.use { it.readBytes() }
                     ?: run {
-                        withContext(Dispatchers.Main) { onResult(false, "无法读取文件") }
+                        withContext(Dispatchers.Main) { onResult(false, "تعذر قراءة الملف") }
                         return@launch
                     }
 
@@ -78,7 +78,7 @@ class SkillsVM(
                     onResult(true, importedNames.joinToString())
                 }
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) { onResult(false, e.message ?: "未知错误") }
+                withContext(Dispatchers.Main) { onResult(false, e.message ?: "خطأ غير معروف") }
             }
         }
     }
@@ -87,7 +87,7 @@ class SkillsVM(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val info = parseGitHubUrl(repoUrl) ?: run {
-                    withContext(Dispatchers.Main) { onResult(false, "无效的 GitHub 仓库链接") }
+                    withContext(Dispatchers.Main) { onResult(false, "غير صالح GitHub رابط المستودع") }
                     return@launch
                 }
 
@@ -95,24 +95,24 @@ class SkillsVM(
                 val files = mutableListOf<Pair<String, String>>() // relativePath -> downloadUrl
                 val listed = listFilesRecursively(info.owner, info.repo, info.branch, info.path, info.path, files)
                 if (!listed) {
-                    withContext(Dispatchers.Main) { onResult(false, "读取 GitHub 目录失败") }
+                    withContext(Dispatchers.Main) { onResult(false, "قراءة GitHub فشل إنشاء الدليل") }
                     return@launch
                 }
 
                 val skillMdEntry = files.find { it.first == "SKILL.md" } ?: run {
-                    withContext(Dispatchers.Main) { onResult(false, "目录中未找到 SKILL.md") }
+                    withContext(Dispatchers.Main) { onResult(false, "لم يُعثر في الدليل SKILL.md") }
                     return@launch
                 }
 
                 val skillMdBytes = downloadBytes(skillMdEntry.second) ?: run {
-                    withContext(Dispatchers.Main) { onResult(false, "下载 SKILL.md 失败，请检查链接或网络") }
+                    withContext(Dispatchers.Main) { onResult(false, "تنزيل SKILL.md فشل،يرجى التحقق من الرابط أو الشبكة") }
                     return@launch
                 }
 
                 val frontmatter = SkillFrontmatterParser.parse(skillMdBytes.toString(Charsets.UTF_8))
                 val name = frontmatter["name"]
                 if (name.isNullOrBlank()) {
-                    withContext(Dispatchers.Main) { onResult(false, "SKILL.md 格式错误：缺少 name 字段") }
+                    withContext(Dispatchers.Main) { onResult(false, "SKILL.md تنسيق غير صحيح:ناقص name حقل") }
                     return@launch
                 }
 
@@ -120,7 +120,7 @@ class SkillsVM(
                 for ((relativePath, downloadUrl) in files) {
                     val content = if (relativePath == "SKILL.md") skillMdBytes else downloadBytes(downloadUrl)
                     if (content == null) {
-                        withContext(Dispatchers.Main) { onResult(false, "下载文件失败：$relativePath") }
+                        withContext(Dispatchers.Main) { onResult(false, "فشل تنزيل الملف:$relativePath") }
                         return@launch
                     }
                     fileContents[relativePath] = content
@@ -136,7 +136,7 @@ class SkillsVM(
                 withContext(Dispatchers.Main) { onResult(true, name) }
             } catch (e: Exception) {
                 e.printStackTrace()
-                withContext(Dispatchers.Main) { onResult(false, e.message ?: "未知错误") }
+                withContext(Dispatchers.Main) { onResult(false, e.message ?: "خطأ غير معروف") }
             }
         }
     }
@@ -146,12 +146,12 @@ class SkillsVM(
         val frontmatter = SkillFrontmatterParser.parse(content)
         val name = frontmatter["name"]?.trim()
         if (name.isNullOrBlank()) {
-            error("SKILL.md 格式错误：缺少 name 字段")
+            error("SKILL.md تنسيق غير صحيح:ناقص name حقل")
         }
         if (frontmatter["description"].isNullOrBlank()) {
-            error("SKILL.md 格式错误：缺少 description 字段")
+            error("SKILL.md تنسيق غير صحيح:ناقص description حقل")
         }
-        val saved = skillManager.saveSkill(name, content) ?: error("فشل الحفظ，请检查技能格式")
+        val saved = skillManager.saveSkill(name, content) ?: error("فشل الحفظ،يرجى التحقق من تنسيق المهارة")
         return listOf(saved.name)
     }
 
@@ -177,7 +177,7 @@ class SkillsVM(
             .filter { it.substringAfterLast('/').equals("SKILL.md", ignoreCase = true) }
             .sorted()
         if (skillMdPaths.isEmpty()) {
-            error("压缩包中未找到 SKILL.md")
+            error("غير موجود داخل الأرشيف المضغوط SKILL.md")
         }
         val skillBasePaths = skillMdPaths.map {
             it.substringBeforeLast('/', missingDelimiterValue = "")
@@ -186,14 +186,14 @@ class SkillsVM(
         val importedNames = mutableListOf<String>()
         for (skillMdPath in skillMdPaths) {
             val skillContent = files[skillMdPath]?.toString(Charsets.UTF_8)
-                ?: error("读取失败：$skillMdPath")
+                ?: error("فشل في القراءة:$skillMdPath")
             val frontmatter = SkillFrontmatterParser.parse(skillContent)
             val name = frontmatter["name"]?.trim()
             if (name.isNullOrBlank()) {
-                error("$skillMdPath 格式错误：缺少 name 字段")
+                error("$skillMdPath تنسيق غير صحيح:ناقص name حقل")
             }
             if (frontmatter["description"].isNullOrBlank()) {
-                error("$skillMdPath 格式错误：缺少 description 字段")
+                error("$skillMdPath تنسيق غير صحيح:ناقص description حقل")
             }
 
             val basePath = skillMdPath.substringBeforeLast('/', missingDelimiterValue = "")
@@ -211,7 +211,7 @@ class SkillsVM(
 
             val saved = skillManager.saveSkillFileBytesAtomically(name, skillFiles)
             if (!saved) {
-                error("فشل الحفظ：$name")
+                error("فشل الحفظ:$name")
             }
             importedNames += name
         }
@@ -318,7 +318,7 @@ class SkillsVM(
         return try {
             val code = connection.responseCode
             if ((code == 403 || code == 429) && connection.getHeaderField("X-RateLimit-Remaining") == "0") {
-                error("GitHub API 请求次数已达上限，请稍后再试")
+                error("GitHub API تم الوصول إلى الحد الأقصى لعدد الطلبات،يرجى المحاولة لاحقًا")
             }
             if (code == 200) connection.inputStream.use { it.readBytes() } else null
         } finally {

@@ -31,10 +31,10 @@ class QwenTTSProvider : TTSProvider<TTSProviderSetting.Qwen> {
         request: TTSRequest
     ): Flow<AudioChunk> = flow {
         require(!providerSetting.model.startsWith("qwen3-tts")) {
-            "旧版 Qwen3 TTS 模型已不再支持，请在 TTS الإعدادات中改用 qwen-audio-3.0-tts-plus 或 qwen-audio-3.0-tts-flash"
+            "الإصدار القديم Qwen3 TTS النموذج لم يعد مدعوماً،يرجى في TTS الإعداداتفيه استبدال الاستخدام بـ qwen-audio-3.0-tts-plus أو qwen-audio-3.0-tts-flash"
         }
         require(!providerSetting.baseUrl.contains("{WorkspaceId}")) {
-            "请在 Base URL 中将 {WorkspaceId} 替换为阿里云百炼业务空间 ID"
+            "يرجى في Base URL في المستقبل سيُستخدم {WorkspaceId} استبدال بمساحة أعمال Alibaba Cloud Bailian ID"
         }
 
         val requestBody = JSONObject().apply {

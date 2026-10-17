@@ -112,8 +112,8 @@ export function ExtensionPickerButton({
     () => safeStringArray(currentAssistant?.quickMessageIds),
     [currentAssistant?.quickMessageIds],
   );
-  // 会话开始后注入固定在会话上，开始前跟随助手。
-  // 旧会话在服务端固定配置之前 config 为空，此时仍然显示助手的，固定时会继承过去。
+  // حقن عناصر مثبتة على الجلسة بعد البدء،اتبع المساعد قبل البدء.
+  // الجلسة القديمة قبل التهيئة الثابتة على الخادم config فارغ،في هذه الأثناء لا يزال يعرض المساعد،عند التثبيت سيتم الوراثة من السابق.
   const conversationBound = conversation?.config != null;
   const conversationModeInjectionIds = conversation?.modeInjectionIds;
   const conversationLorebookIds = conversation?.lorebookIds;

@@ -215,7 +215,7 @@ export function useConversationList({
       })
       .catch((err: Error) => {
         if (!active || requestEpoch !== listRequestEpochRef.current) return;
-        setError(err.message || "加载会话失败");
+        setError(err.message || "فشل تحميل الجلسة");
       })
       .finally(() => {
         if (!active || requestEpoch !== listRequestEpochRef.current) return;

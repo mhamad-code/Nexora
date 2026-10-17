@@ -19,9 +19,9 @@ def empty():
     pass
 
 
-def 计算(值, 倍数=2):
+def حساب(قيمة, مضاعف=2):
     """Names may be written in any script."""
-    return 值 * 倍数
+    return قيمة * مضاعف
 
 
 class Base:
@@ -29,7 +29,7 @@ class Base:
 
 
 class Derived(Base):
-    标记 = "ok"
+    وسم = "ok"
 
 
 PLAIN = 'single'

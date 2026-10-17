@@ -57,7 +57,7 @@ private class RenderedInlineText(
 
 private val MATH_SOURCE_STYLE = SpanStyle(fontFamily = FontFamily.Monospace)
 
-private val QUOTE_PAIRS = mapOf('"' to '"', '“' to '”', '「' to '」', '『' to '』')
+private val QUOTE_PAIRS = mapOf('"' to '"', '"' to '"', '"' to '"', '『' to '』')
 
 private class InlineTextBuilder(
     private val context: MarkdownContext,

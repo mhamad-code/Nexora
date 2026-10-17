@@ -141,7 +141,7 @@ class MemoryRepositoryTest {
                 ---
                 name: mom
                 description: The user's mother and her move to Chengdu
-                aliases: [妈妈, mother]
+                aliases: [أم, mother]
                 ---
 
                 - [stated] Lives in Chengdu
@@ -149,7 +149,7 @@ class MemoryRepositoryTest {
         )
 
         assertEquals("The user's mother and her move to Chengdu", file.description)
-        assertEquals(listOf("妈妈", "mother"), file.aliases)
+        assertEquals(listOf("أم", "mother"), file.aliases)
     }
 
     @Test
@@ -177,13 +177,13 @@ class MemoryRepositoryTest {
     fun `titles are derived from the file name`() = runBlocking {
         assertEquals("Frontend Tooling", create("/topics/frontend-tooling.md", "content").title)
         assertEquals("Profile", create("/profile.md", "content").title)
-        assertEquals("妈妈", create("/people/妈妈.md", "content").title)
+        assertEquals("أم", create("/people/أم.md", "content").title)
     }
 
     @Test
     fun `a title in the frontmatter takes precedence over the file name`() = runBlocking {
-        val food = create("/topics/food.md", "---\nname: food\ntitle: 饮食\n---\n\n- [stated] Likes noodles\n")
-        assertEquals("饮食", food.title)
+        val food = create("/topics/food.md", "---\nname: food\ntitle: نظام غذائي\n---\n\n- [stated] Likes noodles\n")
+        assertEquals("نظام غذائي", food.title)
         assertEquals("Books", create("/topics/books.md", "---\nname: books\ntitle: \"\"\n---\n").title)
     }
 

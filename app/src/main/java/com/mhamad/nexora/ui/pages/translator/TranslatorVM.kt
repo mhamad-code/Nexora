@@ -109,7 +109,7 @@ class TranslatorVM(
                     targetLanguage = targetLanguage
                 ) { translatedText ->
                     _translatedText.value = translatedText
-                }.collect { /* 结果已经在 onStreamUpdate 里更新 */ }
+                }.collect { /* النتيجة موجودة بالفعل في onStreamUpdate التحديث داخل */ }
 
                 val result = _translatedText.value
                 if (result.isNotBlank()) {

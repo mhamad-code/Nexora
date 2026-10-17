@@ -58,7 +58,7 @@ const TOOL_NAMES = {
   ASK_USER: "ask_user",
 } as const;
 
-// 记忆库工具：按文件读写
+// أداة مخزن الذاكرة:قراءة/كتابة حسب الملف
 const MEMORY_FILE_TOOLS = {
   READ: "memory_read",
   WRITE: "memory_write",

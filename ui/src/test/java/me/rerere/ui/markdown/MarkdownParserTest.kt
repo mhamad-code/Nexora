@@ -149,9 +149,9 @@ class MarkdownParserTest {
         val table = single<Table>(
             """
             <table style="font-size: 12px">
-              <tr><th align="center">状态</th><th>数量</th></tr>
-              <tr align="right"><td style="color: red; font-weight: bold">异常</td><td style="text-align: left">3</td></tr>
-              <tr><td>正常</td><td>5</td></tr>
+              <tr><th align="center">الحالة</th><th>الكمية</th></tr>
+              <tr align="right"><td style="color: red; font-weight: bold">استثناء</td><td style="text-align: left">3</td></tr>
+              <tr><td>طبيعي</td><td>5</td></tr>
             </table>
             """
         )
@@ -159,7 +159,7 @@ class MarkdownParserTest {
         assertNull(table.source)
 
         val (error, count) = table.rows[0]
-        assertEquals("异常", error.content.plainText())
+        assertEquals("استثناء", error.content.plainText())
         assertEquals(Color.Red, error.style!!.color)
         assertEquals(FontWeight.Bold, error.style!!.fontWeight)
         assertEquals(TextAlign.End, error.style!!.textAlign)

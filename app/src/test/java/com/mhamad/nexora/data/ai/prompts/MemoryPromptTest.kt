@@ -14,7 +14,7 @@ class MemoryPromptTest {
             ---
             name: food
             description: What the user eats and avoids
-            aliases: [diet, 饮食]
+            aliases: [diet, نظام غذائي]
             ---
 
             - [stated] Allergic to peanuts
@@ -32,7 +32,7 @@ class MemoryPromptTest {
         assertEquals("- [stated] Name is Lin", prompt.block("profile"))
 
         val listing = prompt.block("memory_listing")
-        assertTrue(listing.startsWith("/topics/food.md | What the user eats and avoids | aliases: diet, 饮食 | updated: "))
+        assertTrue(listing.startsWith("/topics/food.md | What the user eats and avoids | aliases: diet, نظام غذائي | updated: "))
         assertFalse(listing.contains(MemoryFile.PROFILE_PATH))
         assertFalse(prompt.contains("Allergic to peanuts"))
     }

@@ -5,7 +5,7 @@
 ## Overview
 
 Color spaces are used to describe color. A color does not change when moved
-between color spaces. Using different “distance spaces” like kilometers, or
+between color spaces. Using different "distance spaces" like kilometers, or
 miles, does not change where you are - it just changes the measure of where you
 are.
 
@@ -74,7 +74,7 @@ color space is crucial for creating color schemes, blending colors, and handling
 disliked colors.
 
 Note that while HCT is infinite, it can describe colors like H26 C231 T100.
-However, that color isn’t “real.” There is no such color as a red (H26) that is
+However, that color isn’t "real." There is no such color as a red (H26) that is
 *extremely* colorful (C231) and the same brightness as white (T100). When it is
 converted to RGB to be displayed, HCT keeps the tone, and reduces chroma until
 the color is feasible.

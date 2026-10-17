@@ -261,7 +261,7 @@ private fun DataTablePreview() {
             listOf(
                 { Text("Fall 2024") },
                 { Text("Fair", style = MaterialTheme.typography.bodyMedium) },
-                { Text("这行更高会把整行拉齐! 这是一个很长的文本用来测试换行功能!\nhaha") },
+                { Text("زيادة ارتفاع هذا السطر ستجعل السطر بالكامل مصطفًا! هذا نص طويل لاختبار ميزات انكسار الأسطر!\nhaha") },
             ),
         )
 

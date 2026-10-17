@@ -67,16 +67,16 @@ class WorkspaceDetailVM(
                                 entry.name.substringAfterLast('.', "").lowercase()
                             ) ?: "application/octet-stream"
                             val document = DocumentsContract.createDocument(resolver, parent, mime, entry.name)
-                                ?: error("无法创建目标文件")
+                                ?: error("تعذر إنشاء ملف الهدف")
                             destination = document
-                            val output = resolver.openOutputStream(document) ?: error("无法打开目标文件")
+                            val output = resolver.openOutputStream(document) ?: error("تعذر فتح ملف الهدف")
                             output.use { repository.exportFile(id, area, entry.path, it) }
                             succeeded++
                             destination = null
                         } catch (error: CancellationException) {
                             throw error
                         } catch (error: Exception) {
-                            failures += "${entry.name}：${error.message ?: "导出失败"}"
+                            failures += "${entry.name}:${error.message ?: "فشل التصدير"}"
                         } finally {
                             destination?.let { runCatching { DocumentsContract.deleteDocument(resolver, it) } }
                         }
@@ -85,14 +85,14 @@ class WorkspaceDetailVM(
                 }
                 _state.update {
                     it.copy(exportResult = buildString {
-                        append("已导出 $succeeded/${entries.size} 个文件")
+                        append("تم التصدير $succeeded/${entries.size} ملف")
                         if (failures.isNotEmpty()) append("\n\n" + failures.joinToString("\n"))
                     })
                 }
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Exception) {
-                _state.update { it.copy(exportResult = "导出失败：${error.message}") }
+                _state.update { it.copy(exportResult = "فشل التصدير:${error.message}") }
             } finally {
                 _state.update { it.copy(exporting = false) }
             }
@@ -167,7 +167,7 @@ class WorkspaceDetailVM(
                     it.copy(
                         entries = emptyList(),
                         loading = false,
-                        error = error.message ?: "加载工作区文件失败",
+                        error = error.message ?: "فشل تحميل ملف مساحة العمل",
                     )
                 }
             }
@@ -204,7 +204,7 @@ class WorkspaceDetailVM(
             }.onSuccess {
                 refresh()
             }.onFailure { error ->
-                _state.update { it.copy(error = error.message ?: "导入文件失败") }
+                _state.update { it.copy(error = error.message ?: "فشل استيراد الملف") }
             }
         }
     }
@@ -219,7 +219,7 @@ class WorkspaceDetailVM(
                     outputStream = outputStream,
                 )
             }.onFailure { error ->
-                _state.update { it.copy(error = error.message ?: "导出文件失败") }
+                _state.update { it.copy(error = error.message ?: "فشل تصدير الملف") }
             }
         }
     }
@@ -246,7 +246,7 @@ class WorkspaceDetailVM(
                 }
                 file
             }.onSuccess(onReady).onFailure { error ->
-                _state.update { it.copy(error = error.message ?: "导出文件失败") }
+                _state.update { it.copy(error = error.message ?: "فشل تصدير الملف") }
             }
         }
     }
@@ -288,7 +288,7 @@ class WorkspaceDetailVM(
             } catch (e: CancellationException) {
                 throw e
             } catch (error: Throwable) {
-                _installError.value = error.message ?: "Rootfs 安装失败"
+                _installError.value = error.message ?: "Rootfs فشل التثبيت"
             } finally {
                 _installProgress.value = null
             }
@@ -328,7 +328,7 @@ class WorkspaceDetailVM(
                 _terminalState.update {
                     it.copy(
                         running = false,
-                        history = it.history + WorkspaceTerminalEntry.Error(error.message ?: "命令执行失败"),
+                        history = it.history + WorkspaceTerminalEntry.Error(error.message ?: "فشل تنفيذ الأمر"),
                     )
                 }
             }

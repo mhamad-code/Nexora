@@ -370,15 +370,15 @@ private fun CardGroupPreview() {
                 title = { Text("About") },
             ) {
                 item(
-                    headlineContent = { Text("第一项") },
+                    headlineContent = { Text("البند الأول") },
                 )
                 item(
-                    headlineContent = { Text("第二项") },
-                    supportingContent = { Text("支持文本") },
+                    headlineContent = { Text("البند الثاني") },
+                    supportingContent = { Text("دعم النص") },
                 )
                 item(
                     onClick = {},
-                    headlineContent = { Text("第三项") },
+                    headlineContent = { Text("البند الثالث") },
                     trailingContent = { Text("→") },
                 )
             }

@@ -72,7 +72,7 @@ fun WorkspaceFileEditorPage(
             textState.setTextAndPlaceCursorAtEnd(content)
             loading = false
         }.onFailure {
-            loadError = it.message ?: "读取文件失败"
+            loadError = it.message ?: "فشل في قراءة الملف"
             loading = false
         }
     }
@@ -91,7 +91,7 @@ fun WorkspaceFileEditorPage(
                 actions = {
                     if (supportsPreview && !loading && loadError == null) {
                         TextButton(onClick = { showPreview = !showPreview }) {
-                            Text(if (showPreview) "源码" else "预览")
+                            Text(if (showPreview) "كود المصدر" else "معاينة")
                         }
                     }
                     if (editable && !loading && loadError == null) {
@@ -108,7 +108,7 @@ fun WorkspaceFileEditorPage(
                                             overwrite = true,
                                         )
                                     }.onSuccess {
-                                        toaster.show("已保存", type = ToastType.Success)
+                                        toaster.show("تم الحفظ", type = ToastType.Success)
                                     }.onFailure {
                                         toaster.show(it.message ?: "فشل الحفظ", type = ToastType.Error)
                                     }

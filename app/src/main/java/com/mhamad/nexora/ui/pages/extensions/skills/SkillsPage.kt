@@ -409,7 +409,7 @@ private fun AddSkillDialog(
                 label = { Text(stringResource(R.string.skills_page_skill_content_label)) },
                 placeholder = {
                     Text(
-                        "---\nname: my-skill\ndescription: \"...\"\n---\n\n指令内容...",
+                        "---\nname: my-skill\ndescription: \"...\"\n---\n\nمحتوى الأمر...",
                         fontFamily = FontFamily.Monospace,
                     )
                 },

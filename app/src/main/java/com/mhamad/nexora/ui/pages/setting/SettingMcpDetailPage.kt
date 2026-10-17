@@ -709,7 +709,7 @@ private fun McpToolCard(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     Text(
-                        text = "启用",
+                        text = "تمكين",
                         style = MaterialTheme.typography.labelSmall,
                     )
                     Switch(

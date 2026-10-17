@@ -73,7 +73,7 @@ internal class McpOAuthDiscoveryClient(
                     return@withContext metadata
                 }
             }
-            error("تعذر اكتشاف خادم المصادقة元数据 (authorization server metadata): $issuer")
+            error("تعذر اكتشاف خادم المصادقةبيانات وصفية (authorization server metadata): $issuer")
         }
 
     private suspend fun probeResourceMetadataUrl(serverUrl: String): String? {

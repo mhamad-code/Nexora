@@ -68,7 +68,7 @@ class UpdateChecker(
         runCatching {
             val request = DownloadManager.Request(download.url.toUri()).apply {
                 setTitle(download.name)
-                setDescription("正在下载更新包...")
+                setDescription("جارٍ تنزيل حزمة التحديث...")
                 setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                 setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
                 setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, download.name)

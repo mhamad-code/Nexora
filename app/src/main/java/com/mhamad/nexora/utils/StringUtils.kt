@@ -108,7 +108,7 @@ fun String.extractQuotedContent(): List<String> {
         "\u2018([^\u2019]*?)\u2019",
         """"([^"]*?)"""",
         """'([^']*?)'""",
-        """「([^」]*?)」""",
+        """"([^"]*?)"""",
         """『([^』]*?)』""",
     )
     for (pattern in patterns) {
@@ -137,7 +137,7 @@ fun String.extractQuotedContentAsText(separator: String = "\n"): String? {
 /**
  */
 fun String.removeBracketedContent(): String? {
-    val pattern = """\([^)]*?\)|（[^）]*?）""".toRegex()
+    val pattern = """\([^)]*?\)|([^)]*?)""".toRegex()
     val result = pattern.replace(this, "").trim()
     return result.ifBlank { null }
 }

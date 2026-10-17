@@ -46,7 +46,7 @@ class AwsSignatureV4Test {
     fun `presigned url keeps the bucket in the path for path style and encodes the key`() {
         val url = AwsSignatureV4.presignGetUrl(
             config = awsExample.copy(endpoint = "https://s3.example.com:9000/", pathStyle = true),
-            path = "/rikkahub_media/参考 视频.mp4",
+            path = "/rikkahub_media/مرجع فيديو.mp4",
             expires = 1.hours,
             now = awsExampleTime,
         )

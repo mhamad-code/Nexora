@@ -3,177 +3,177 @@ comment	#!/usr/bin/env python3
 comment	# type: ignore
 	\n
 string	"""Doctests, string prefixes and every numeric literal.\n\n
-meta	>>> 
+meta	>>>
 string	add(1, 2)\n3\n
-meta	... 
+meta	...
 string	still the same prompt\n"""
 	\n\n
 keyword	import
 	 re\n\n\n
 keyword	def
-	 
+
 title.function	add
 	(
 params	left, right
-	):\n    
+	):\n
 comment	# type: (
 built_in	int
-comment	, 
+comment	,
 built_in	int
-comment	) -> 
+comment	) ->
 built_in	int
-	\n    
+	\n
 keyword	return
 	 left + right\n\n\n
 keyword	def
-	 
+
 title.function	empty
-	():\n    
+	():\n
 keyword	pass
 	\n\n\n
 keyword	def
-	 
-title.function	计算
+
+title.function	حساب
 	(
-params	值, 倍数=
+params	قيمة, مضاعف=
 number	2
-	):\n    
+	):\n
 string	"""Names may be written in any script."""
-	\n    
+	\n
 keyword	return
-	 值 * 倍数\n\n\n
+	 قيمة * مضاعف\n\n\n
 keyword	class
-	 
+
 title.class	Base
-	:\n    
+	:\n
 keyword	pass
 	\n\n\n
 keyword	class
-	 
+
 title.class	Derived
 	(
 title.class.inherited	Base
-	):\n    标记 = 
+	):\n    وسم =
 string	"ok"
-	\n\n\nPLAIN = 
+	\n\n\nPLAIN =
 string	'single'
-	\nUNICODE = 
+	\nUNICODE =
 string	u"unicode"
-	\nRAW = 
+	\nRAW =
 string	r"raw\\nnot escaped"
-	\nBYTES = 
+	\nBYTES =
 string	b'bytes'
-	\nRAW_BYTES = 
+	\nRAW_BYTES =
 string	br'\\x00'
-	\nBYTES_RAW = 
+	\nBYTES_RAW =
 string	rb"\\x00"
-	\nFSTRING = 
+	\nFSTRING =
 string	f"
 subst	{PLAIN}
 string	 and {{literal}}"
-	\nFRAW = 
+	\nFRAW =
 string	rf'
 subst	{PLAIN}
 string	'
-	\nFRAW2 = 
+	\nFRAW2 =
 string	fr"
 subst	{PLAIN}
 string	"
-	\nBLOCK = 
+	\nBLOCK =
 string	'''triple\nsingle'''
-	\nFBLOCK = 
+	\nFBLOCK =
 string	f"""\n
 subst	{PLAIN}
 string	 {{brace}}\n"""
-	\n\nDEC = 
+	\n\nDEC =
 number	1_000_000
-	\nZEROS = 
+	\nZEROS =
 number	0000
-	\nHEX = 
+	\nHEX =
 number	0xCAFE_BABE
-	\nOCT = 
+	\nOCT =
 number	0o755
-	\nBIN = 
+	\nBIN =
 number	0b1010_1010
-	\nLONG = 
+	\nLONG =
 number	42L
-	\nIMAG = 
+	\nIMAG =
 number	3.5j
-	\nIMAG2 = 
+	\nIMAG2 =
 number	12j
-	\nEXP = 
+	\nEXP =
 number	1_0.5e-3
-	\nPOINT = 
+	\nPOINT =
 number	.5
-	\nTRAILING = 
+	\nTRAILING =
 number	10.
 	\nNEG = -
 number	0.5e+10
 	\n\n\n
 keyword	def
-	 
+
 title.function	classify
 	(
 params	value
-	):\n    
+	):\n
 keyword	match
-	 value:\n        
+	 value:\n
 keyword	case
-	 
+
 number	0
-	:\n            
+	:\n
 keyword	return
-	 
+
 string	"zero"
-	\n        
+	\n
 keyword	case
-	 [first, *rest]:\n            
+	 [first, *rest]:\n
 keyword	return
-	 first\n        
+	 first\n
 keyword	case
-	 _:\n            
+	 _:\n
 keyword	return
 	 value\n\n\n
 keyword	def
-	 
+
 title.function	counter
-	():\n    total = 
+	():\n    total =
 number	0
-	\n\n    
+	\n\n
 keyword	def
-	 
+
 title.function	bump
 	(
 params	step=
 number	1
-	):\n        
+	):\n
 keyword	nonlocal
-	 total\n        total += step\n        
+	 total\n        total += step\n
 keyword	return
-	 total\n\n    
+	 total\n\n
 keyword	return
-	 bump\n\n\nsquare = 
+	 bump\n\n\nsquare =
 keyword	lambda
-	 n: n * n\npairs = {name: 
+	 n: n * n\npairs = {name:
 built_in	len
-	(name) 
+	(name)
 keyword	for
-	 name 
+	 name
 keyword	in
 	 (
 string	"a"
-	, 
+	,
 string	"bb"
 	)}\nmatched = re.
 keyword	match
 	(
 string	"^a+"
-	, 
+	,
 string	"aaa"
-	) 
+	)
 keyword	is
-	 
+
 keyword	not
-	 
+
 literal	None
 	\n

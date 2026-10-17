@@ -33,12 +33,12 @@ class MediaGenerationProviderSettingTest {
         val setting = MediaGenerationProviderSetting.OpenAI(apiKey = "sk-test")
         val models = setting.models + MediaGenerationModel(modelId = "gpt-image-1", kind = MediaKind.IMAGE)
 
-        val copy = setting.copyProvider(name = "中转", models = models)
+        val copy = setting.copyProvider(name = "ترانزيت", models = models)
 
         assertTrue(copy is MediaGenerationProviderSetting.OpenAI)
         assertEquals(setting.id, copy.id)
         assertEquals("sk-test", copy.apiKey)
-        assertEquals("中转", copy.name)
+        assertEquals("ترانزيت", copy.name)
         assertEquals(
             listOf("gpt-image-2.5-sunburst", "gpt-image-2.5-flare", "gpt-image-1"),
             copy.models.map { it.modelId }

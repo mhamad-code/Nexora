@@ -72,7 +72,7 @@ import kotlin.time.Clock
 private const val TAG = "InteractionsAPI"
 
 /**
- * Gemini Interactions API (`POST /v1beta/interactions`)。
+ * Gemini Interactions API (`POST /v1beta/interactions`).
  *
  */
 internal class InteractionsAPI(

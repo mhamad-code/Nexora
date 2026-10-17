@@ -10,7 +10,7 @@ class TextChunker(
         if (text.isBlank()) return emptyList()
 
         val paragraphs = text.split("\n\n")
-        val punctuationRegex = "(?<=[。！？，、：;.!?:,\n])".toRegex()
+        val punctuationRegex = "(?<=[.!؟،،:;.!?:,\n])".toRegex()
 
         val chunks = paragraphs.flatMap { paragraph ->
             if (paragraph.isBlank()) emptyList() else {

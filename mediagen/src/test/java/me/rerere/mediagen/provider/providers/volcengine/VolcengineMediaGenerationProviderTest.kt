@@ -48,7 +48,7 @@ class VolcengineMediaGenerationProviderTest {
         val textOnly = generation.buildBody(
             model = seedream,
             request = MediaGenerationRequest(
-                prompt = "一只猫",
+                prompt = "قط",
                 count = 1,
                 resolution = "2K",
                 watermark = false,
@@ -59,7 +59,7 @@ class VolcengineMediaGenerationProviderTest {
             ),
         )
         assertEquals(JsonPrimitive("doubao-seedream-5-0-pro-260628"), textOnly["model"])
-        assertEquals(JsonPrimitive("一只猫"), textOnly["prompt"])
+        assertEquals(JsonPrimitive("قط"), textOnly["prompt"])
         assertEquals(JsonPrimitive("2K"), textOnly["size"])
         assertEquals(JsonPrimitive(false), textOnly["watermark"])
         assertEquals(JsonPrimitive("png"), textOnly["output_format"])
@@ -67,14 +67,14 @@ class VolcengineMediaGenerationProviderTest {
 
         val single = generation.buildBody(
             seedream,
-            MediaGenerationRequest(prompt = "换背景", inputs = listOf(MediaGenerationInput.Image(local.absolutePath))),
+            MediaGenerationRequest(prompt = "تغيير الخلفية", inputs = listOf(MediaGenerationInput.Image(local.absolutePath))),
         )
         assertEquals(JsonPrimitive("data:image/png;base64,cG5n"), single["image"])
 
         val multiple = generation.buildBody(
             seedream,
             MediaGenerationRequest(
-                prompt = "融合",
+                prompt = "دمج",
                 inputs = listOf(
                     MediaGenerationInput.Image("https://example.com/a.png"),
                     MediaGenerationInput.Image("file://${local.absolutePath}"),
@@ -196,7 +196,7 @@ class VolcengineMediaGenerationProviderTest {
         val body = VolcengineVideoGeneration(client).buildCreateBody(
             model = MediaGenerationModel(modelId = "seedance-test", kind = MediaKind.VIDEO),
             request = MediaGenerationRequest(
-                prompt = "参考图和音频生成视频",
+                prompt = "توليد فيديو من الصور المرجعية والصوت",
                 inputs = listOf(
                     MediaGenerationInput.Image("https://example.com/ref.png"),
                     MediaGenerationInput.Audio("https://example.com/ref.mp3"),

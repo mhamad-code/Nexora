@@ -501,7 +501,7 @@ private fun MediaGenerationStatus.toCreationStatus(current: MediaCreationStatus)
 }
 
 private fun MediaGenerationTask.failureMessage(context: Context): String {
-    val reason = error?.let { error -> listOfNotNull(error.code, error.message).joinToString("：") }
+    val reason = error?.let { error -> listOfNotNull(error.code, error.message).joinToString(":") }
     return reason?.takeIf(String::isNotBlank) ?: when (status) {
         MediaGenerationStatus.CANCELLED -> context.getString(R.string.media_creation_error_cancelled_remotely)
         MediaGenerationStatus.EXPIRED -> context.getString(R.string.media_creation_error_expired)
