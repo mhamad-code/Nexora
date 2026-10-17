@@ -67,7 +67,7 @@ export function McpPickerButton({
     [enabledServers],
   );
 
-  // 会话开始后以会话上固定的 MCP 服务器为准
+  // بعد بدء الجلسة، اعتمد المثبت على الجلسة MCP الخادم هو المرجع
   const selectedServers = conversation?.config
     ? conversation.config.mcpServers
     : currentAssistant?.mcpServers;

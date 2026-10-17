@@ -23,19 +23,19 @@ def load_config() -> Config:
     config_path = Path(__file__).parent.parent / "config.yml"
 
     if not config_path.exists():
-        click.echo(f"错误：未找到配置文件 {config_path}", err=True)
-        click.echo("请基于模板创建 config.yml 文件。", err=True)
+        click.echo(f"خطأ:ملف التكوين غير موجود {config_path}", err=True)
+        click.echo("يرجى الإنشاء استنادًا إلى القالب config.yml ملف.", err=True)
         sys.exit(1)
 
     try:
         config = Config.load(config_path)
     except Exception as e:
-        click.echo(f"错误：加载配置失败 - {e}", err=True)
+        click.echo(f"خطأ:فشل تحميل التكوين - {e}", err=True)
         sys.exit(1)
 
     # Validate configuration
     if not config.openai_api_key:
-        click.echo("警告：未设置 OPENAI_API_KEY。AI 翻译功能将无法使用。", err=True)
+        click.echo("تحذير:غير مُعد OPENAI_API_KEY.AI ميزة الترجمة لن تكون متاحة.", err=True)
 
     return config
 
@@ -43,9 +43,9 @@ def load_config() -> Config:
 @click.group(invoke_without_command=True)
 @click.pass_context
 def cli(ctx):
-    """Android Locale Manager - 管理和翻译 Android 字符串资源
+    """Android Locale Manager - إدارة وترجمة Android مصدر السلسلة
 
-    不带参数启动 TUI 界面，使用子命令进行命令行操作。
+    تشغيل بدون معلمات TUI واجهة،استخدم الأوامر الفرعية للعمل من سطر الأوامر.
     """
     if ctx.invoked_subcommand is None:
         # No command provided, launch TUI
@@ -56,22 +56,22 @@ def cli(ctx):
 
 @cli.command("test-connection")
 def test_connection():
-    """测试 AI 服务连接
+    """اختبار AI اتصال الخدمة
 
     \b
-    示例：
+    مثال:
         locale-tui test-connection
     """
     config = load_config()
 
     if not config.openai_api_key:
-        click.echo("错误：未设置 OPENAI_API_KEY，无法测试连接。", err=True)
+        click.echo("خطأ:غير مُعد OPENAI_API_KEY،تعذر اختبار الاتصال.", err=True)
         sys.exit(1)
 
-    click.echo("AI 服务配置：")
+    click.echo("AI تكوين الخدمة:")
     click.echo(f"  Base URL: {config.openai_base_url}")
     click.echo(f"  Model: {config.translation_model}")
-    click.echo("正在测试连接...")
+    click.echo("جارٍ اختبار الاتصال...")
 
     async def test_async():
         translator = AITranslator(config)
@@ -79,13 +79,13 @@ def test_connection():
 
     try:
         content = asyncio.run(test_async())
-        click.echo("✓ 连接成功")
+        click.echo("✓ تم الاتصال بنجاح")
         if content:
-            click.echo(f"响应: {content}")
+            click.echo(f"استجابة: {content}")
         else:
-            click.echo("响应为空，但 API 已返回有效结果。")
+            click.echo("الاستجابة فارغة،لكن API تم إرجاع نتيجة صالحة.")
     except Exception as e:
-        click.echo(f"✗ 连接失败: {e}", err=True)
+        click.echo(f"✗ فشل الاتصال: {e}", err=True)
         sys.exit(1)
 
 
@@ -96,14 +96,14 @@ def test_connection():
     "--module",
     "-m",
     default=None,
-    help="模块名称（默认使用配置文件中的第一个模块）",
+    help="اسم الوحدة(يستخدم افتراضيًا الوحدة الأولى في ملف التعريف)",
 )
-@click.option("--skip-translate", is_flag=True, help="跳过自动翻译，仅添加源语言条目")
+@click.option("--skip-translate", is_flag=True, help="تخطي الترجمة التلقائية،أضف فقط مدخلات اللغة المصدر")
 def add(key: str, value: str, module: str, skip_translate: bool):
-    """添加新的语言条目并自动翻译
+    """إضافة مدخل لغوي جديد وترجمته تلقائياً
 
     \b
-    示例：
+    مثال:
         locale-tui add hello_world "Hello, World!"
         locale-tui add greeting "Welcome" -m app
         locale-tui add test_key "Test" --skip-translate
@@ -114,38 +114,38 @@ def add(key: str, value: str, module: str, skip_translate: bool):
     if module:
         selected_module = next((m for m in config.modules if m.name == module), None)
         if not selected_module:
-            click.echo(f"错误：未找到模块 '{module}'", err=True)
-            click.echo(f"可用模块：{', '.join(m.name for m in config.modules)}", err=True)
+            click.echo(f"خطأ:الموديل غير موجود '{module}'", err=True)
+            click.echo(f"وحدات متاحة:{', '.join(m.name for m in config.modules)}", err=True)
             sys.exit(1)
     else:
         if not config.modules:
-            click.echo("错误：配置文件中未定义模块", err=True)
+            click.echo("خطأ:الوحدة غير معرّفة في ملف التكوين", err=True)
             sys.exit(1)
         selected_module = config.modules[0]
 
-    click.echo(f"使用模块: {selected_module.name}")
+    click.echo(f"استخدام الوحدة: {selected_module.name}")
 
     # Get source language
     source_lang = config.get_source_language()
     if not source_lang:
-        click.echo("错误：未配置源语言", err=True)
+        click.echo("خطأ:لم يتم تكوين لغة المصدر", err=True)
         sys.exit(1)
 
     # Resolve res directory
     res_dir = config.project_root / selected_module.res_path
     if not res_dir.exists():
-        click.echo(f"错误：资源目录不存在 {res_dir}", err=True)
+        click.echo(f"خطأ:دليل الموارد غير موجود {res_dir}", err=True)
         sys.exit(1)
 
     # Add entry to source language file
     source_file = res_dir / "values" / "strings.xml"
-    click.echo(f"添加条目到 {source_file.relative_to(config.project_root)}...")
+    click.echo(f"أضف مدخلاً إلى {source_file.relative_to(config.project_root)}...")
 
     try:
         StringsXmlParser.update_entry(source_file, key, value)
-        click.echo(f"✓ 已添加条目: {key} = {value}")
+        click.echo(f"✓ تمت إضافة مدخل: {key} = {value}")
     except Exception as e:
-        click.echo(f"错误：添加条目失败 - {e}", err=True)
+        click.echo(f"خطأ:فشل إضافة المدخل - {e}", err=True)
         sys.exit(1)
 
     # Translate to other languages
@@ -153,10 +153,10 @@ def add(key: str, value: str, module: str, skip_translate: bool):
         target_languages = [lang.code for lang in config.languages if not lang.is_source]
 
         if not target_languages:
-            click.echo("未配置目标语言，跳过翻译。")
+            click.echo("لم يتم تكوين لغة الهدف،تخطي الترجمة.")
             return
 
-        click.echo(f"开始翻译到 {len(target_languages)} 种语言...")
+        click.echo(f"ابدأ الترجمة إلى {len(target_languages)} لغات...")
 
         # Create entry for translation
         entry = TranslationEntry(key=key, translations={"values": value})
@@ -174,7 +174,7 @@ def add(key: str, value: str, module: str, skip_translate: bool):
 
                     if key in translations:
                         return lang_code, lang_name, translations[key], None
-                    return lang_code, lang_name, None, "翻译失败（未返回结果）"
+                    return lang_code, lang_name, None, "فشل الترجمة(لم تُرجع نتيجة)"
                 except Exception as e:
                     return lang_code, lang_name, None, str(e)
 
@@ -182,10 +182,10 @@ def add(key: str, value: str, module: str, skip_translate: bool):
             results = await asyncio.gather(*tasks)
 
             for lang_code, lang_name, translated_value, error in results:
-                click.echo(f"翻译到 {lang_name}...", nl=False)
+                click.echo(f"ترجم إلى {lang_name}...", nl=False)
 
                 if error:
-                    click.echo(f" ✗ 错误: {error}", err=True)
+                    click.echo(f" ✗ خطأ: {error}", err=True)
                     continue
 
                 entry.set_translation(lang_code, translated_value)
@@ -197,7 +197,7 @@ def add(key: str, value: str, module: str, skip_translate: bool):
                 click.echo(f" ✓ {translated_value}")
 
         asyncio.run(translate_async())
-        click.echo("完成！")
+        click.echo("مكتمل!")
 
 
 @cli.command()
@@ -207,20 +207,20 @@ def add(key: str, value: str, module: str, skip_translate: bool):
     "--lang",
     "-l",
     default=None,
-    help="语言代码（例如：values, values-zh, values-ja），默认为源语言",
+    help="رمز اللغة(مثال:values, values-zh, values-ja)،الافتراضي هو لغة المصدر",
 )
 @click.option(
     "--module",
     "-m",
     default=None,
-    help="模块名称（默认使用配置文件中的第一个模块）",
+    help="اسم الوحدة(يستخدم افتراضيًا الوحدة الأولى في ملف التعريف)",
 )
 def set(key: str, value: str, lang: str, module: str):
-    """手动设置指定语言的条目值
+    """تعيين يدوي لقيمة عنصر بلغة محددة
 
     \b
-    示例：
-        locale-tui set hello_world "你好，世界！" -l values-zh
+    مثال:
+        locale-tui set hello_world "مرحبًا،العالم!" -l values-zh
         locale-tui set greeting "Welcome" -l values
         locale-tui set test_key "テスト" -l values-ja -m app
     """
@@ -230,12 +230,12 @@ def set(key: str, value: str, lang: str, module: str):
     if module:
         selected_module = next((m for m in config.modules if m.name == module), None)
         if not selected_module:
-            click.echo(f"错误：未找到模块 '{module}'", err=True)
-            click.echo(f"可用模块：{', '.join(m.name for m in config.modules)}", err=True)
+            click.echo(f"خطأ:الموديل غير موجود '{module}'", err=True)
+            click.echo(f"وحدات متاحة:{', '.join(m.name for m in config.modules)}", err=True)
             sys.exit(1)
     else:
         if not config.modules:
-            click.echo("错误：配置文件中未定义模块", err=True)
+            click.echo("خطأ:الوحدة غير معرّفة في ملف التكوين", err=True)
             sys.exit(1)
         selected_module = config.modules[0]
 
@@ -246,21 +246,21 @@ def set(key: str, value: str, lang: str, module: str):
     # Resolve res directory
     res_dir = config.project_root / selected_module.res_path
     if not res_dir.exists():
-        click.echo(f"错误：资源目录不存在 {res_dir}", err=True)
+        click.echo(f"خطأ:دليل الموارد غير موجود {res_dir}", err=True)
         sys.exit(1)
 
     # Target file
     target_file = res_dir / lang / "strings.xml"
-    lang_name = config.get_language_name(lang) if lang != "values" else "源语言"
+    lang_name = config.get_language_name(lang) if lang != "values" else "لغة المصدر"
 
-    click.echo(f"设置 {lang_name} 的条目: {key} = {value}")
-    click.echo(f"目标文件: {target_file.relative_to(config.project_root)}")
+    click.echo(f"إعداد {lang_name} مدخلات الـ: {key} = {value}")
+    click.echo(f"الملف الهدف: {target_file.relative_to(config.project_root)}")
 
     try:
         StringsXmlParser.update_entry(target_file, key, value)
-        click.echo(f"✓ 设置成功")
+        click.echo(f"✓ تم الإعداد بنجاح")
     except Exception as e:
-        click.echo(f"错误：设置失败 - {e}", err=True)
+        click.echo(f"خطأ:فشل الإعداد - {e}", err=True)
         sys.exit(1)
 
 
@@ -269,13 +269,13 @@ def set(key: str, value: str, lang: str, module: str):
     "--module",
     "-m",
     default=None,
-    help="模块名称（默认使用配置文件中的第一个模块）",
+    help="اسم الوحدة(يستخدم افتراضيًا الوحدة الأولى في ملف التعريف)",
 )
 def list_keys(module: str):
-    """列出所有语言条目的键
+    """سرد مفاتيح جميع مدخلات اللغة
 
     \b
-    示例：
+    مثال:
         locale-tui list-keys
         locale-tui list-keys -m app
     """
@@ -285,11 +285,11 @@ def list_keys(module: str):
     if module:
         selected_module = next((m for m in config.modules if m.name == module), None)
         if not selected_module:
-            click.echo(f"错误：未找到模块 '{module}'", err=True)
+            click.echo(f"خطأ:الموديل غير موجود '{module}'", err=True)
             sys.exit(1)
     else:
         if not config.modules:
-            click.echo("错误：配置文件中未定义模块", err=True)
+            click.echo("خطأ:الوحدة غير معرّفة في ملف التكوين", err=True)
             sys.exit(1)
         selected_module = config.modules[0]
 
@@ -298,13 +298,13 @@ def list_keys(module: str):
     source_file = res_dir / "values" / "strings.xml"
 
     if not source_file.exists():
-        click.echo(f"错误：源文件不存在 {source_file}", err=True)
+        click.echo(f"خطأ:ملف المصدر غير موجود {source_file}", err=True)
         sys.exit(1)
 
     # Parse and display
     entries = StringsXmlParser.parse(source_file)
 
-    click.echo(f"模块 '{selected_module.name}' 共有 {len(entries)} 个条目：")
+    click.echo(f"وحدة '{selected_module.name}' مشترك {len(entries)} مدخل:")
     click.echo()
 
     for key in sorted(entries.keys()):
@@ -321,18 +321,18 @@ _batch_options = [
         "-l",
         "langs",
         multiple=True,
-        help="目标语言代码，可重复（例如：-l values-ar -l values-ja），默认所有非源语言",
+        help="رمز لغة الهدف،قابل للتكرار(مثال:-l values-ar -l values-ja)،تحديد كل اللغات غير المصدرية افتراضيًا",
     ),
     click.option(
         "--module",
         "-m",
         "module_names",
         multiple=True,
-        help="模块名称，可重复，默认所有模块",
+        help="اسم الوحدة،قابل للتكرار،تحديد كل الوحدات افتراضيًا",
     ),
-    click.option("--concurrency", "-c", default=8, show_default=True, help="并发请求数"),
-    click.option("--retries", default=3, show_default=True, help="单批次最大尝试次数"),
-    click.option("--dry-run", is_flag=True, help="只统计待翻译条目，不调用翻译"),
+    click.option("--concurrency", "-c", default=8, show_default=True, help="عدد الطلبات المتزامنة"),
+    click.option("--retries", default=3, show_default=True, help="أقصى محاولات لكل دفعة"),
+    click.option("--dry-run", is_flag=True, help="احتساب عناصر للترجمة فقط،لا تستدعي الترجمة"),
 ]
 
 
@@ -358,14 +358,14 @@ def run_batch_translation(
     config = load_config()
 
     if not dry_run and not config.openai_api_key:
-        click.echo("错误：未设置 OPENAI_API_KEY，无法翻译。", err=True)
+        click.echo("خطأ:غير مُعد OPENAI_API_KEY،تعذر الترجمة.", err=True)
         sys.exit(1)
 
     known_langs = [lang.code for lang in config.languages if not lang.is_source]
     for code in langs:
         if code not in known_langs:
-            click.echo(f"错误：未在配置中找到目标语言 '{code}'", err=True)
-            click.echo(f"可用语言：{', '.join(known_langs)}", err=True)
+            click.echo(f"خطأ:لم يتم العثور على اللغة الهدف في التكوين '{code}'", err=True)
+            click.echo(f"لغات متاحة:{', '.join(known_langs)}", err=True)
             sys.exit(1)
     target_langs = list(langs) or known_langs
 
@@ -374,8 +374,8 @@ def run_batch_translation(
         modules = [m for m in config.modules if m.name in module_names]
         unknown = {*module_names} - {m.name for m in modules}
         if unknown:
-            click.echo(f"错误：未找到模块 {', '.join(sorted(unknown))}", err=True)
-            click.echo(f"可用模块：{', '.join(m.name for m in config.modules)}", err=True)
+            click.echo(f"خطأ:الموديل غير موجود {', '.join(sorted(unknown))}", err=True)
+            click.echo(f"وحدات متاحة:{', '.join(m.name for m in config.modules)}", err=True)
             sys.exit(1)
 
     all_failures: list[tuple[str, str, str, str]] = []
@@ -398,7 +398,7 @@ def run_batch_translation(
                     continue
 
                 label = f"[{module.name}/{lang_code}]"
-                click.echo(f"{label} {action} {len(selected)} 条")
+                click.echo(f"{label} {action} {len(selected)} عنصر")
                 if dry_run:
                     continue
 
@@ -417,7 +417,7 @@ def run_batch_translation(
                 if translations:
                     StringsXmlParser.update_entries(target_file, translations)
                 click.echo(
-                    f"{label} ✓ 写入 {len(translations)}/{len(selected)} 条 -> "
+                    f"{label} ✓ كتابة {len(translations)}/{len(selected)} عنصر -> "
                     f"{target_file.relative_to(config.project_root)}"
                 )
                 for key, error in failures.items():
@@ -426,25 +426,25 @@ def run_batch_translation(
     asyncio.run(run_all())
 
     if all_failures:
-        click.echo(f"\n{len(all_failures)} 条翻译失败（未写入，可重新运行）：", err=True)
+        click.echo(f"\n{len(all_failures)} فشل ترجمة عنصر(لم يُكتب،قابل لإعادة التشغيل):", err=True)
         for module_name, lang_code, key, error in all_failures:
             click.echo(f"  {module_name}/{lang_code} {key}: {error}", err=True)
         sys.exit(1)
 
-    click.echo("完成！")
+    click.echo("مكتمل!")
 
 
 @cli.command("translate-missing")
 @batch_options
 def translate_missing(**options):
-    """批量翻译缺失的条目（适合新增语言后补全）
+    """ترجمة مجمعة للعناصر المفقودة(مناسب للإكمال بعد إضافة لغة جديدة)
 
     \b
-    译文会校验占位符与换行是否与原文一致，并自动转义引号；
-    校验失败的条目会重试，仍失败则不写入并在最后列出。
+    سيقوم الترجمة بالتحقق من تطابق العناصر النائبة وأسطر الكسر مع النص الأصلي،ويقوم بالهروب التلقائي للاقتباسات؛
+    سيتم إعادة محاولة العناصر التي فشلت في التحقق،إذا فشل مجددًا، لا تُكتب وتُدرج في النهاية.
 
     \b
-    示例：
+    مثال:
         locale-tui translate-missing -l values-ar
         locale-tui translate-missing -m app --dry-run
     """
@@ -453,7 +453,7 @@ def translate_missing(**options):
         select=lambda source, existing: {
             k: v for k, v in source.items() if k not in existing
         },
-        action="缺失",
+        action="مفقود",
     )
 
 
@@ -462,29 +462,29 @@ def translate_missing(**options):
     "--match",
     "pattern",
     default=None,
-    help="正则表达式（忽略大小写），重新翻译英文原文匹配的条目",
+    help="تعبير نظامي(تجاهل حالة الأحرف)،إعادة ترجمة الإدخالات المطابقة للنص الإنجليزي الأصلي",
 )
-@click.option("--key", "keys", multiple=True, help="按 key 指定条目，可重复")
+@click.option("--key", "keys", multiple=True, help="بحسب key عنصر محدد،قابل للتكرار")
 @batch_options
 def retranslate(pattern: str | None, keys: tuple[str, ...], **options):
-    """重新翻译已有条目（例如更新术语表后统一术语）
+    """إعادة ترجمة إدخالات موجودة(مثلاً بعد تحديث معجم المصطلحات لتوحيد المصطلحات)
 
     \b
-    只覆盖目标语言中已存在的条目，缺失条目请用 translate-missing。
-    --match 与 --key 至少指定一个，两者同时指定时取并集。
+    استبدال مدخلات الموجودة فقط في لغة الهدف،للمداخل المفقودة استخدم translate-missing.
+    --match و --key حدد واحدًا على الأقل،عند تحديدهما معًا، خذ الاتحاد.
 
     \b
-    示例：
+    مثال:
         locale-tui retranslate -l values-ar --match '\\bprompts?\\b' --dry-run
         locale-tui retranslate -l values-ja --key setting_page_title
     """
     if not pattern and not keys:
-        click.echo("错误：请至少指定 --match 或 --key", err=True)
+        click.echo("خطأ:يرجى تحديد ما لا يقل عن --match أو --key", err=True)
         sys.exit(1)
     try:
         regex = re.compile(pattern, re.IGNORECASE) if pattern else None
     except re.error as e:
-        click.echo(f"错误：无效的正则表达式 - {e}", err=True)
+        click.echo(f"خطأ:تعبير نمطي غير صالح - {e}", err=True)
         sys.exit(1)
 
     def select(source: dict[str, str], existing: dict[str, str]) -> dict[str, str]:
@@ -494,7 +494,7 @@ def retranslate(pattern: str | None, keys: tuple[str, ...], **options):
             if k in existing and (k in keys or (regex and regex.search(v)))
         }
 
-    run_batch_translation(**options, select=select, action="重新翻译")
+    run_batch_translation(**options, select=select, action="إعادة الترجمة")
 
 
 def main():

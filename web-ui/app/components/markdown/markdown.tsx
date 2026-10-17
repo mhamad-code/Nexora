@@ -12,7 +12,7 @@ import { useOptionalWorkbench } from "~/components/workbench/workbench-context";
 import { useSettingsStore } from "~/stores";
 import { CodeBlock } from "./code-block";
 import "katex/dist/katex.min.css";
-// mhchem 扩展: 支持 \ce{} 等化学公式语法
+// mhchem امتداد: دعم \ce{} مثل صياغة المعادلات الكيميائية
 import "katex/dist/contrib/mhchem.mjs";
 import "./markdown.css";
 import "streamdown/styles.css";

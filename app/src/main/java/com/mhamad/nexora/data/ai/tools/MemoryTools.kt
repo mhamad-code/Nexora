@@ -28,7 +28,6 @@ object MemoryToolNames {
     const val DELETE = "memory_delete"
     const val LIST = "memory_list"
 
-    /** 会改动记忆库的工具 */
     val WRITES = setOf(WRITE, STR_REPLACE, APPEND, DELETE)
 }
 
@@ -38,9 +37,7 @@ private const val IF_VERSION_DESCRIPTION =
     "The version returned by the most recent read or write of this file"
 
 /**
- * 记忆库的读写工具，[assistantId] 决定操作哪个记忆库（助手自己的或全局的）。
  *
- * 何时读、何时写由 system prompt 里的记忆片段约束，这里只描述每个工具本身。
  */
 fun buildMemoryTools(
     repository: MemoryRepository,
@@ -63,7 +60,6 @@ fun buildMemoryTools(
             )
         },
         execute = { args ->
-            // 有些模型只读一个文件时会直接传字符串
             val paths = when (val path = args.jsonObject["path"]) {
                 is JsonArray -> path.mapNotNull { (it as? JsonPrimitive)?.contentOrNull }
                 is JsonPrimitive -> listOfNotNull(path.contentOrNull)
@@ -205,7 +201,6 @@ fun buildMemoryTools(
     ),
 )
 
-/** 这次工具调用成功改动的记忆文件路径；不是写工具、还没执行或写入被拒绝时返回 null */
 fun UIMessagePart.Tool.memoryWritePath(): String? {
     if (toolName !in MemoryToolNames.WRITES || !isExecuted) return null
     val result = runCatching {
@@ -234,7 +229,6 @@ private inline fun guarded(content: String, write: () -> MemoryWriteResult): Mem
     )
 }
 
-// 冲突时带上最新内容和版本，模型可以在同一轮里合并后重试
 private fun MemoryWriteResult.toToolOutput(path: String): List<UIMessagePart> = toolOutput {
     when (val result = this@toToolOutput) {
         is MemoryWriteResult.Success -> {

@@ -53,7 +53,6 @@ import com.mhamad.nexora.ui.components.ui.CardGroupScope
 
 @Composable
 internal fun PromptSettingsPage(settings: Settings, vm: SettingVM, contentPadding: PaddingValues) {
-    // 正在编辑哪一项；编辑弹窗放在列表外面，CardGroup 里放不了
     var editing by remember { mutableStateOf<PromptSlot?>(null) }
 
     LazyColumn(
@@ -64,7 +63,6 @@ internal fun PromptSettingsPage(settings: Settings, vm: SettingVM, contentPaddin
         item {
             val containerColor = MaterialTheme.colorScheme.primaryContainer
             val contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-            // 只有翻译能单独设思考强度，所以自成一组
             CardGroup {
                 promptItem(
                     slot = PromptSlot.TRANSLATION,
@@ -117,11 +115,9 @@ internal fun PromptSettingsPage(settings: Settings, vm: SettingVM, contentPaddin
     }
 }
 
-// 可以自定义提示词的几项功能
 private enum class PromptSlot(
     val icon: ImageVector,
     @param:StringRes val title: Int,
-    // 提示词里可用的变量说明
     @param:StringRes val variables: Int,
     val default: String,
     val get: (Settings) -> String,
@@ -171,7 +167,6 @@ private enum class PromptSlot(
 
 private val Whitespace = Regex("\\s+")
 
-// 一项提示词：标题下面预览当前内容，点击后编辑
 private fun CardGroupScope.promptItem(
     slot: PromptSlot,
     settings: Settings,
@@ -187,9 +182,7 @@ private fun CardGroupScope.promptItem(
     supportingContent = {
         val prompt = slot.get(settings)
         Text(
-            // 提示词里换行很多，压成一行才看得到实际内容
             text = remember(prompt) { prompt.trim().replace(Whitespace, " ") },
-            // 只留一行：超过两行 ListItem 会把右侧箭头顶到上面去
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
@@ -214,7 +207,6 @@ private fun PromptEditSheet(
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        // 直接全展开，半展开时键盘会把输入框整个盖住
         sheetState = rememberBottomSheetState(
             initialValue = SheetValue.Hidden,
             enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded)
@@ -239,7 +231,6 @@ private fun PromptEditSheet(
             OutlinedTextField(
                 value = value,
                 onValueChange = onValueChange,
-                // 键盘弹出后高度不够时让输入框让位，下面的按钮不被挤出去
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f, fill = false),

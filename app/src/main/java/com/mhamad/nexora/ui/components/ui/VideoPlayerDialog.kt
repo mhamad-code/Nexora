@@ -43,7 +43,6 @@ import com.mhamad.nexora.R
 import java.io.File
 
 /**
- * 全屏循环播放一个本地视频文件。设备解不了这个视频时给出提示，并可以交给其他应用打开。
  */
 @Composable
 fun VideoPlayerDialog(

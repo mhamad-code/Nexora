@@ -47,7 +47,7 @@ class AliyunMediaGenerationProviderTest {
         val body = AliyunImageGeneration(client).buildBody(
             model = wan,
             request = MediaGenerationRequest(
-                prompt = "把背景换成雪山",
+                prompt = "غيّر الخلفية إلى جبال مغطاة بالثلج",
                 inputs = listOf(
                     MediaGenerationInput.Image("https://example.com/a.png"),
                     MediaGenerationInput.Image(local.absolutePath),
@@ -59,7 +59,7 @@ class AliyunMediaGenerationProviderTest {
                 promptEnhancement = true,
                 extraParameters = buildJsonObject {
                     put("n", 9)
-                    put("negative_prompt", "模糊")
+                    put("negative_prompt", "غير واضح")
                 },
             ),
         )
@@ -68,7 +68,7 @@ class AliyunMediaGenerationProviderTest {
         val message = body["input"]!!.jsonObject["messages"]!!.jsonArray.single().jsonObject
         assertEquals(JsonPrimitive("user"), message["role"])
         val content = message["content"]!!.jsonArray.map { it.jsonObject }
-        assertEquals(JsonPrimitive("把背景换成雪山"), content[0]["text"])
+        assertEquals(JsonPrimitive("غيّر الخلفية إلى جبال مغطاة بالثلج"), content[0]["text"])
         assertEquals(JsonPrimitive("https://example.com/a.png"), content[1]["image"])
         assertEquals(JsonPrimitive("data:image/jpeg;base64,anBn"), content[2]["image"])
         val parameters = body["parameters"]!!.jsonObject
@@ -77,7 +77,7 @@ class AliyunMediaGenerationProviderTest {
         assertEquals(JsonPrimitive(false), parameters["watermark"])
         assertEquals(JsonPrimitive(42L), parameters["seed"])
         assertEquals(JsonPrimitive(true), parameters["prompt_extend"])
-        assertEquals(JsonPrimitive("模糊"), parameters["negative_prompt"])
+        assertEquals(JsonPrimitive("غير واضح"), parameters["negative_prompt"])
     }
 
     @Test
@@ -112,7 +112,7 @@ class AliyunMediaGenerationProviderTest {
                   "output": {
                     "choices": [
                       {"finish_reason": "stop", "message": {"role": "assistant", "content": [
-                        {"type": "text", "text": "说明"},
+                        {"type": "text", "text": "شرح"},
                         {"type": "image", "image": "https://oss.example.com/a.png?Expires=1"}
                       ]}},
                       {"message": {"content": [{"type": "image", "image": "https://oss.example.com/b.jpg?Expires=1"}]}}
@@ -178,7 +178,6 @@ class AliyunMediaGenerationProviderTest {
                 jsonResponse(request, """{"output":{"task_id":"t1","task_status":"PENDING"}}""")
             }
         })
-        // 不含占位符的地址（如旧的 dashscope 域名）原样使用，不需要 workspaceId
         val setting = MediaGenerationProviderSetting.Aliyun(apiKey = "key", baseUrl = "https://dash.example.com/api/v1")
         val video = setting.models.single { it.kind == MediaKind.VIDEO }
 
@@ -196,7 +195,6 @@ class AliyunMediaGenerationProviderTest {
             imageRequest.url.toString(),
         )
         assertEquals("Bearer key", imageRequest.header("Authorization"))
-        // 图像走同步接口，不带异步头
         assertNull(imageRequest.header("X-DashScope-Async"))
         assertEquals(
             "https://dash.example.com/api/v1/services/aigc/video-generation/video-synthesis",
@@ -237,7 +235,6 @@ class AliyunMediaGenerationProviderTest {
             requests.map { it.url.toString() },
         )
 
-        // 换地域只改 baseUrl 里的地域段
         requests.clear()
         val singapore = setting.copy(baseUrl = "https://{WorkspaceId}.ap-southeast-1.maas.aliyuncs.com/api/v1/")
         manager.create(singapore, wan, MediaGenerationRequest(prompt = "cat")).getOrThrow()
@@ -275,12 +272,10 @@ class AliyunMediaGenerationProviderTest {
     @Test
     fun aliyunTreatsUnknownTaskStatusAsExpired() {
         val video = AliyunVideoGeneration(client)
-        // 文档里 task_id 过期后的查询结果
         val expired = video.parseTask(parse("""{"output":{"task_id":"t1","task_status":"UNKNOWN"}}"""))
         assertEquals(MediaGenerationStatus.EXPIRED, expired.status)
         assertTrue(expired.isTerminal)
 
-        // 文档没列出的状态仍然当作未结束，不能把还在跑的任务判成过期
         val unrecognised = video.parseTask(parse("""{"output":{"task_id":"t1","task_status":"SUSPENDED"}}"""))
         assertEquals(MediaGenerationStatus.UNKNOWN, unrecognised.status)
         assertTrue(!unrecognised.isTerminal)
@@ -291,7 +286,7 @@ class AliyunMediaGenerationProviderTest {
         val body = AliyunVideoGeneration(client).buildCreateBody(
             model = MediaGenerationModel(modelId = "wan3.0-video", kind = MediaKind.VIDEO),
             request = MediaGenerationRequest(
-                prompt = "产品广告",
+                prompt = "إعلان المنتج",
                 inputs = listOf(
                     MediaGenerationInput.Image(
                         "https://example.com/start.png",

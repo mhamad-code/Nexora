@@ -13,7 +13,6 @@ interface MemoryConsolidationDAO {
     @Upsert
     suspend fun upsert(entity: MemoryConsolidationEntity)
 
-    /** 上次整理之后又有更新的对话，最近更新的在前；是否真有新的轮次要读出消息才知道 */
     @Query(
         "SELECT c.id FROM conversationentity AS c " +
             "LEFT JOIN memory_consolidation AS m ON m.conversation_id = c.id " +
@@ -24,7 +23,6 @@ interface MemoryConsolidationDAO {
     )
     suspend fun getUpdatedConversationIds(assistantIds: List<String>, since: Long, limit: Int): List<String>
 
-    /** [assistantIds] 里有哪些助手存在上次整理之后又有更新的对话 */
     @Query(
         "SELECT DISTINCT c.assistant_id FROM conversationentity AS c " +
             "LEFT JOIN memory_consolidation AS m ON m.conversation_id = c.id " +

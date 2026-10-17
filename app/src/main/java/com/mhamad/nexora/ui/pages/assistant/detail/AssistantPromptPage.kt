@@ -309,8 +309,8 @@ private fun AssistantPromptContent(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     val rawMessages = listOf(
-                        UIMessage.user("你好啊"),
-                        UIMessage.assistant("你好，有什么我可以帮你的吗？"),
+                        UIMessage.user("مرحبًا بك"),
+                        UIMessage.assistant("مرحبًا،هل هناك ما أستطيع مساعدتك به؟؟"),
                     )
                     val preview by produceState<UiState<List<UIMessage>>>(
                         UiState.Success(rawMessages),
@@ -488,7 +488,6 @@ private fun AssistantPromptContent(
                         onExpandedChange = {
                             expandedIds = if (it) expandedIds + regex.id else expandedIds - regex.id
                         },
-                        // 展开后内部是输入框，长按拖拽会与文本选择冲突
                         modifier = longPressReorder(
                             isDragging = isDragging,
                             enabled = !expanded && assistant.regexes.size > 1,

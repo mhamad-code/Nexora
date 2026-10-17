@@ -41,16 +41,16 @@ val DEFAULT_PROVIDERS = listOf(
         description = {
             Text(
                 text = buildAnnotatedString {
-                    append("提供 OpenAI、Claude、Google Gemini 等主流模型的高并发和稳定服务")
+                    append("يوفر خدمات عالية الاستقرار لنماذج OpenAI و Claude و Google Gemini")
                     appendLine()
-                    append("官网：")
+                    append("الموقع الرسمي: ")
                     withLink(LinkAnnotation.Url("https://aihubmix.com")) {
                         withStyle(SpanStyle(MaterialTheme.colorScheme.primary)) {
                             append("https://aihubmix.com")
                         }
                     }
                     appendLine()
-                    append("充值: ")
+                    append("شحن الرصيد: ")
                     withLink(LinkAnnotation.Url("https://console.aihubmix.com/topup")) {
                         withStyle(SpanStyle(MaterialTheme.colorScheme.primary)) {
                             append("https://console.aihubmix.com/topup")
@@ -61,13 +61,13 @@ val DEFAULT_PROVIDERS = listOf(
         },
         shortDescription = {
             Text(
-                text = "支持gpt, claude, gemini等200+模型"
+                text = "يدعم أكثر من 200 نموذج تشمل GPT و Claude و Gemini"
             )
         },
     ),
     ProviderSetting.OpenAI(
         id = Uuid.parse("56a94d29-c88b-41c5-8e09-38a7612d6cf8"),
-        name = "硅基流动",
+        name = "SiliconFlow",
         baseUrl = "https://api.siliconflow.cn/v1",
         apiKey = "",
         builtIn = true,
@@ -94,7 +94,7 @@ val DEFAULT_PROVIDERS = listOf(
     ),
     ProviderSetting.OpenAI(
         id = Uuid.parse("d6c4d8c6-3f62-4ca9-a6f3-7ade6b15ecc3"),
-        name = "月之暗面",
+        name = "Moonshot AI",
         baseUrl = "https://api.moonshot.cn/v1",
         apiKey = "",
         enabled = true,
@@ -132,7 +132,7 @@ val DEFAULT_PROVIDERS = listOf(
     ),
     ProviderSetting.OpenAI(
         id = Uuid.parse("f76cae46-069a-4334-ab8e-224e4979e58c"),
-        name = "阿里云百炼",
+        name = "Alibaba Bailian",
         baseUrl = "https://dashscope.aliyuncs.com/compatible-mode/v1",
         apiKey = "",
         enabled = false,
@@ -140,7 +140,7 @@ val DEFAULT_PROVIDERS = listOf(
     ),
     ProviderSetting.OpenAI(
         id = Uuid.parse("3dfd6f9b-f9d9-417f-80c1-ff8d77184191"),
-        name = "火山引擎",
+        name = "Volcengine",
         baseUrl = "https://ark.cn-beijing.volces.com/api/v3",
         apiKey = "",
         enabled = false,
@@ -148,7 +148,7 @@ val DEFAULT_PROVIDERS = listOf(
     ),
     ProviderSetting.OpenAI(
         id = Uuid.parse("3bc40dc1-b11a-46fa-863b-6306971223be"),
-        name = "智谱AI开放平台",
+        name = "Zhipu AI",
         baseUrl = "https://open.bigmodel.cn/api/paas/v4",
         apiKey = "",
         enabled = false,
@@ -156,7 +156,7 @@ val DEFAULT_PROVIDERS = listOf(
     ),
     ProviderSetting.OpenAI(
         id = Uuid.parse("f4f8870e-82d3-495b-9b64-d58e508b3b2c"),
-        name = "阶跃星辰",
+        name = "StepFun",
         baseUrl = "https://api.stepfun.com/v1",
         apiKey = "",
         enabled = false,
@@ -172,7 +172,7 @@ val DEFAULT_PROVIDERS = listOf(
         description = {
             Text(
                 text = buildAnnotatedString {
-                    append("企业级AI服务, 官网：")
+                    append("خدمات ذكاء اصطناعي للمؤسسات، الموقع الرسمي: ")
                     withLink(LinkAnnotation.Url("https://302.ai/")) {
                         withStyle(SpanStyle(MaterialTheme.colorScheme.primary)) {
                             append("https://302.ai/")
@@ -184,7 +184,7 @@ val DEFAULT_PROVIDERS = listOf(
     ),
     ProviderSetting.OpenAI(
         id = Uuid.parse("ef5d149b-8e34-404b-818c-6ec242e5c3c5"),
-        name = "腾讯Hunyuan",
+        name = "Tencent Hunyuan",
         baseUrl = "https://tokenhub.tencentmaas.com/v1",
         apiKey = "",
         enabled = false,
@@ -201,7 +201,7 @@ val DEFAULT_PROVIDERS = listOf(
     ),
     ProviderSetting.OpenAI(
         id = Uuid.parse("aecf04fd-cb5c-4582-aed2-e8bf393923fd"),
-        name = "随想AI网关",
+        name = "SuiXiang AI Gateway",
         baseUrl = "https://sui-xiang.com/v1",
         apiKey = "",
         enabled = false,
@@ -209,8 +209,8 @@ val DEFAULT_PROVIDERS = listOf(
         description = {
             Text(
                 text = buildAnnotatedString {
-                    append("可靠高效的 API 中继服务，提供 Claude、Codex、Gemini 等中继服务。注重隐私·无数据倒卖·无模型掺水，充值额度 1:1，按量付费。多线路冗余、跨区域容灾、自动故障切换，长链路 SSE 不中断。\n")
-                    append("官网：")
+                    append("خدمة بوابة API موثوقة وعالية الكفاءة لنماذج Claude و Codex و Gemini مع حماية تامة للخصوصية ودعم مستمر.\n")
+                    append("الموقع الرسمي: ")
                     withLink(LinkAnnotation.Url("https://sui-xiang.com")) {
                         withStyle(SpanStyle(MaterialTheme.colorScheme.primary)) {
                             append("https://sui-xiang.com")
@@ -221,7 +221,7 @@ val DEFAULT_PROVIDERS = listOf(
         },
         shortDescription = {
             Text(
-                text = "Claude、Codex、Gemini 等中继服务，1:1 充值"
+                text = "خدمات وسيطة لنماذج Claude و Codex و Gemini"
             )
         },
     ),

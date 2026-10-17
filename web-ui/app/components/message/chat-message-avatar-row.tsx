@@ -70,7 +70,7 @@ export function ChatMessageAvatarRow({
   const showModelIcon = displaySetting?.showModelIcon !== false;
   const showModelName = displaySetting?.showModelName === true;
 
-  // 模型被删除后用消息上的快照；两者都没有时退回助手名称，时间照常显示
+  // استخدم لقطة الرسالة بعد حذف النموذج؛إذا لم يوجد أي منهما، عد إلى اسم المساعد،يستمر عرض الوقت كالمعتاد
   const modelInfo = model ?? message.modelSnapshot ?? null;
   const useAssistantAvatar = assistant?.useAssistantAvatar === true;
   const defaultAssistantName = t("common:quick_jump.role_assistant", { defaultValue: "Assistant" });

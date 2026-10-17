@@ -1,9 +1,6 @@
-# locale-tui 配置文件
 
-# 项目根路径 (相对于 locale-tui 目录)
 project_root: ".."
 
-# 模块配置
 modules:
   - name: "app"
     res_path: "app/src/main/res"
@@ -46,7 +43,6 @@ modules:
       - "rag/src/main/java/**/*.java"
       - "rag/src/main/AndroidManifest.xml"
 
-# 支持的语言列表
 languages:
   - code: "values"
     name: "English"
@@ -54,24 +50,24 @@ languages:
   - code: "values-zh"
     name: "Chinese (Simplified)"
     glossary:
-      prompt: "提示词（不要译为“提示”）"
-      context: "上下文"
-      model: "模型"
-      inference: "推理"
-      dreaming: "做梦（后台整理记忆的功能名）"
+      prompt: "كلمة تلميح(لا تترجم إلى"تلميح")"
+      context: "السياق"
+      model: "نموذج"
+      inference: "استنتاج"
+      dreaming: "يحلم(اسم ميزة تنظيم الذاكرة في الخلفية)"
   - code: "values-zh-rTW"
     name: "Chinese (Traditional)"
     glossary:
-      prompt: "提示詞（不要譯為「提示」）"
-      context: "上下文"
-      model: "模型"
-      inference: "推理"
-      dreaming: "做夢（背景整理記憶的功能名）"
+      prompt: "عبارة تلميح(لا تُترجم إلى"تلميح")"
+      context: "السياق"
+      model: "نموذج"
+      inference: "استنتاج"
+      dreaming: "يحلم(اسم ميزة تنظيم الذاكرة الخلفية)"
   - code: "values-ja"
     name: "Japanese"
     glossary:
-      memory: "記憶（「メモリ」としない）"
-      dreaming: "夢を見る（記憶を整理する機能の名称。「ドリーミング」と音訳しない）"
+      memory: "ذاكرة("メモリ"としない)"
+      dreaming: "حلمをانظرる(ذاكرةをتنظيمするوظيفةのاسم."ドリーミング"とنسخ صوتيしない)"
   - code: "values-ko-rKR"
     name: "Korean"
     glossary:
@@ -81,7 +77,6 @@ languages:
     name: "Russian"
   - code: "values-ar"
     name: "Arabic"
-    # 使用不带冠词的基本形式，由模型按语法变格
     glossary:
       prompt: "مطالبة (plural مطالبات); never موجه"
       system prompt: "مطالبة النظام"
@@ -102,7 +97,6 @@ languages:
       memory: "ذاكرة"
       quick message: "رسالة سريعة"
 
-# AI 翻译配置
 translation:
   batch_size: 10
   model: "deepseek-v4-flash"
@@ -127,7 +121,6 @@ translation:
     Respond with a JSON object mapping the same keys to translated values.
     Only output the JSON, no other text.
 
-# 显示设置
 display:
   column_widths:
     key: 30

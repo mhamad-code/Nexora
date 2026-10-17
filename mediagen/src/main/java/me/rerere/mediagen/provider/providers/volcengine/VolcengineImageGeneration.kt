@@ -30,7 +30,6 @@ import kotlin.io.encoding.Base64
 import kotlin.uuid.Uuid
 
 /**
- * Seedream 图像生成。带图片输入时是图生图 / 多图参考，接口同步返回结果。
  */
 internal class VolcengineImageGeneration(
     private val client: OkHttpClient,
@@ -42,7 +41,6 @@ internal class VolcengineImageGeneration(
         model: MediaGenerationModel,
         request: MediaGenerationRequest,
     ): MediaGenerationTask {
-        // 本地图片要读出来编码成 data URI
         val body = withContext(Dispatchers.IO) { buildBody(model, request) }
         val httpRequest = bearerRequest("${setting.baseUrl.trimEnd('/')}/images/generations", setting.apiKey)
             .postJson(body)
@@ -75,7 +73,6 @@ internal class VolcengineImageGeneration(
 
     internal fun parseTask(root: JsonObject, fallbackModel: String? = null): MediaGenerationTask {
         val items = (root["data"] as? JsonArray).orEmpty().filterIsInstance<JsonObject>()
-        // 组图里单张失败的项只有 error，没有图片
         val outputs = items.mapNotNull { item ->
             val url = item.string("url")
             val base64 = item.string("b64_json")
@@ -89,7 +86,6 @@ internal class VolcengineImageGeneration(
         }
         val errorObject = root.obj("error") ?: items.firstNotNullOfOrNull { it.obj("error") }
         return MediaGenerationTask(
-            // 同步接口没有服务端任务 ID
             id = Uuid.random().toString(),
             provider = id,
             model = root.string("model") ?: fallbackModel,
@@ -107,7 +103,6 @@ internal class VolcengineImageGeneration(
             usage = root.obj("usage")?.let {
                 MediaGenerationUsage(totalTokens = it.long("total_tokens"))
             },
-            // 保留图层等逐图信息，但不把整张图片的 base64 放进 metadata
             metadata = JsonObject(root + ("data" to JsonArray(items.map { JsonObject(it - "b64_json") }))),
         )
     }

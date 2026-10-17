@@ -12,6 +12,7 @@ import type { Route } from "./+types/root";
 import { useSettingsSubscription } from "~/stores";
 import "./app.css";
 import "./i18n";
+import { useTranslation } from "react-i18next";
 import { Toaster } from "./components/ui/sonner";
 import { ThemeProvider } from "./components/theme-provider";
 import { WebAuthGate } from "./components/web-auth-gate";
@@ -23,8 +24,10 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const { i18n: activeI18n } = useTranslation();
+  const isArabic = activeI18n.language === "ar";
   return (
-    <html lang="en">
+    <html lang={isArabic ? "ar" : "en"} dir={isArabic ? "rtl" : "ltr"}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

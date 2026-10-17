@@ -1,0 +1,16 @@
+{
+  "code_block": {
+    "clipboard_not_available": "الحافظة غير متاحة",
+    "copy_code": "نسخ الكود",
+    "copied": "تم النسخ",
+    "copy": "نسخ",
+    "preview_code": "معاينة الكود",
+    "preview": "معاينة",
+    "window_not_available": "النافذة غير متاحة",
+    "download_code": "تنزيل الكود",
+    "download": "تنزيل"
+  },
+  "markdown": {
+    "code_preview_title": "معاينة {{language}}"
+  }
+}

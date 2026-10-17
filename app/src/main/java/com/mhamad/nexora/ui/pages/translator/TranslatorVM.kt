@@ -34,33 +34,26 @@ class TranslatorVM(
     val settings: StateFlow<Settings> = settingsStore.settingsFlow
         .stateIn(viewModelScope, SharingStarted.Lazily, Settings.dummy())
 
-    // 翻译状态
     private val _translating = MutableStateFlow(false)
     val translating: StateFlow<Boolean> = _translating
 
-    // 输入文本
     private val _inputText = MutableStateFlow("")
     val inputText: StateFlow<String> = _inputText
 
-    // 翻译结果
     private val _translatedText = MutableStateFlow("")
     val translatedText: StateFlow<String> = _translatedText
 
-    // 翻译目标语言，保存在设置里
     val targetLanguage: StateFlow<Locale> = settings
         .map { Locale.forLanguageTag(it.translateTargetLanguage) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, Locale.SIMPLIFIED_CHINESE)
 
-    // 翻译历史，按时间倒序分页加载
     val history: Flow<PagingData<TranslationHistoryEntity>> = Pager(
         config = PagingConfig(pageSize = 20, enablePlaceholders = false),
         pagingSourceFactory = { historyRepository.pagingAll() },
     ).flow.cachedIn(viewModelScope)
 
-    // 错误流
     val errorFlow = MutableSharedFlow<Throwable>()
 
-    // 当前任务
     private var currentJob: Job? = null
 
     fun updateSettings(fn: (Settings) -> Settings) {
@@ -77,7 +70,6 @@ class TranslatorVM(
         updateSettings { it.copy(translateTargetLanguage = language.toLanguageTag()) }
     }
 
-    // 把翻译结果放回输入框，方便接着改或反向翻译
     fun useResultAsInput() {
         _inputText.value = _translatedText.value
         _translatedText.value = ""
@@ -107,7 +99,6 @@ class TranslatorVM(
         _translating.value = true
         _translatedText.value = ""
 
-        // 先记下 job 再启动，finally 里才能拿它和 currentJob 比较
         val job = viewModelScope.launch(start = CoroutineStart.LAZY) {
             try {
                 val settings = settings.value
@@ -118,7 +109,7 @@ class TranslatorVM(
                     targetLanguage = targetLanguage
                 ) { translatedText ->
                     _translatedText.value = translatedText
-                }.collect { /* 结果已经在 onStreamUpdate 里更新 */ }
+                }.collect { /* النتيجة موجودة بالفعل في onStreamUpdate التحديث داخل */ }
 
                 val result = _translatedText.value
                 if (result.isNotBlank()) {
@@ -135,7 +126,6 @@ class TranslatorVM(
                 e.printStackTrace()
                 errorFlow.emit(e)
             } finally {
-                // 被新任务替换掉时不能把新任务的状态改掉
                 if (currentJob == coroutineContext[Job]) _translating.value = false
             }
         }

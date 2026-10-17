@@ -16,11 +16,9 @@ class MediaCreationSessionsVM(
     private val repository: MediaCreationRepository,
     private val service: MediaCreationService,
 ) : ViewModel() {
-    /** 最近用过的排在前面；null 表示还在加载。 */
     val sessions: StateFlow<List<MediaCreationSession>?> = repository.observeSessions()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
-    /** 准备一个空会话交给 [onReady] 打开。 */
     fun newSession(onReady: (Uuid) -> Unit) {
         viewModelScope.launch { onReady(repository.newSession().id) }
     }

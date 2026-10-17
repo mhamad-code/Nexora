@@ -43,7 +43,6 @@ internal interface PagerTab {
         @Composable get
 }
 
-// 分页切换：可横向滚动的切换按钮，选中项带图标；tabs 的顺序要和 pager 的页一一对应
 @Composable
 internal fun PagerTabs(
     pagerState: PagerState,
@@ -52,11 +51,9 @@ internal fun PagerTabs(
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     val scope = rememberCoroutineScope()
-    // 用 targetPage 而不是 currentPage，跨多页跳转时中间的按钮不会依次闪过
     val selectedIndex = pagerState.targetPage
     val requesters = remember(tabs) { tabs.map { BringIntoViewRequester() } }
 
-    // 滑动翻页后，把选中的按钮滚进可视范围
     LaunchedEffect(selectedIndex) {
         requesters[selectedIndex].bringIntoView()
     }

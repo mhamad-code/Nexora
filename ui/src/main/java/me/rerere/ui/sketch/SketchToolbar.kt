@@ -35,7 +35,6 @@ import me.rerere.hugeicons.stroke.Type
 import me.rerere.ui.R
 
 /**
- * 画纸下方的工具栏：粗细、画笔、文字、选择、橡皮和颜色。
  */
 @Composable
 internal fun SketchToolbar(state: SketchState) {
@@ -106,12 +105,10 @@ internal fun SketchToolbar(state: SketchState) {
                 onClick = {
                     val custom = state.customColor
                     when {
-                        // 第一次点：给一个起始色，直接开始调
                         custom == null -> {
                             state.useCustom(SketchDefaults.CustomColor)
                             state.pickingColor = true
                         }
-                        // 调过之后，点一下是选中它，选中时再点才是打开或收起调色面板
                         !customSelected -> state.useCustom(custom)
                         else -> state.pickingColor = !state.pickingColor
                     }
@@ -121,7 +118,6 @@ internal fun SketchToolbar(state: SketchState) {
     }
 }
 
-// 中间的圆点就是这一档的粗细。荧光笔画出来比它宽，文字的字号也跟着这一档走
 @Composable
 private fun WidthOption(width: Dp, selected: Boolean, onClick: () -> Unit) {
     Box(
@@ -147,7 +143,6 @@ private fun WidthOption(width: Dp, selected: Boolean, onClick: () -> Unit) {
     }
 }
 
-// [custom] 是自定义颜色的那一格：外面一圈彩虹，调过颜色之后中间显示调出来的颜色
 @Composable
 private fun ColorOption(
     color: Color?,
@@ -180,7 +175,6 @@ private fun ColorOption(
                 }
             )
             .then(if (color != null) Modifier.background(color, CircleShape) else Modifier)
-            // 深色主题下黑色的色块要靠描边才看得出来
             .then(
                 if (custom) {
                     Modifier

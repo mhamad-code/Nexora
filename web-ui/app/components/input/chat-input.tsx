@@ -66,10 +66,10 @@ async function detectUploadFile(
   const buffer = await file.slice(0, 4100).arrayBuffer();
   const detected = await fileTypeFromBuffer(buffer);
 
-  // 无法识别 magic bytes → 文本文件 → 允许，强制 text/plain 防止 OS MIME 映射污染（如 .ts → video/mp2t）
+  // غير قابل للتعرّف magic bytes → ملف نصي → سماح،إجبار text/plain منع OS MIME تلوث التخطيط(مثل .ts → video/mp2t)
   if (!detected) return { allowed: true, mimeType: "text/plain" };
 
-  // 识别为图片 / 视频 / 音频 → 允许，使用 magic bytes 检测到的 MIME
+  // تم التعرف كصورة / فيديو / صوت/ملف صوتي → سماح،استخدام magic bytes المكتشف MIME
   if (
     detected.mime.startsWith("image/") ||
     detected.mime.startsWith("video/") ||
@@ -78,7 +78,7 @@ async function detectUploadFile(
     return { allowed: true, mimeType: detected.mime };
   }
 
-  // 允许常见文档格式
+  // السماح بصيغ المستندات الشائعة
   const ALLOWED_DOCUMENT_MIMES = new Set([
     "application/pdf",
     "application/msword",
@@ -92,7 +92,7 @@ async function detectUploadFile(
     return { allowed: true, mimeType: detected.mime };
   }
 
-  // 其他可识别的二进制格式（exe、zip 等）→ 拒绝
+  // صيغ ثنائية أخرى قابلة للتعرّف(exe،zip إلخ)→ رفض
   return { allowed: false, mimeType: detected.mime };
 }
 
@@ -275,7 +275,7 @@ function ChatInputInner({
 
       const formData = new FormData();
       uploadableFiles.forEach(({ file, mimeType }) => {
-        // 用 magic bytes 检测结果覆盖浏览器的 file.type，修正跨平台 MIME 歧义
+        // باستخدام magic bytes نتائج الكشف تتجاوز متصفح file.type،تصحيح عبر المنصات MIME غموض
         const safeFile =
           file.type !== mimeType
             ? new globalThis.File([file], file.name, { type: mimeType })
@@ -380,9 +380,9 @@ function ChatInputInner({
       if (isGenerating) return;
       if (event.nativeEvent.isComposing) return;
 
-      // 镜像逻辑：
-      // sendOnEnter = true: Enter 发送，Shift+Enter 换行
-      // sendOnEnter = false: Shift+Enter 发送，Enter 换行
+      // منطق النسخ/المرايا:
+      // sendOnEnter = true: Enter إرسال،Shift+Enter سطر جديد
+      // sendOnEnter = false: Shift+Enter إرسال،Enter سطر جديد
       const shouldSend = sendOnEnter ? !event.shiftKey : event.shiftKey;
       if (!shouldSend) return;
 
@@ -404,7 +404,7 @@ function ChatInputInner({
     async (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
       if (!canUpload) return;
 
-      // 粘贴长文本自动转换为文件
+      // الصق نصًا طويلًا ليتحول تلقائيًا إلى ملف
       if (pasteLongTextAsFile) {
         const text = event.clipboardData.getData("text/plain");
         if (text.length > pasteLongTextThreshold) {
@@ -719,7 +719,7 @@ function ChatInputInner({
               />
               <ReasoningPickerButton disabled={!canSwitchModel} conversation={conversation} />
               <Button
-                aria-label={canStop ? "停止生成" : "发送消息"}
+                aria-label={canStop ? "إيقاف التوليد" : "إرسال رسالة"}
                 title={sendHint}
                 onClick={() => {
                   void handlePrimaryAction();

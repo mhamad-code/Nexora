@@ -19,7 +19,7 @@ def test_glossary_injected_into_prompt():
     assert "مطالبة" in arabic
 
     chinese = translator.build_prompt(entries, "Chinese (Simplified)")
-    assert "提示词" in chinese
+    assert "كلمة تلميح" in chinese
 
-    # 未配置术语表的语言不追加术语段
+    # اللغات غير المكوّنة لقائمة المصطلحات لا تضيف مقاطع مصطلحية
     assert "Glossary" not in translator.build_prompt(entries, "Japanese")

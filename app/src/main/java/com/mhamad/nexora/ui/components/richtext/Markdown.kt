@@ -122,8 +122,6 @@ private fun MarkdownPreview() {
 }
 
 /**
- * 应用内使用的 Markdown：在通用的 [Markdown] 组件上接入代码高亮、图片预览、LaTeX 渲染、
- * 表格工具栏和搜索引用角标这些和应用相关的能力。
  */
 @Composable
 fun MarkdownBlock(
@@ -144,7 +142,6 @@ fun MarkdownBlock(
                 fontFamily = JetbrainsMono,
                 fontFeatureSettings = "'calt' 0, 'liga' 0, 'clig' 0",
             ),
-            // 段落间距跟随字号，调整字体大小时保持比例
             blockSpacing = if (fontSize.isSp) with(density) { fontSize.toDp() } else defaultTheme.blockSpacing,
             quotedText = SpanStyle(color = quoteColor).takeIf { enableQuoteHighlight },
         )
@@ -179,7 +176,6 @@ fun MarkdownBlock(
                         fontSize = LocalTextStyle.current.fontSize,
                     )
                 } else {
-                    // 禁用 LaTeX 渲染时，以等宽字体显示原始公式
                     MarkdownDefaults.MathBlock(formula)
                 }
             },
@@ -203,8 +199,6 @@ private fun MarkdownInlineScope.inlineMathWidgets(formula: String): List<Markdow
     if (!fontSize.isSp) return emptyList()
     return with(density) {
         val fontSizePx = fontSize.toPx()
-        // 将过长的行内公式按顶层运算符水平拆分为多段，每段最大宽度限制为字号的两倍，
-        // 使其能在文本流中换行，避免单体公式超出可用宽度被挤出屏幕
         val drawables = splitLatex(
             latex = formula,
             maxWidthPx = fontSizePx * 2,
@@ -224,7 +218,6 @@ private fun MarkdownInlineScope.inlineMathWidgets(formula: String): List<Markdow
                 }
             }
         } else {
-            // 拆分失败时回退为单体内联渲染；连尺寸都量不出来说明公式有误，交给组件显示公式源码
             val bounds = assumeLatexSize(latex = formula, fontSize = fontSizePx)
             if (bounds.isEmpty) return emptyList()
             listOf(
@@ -242,14 +235,12 @@ private fun MarkdownInlineScope.inlineMathWidgets(formula: String): List<Markdow
     }
 }
 
-// 搜索引用在正文里写作 [citation,域名](引用id)，渲染成可点击的角标
 private fun citationWidget(link: MarkdownInline.Link, onClick: (String) -> Unit): MarkdownInlineWidget? {
     val text = link.children.plainText()
     if (!text.startsWith("citation,")) return null
     val domain = text.substringAfter("citation,")
     val id = link.destination
     if (id.length != 6) {
-        // id 不合法的引用没法跳转，不显示
         return MarkdownInlineWidget(Placeholder(0.sp, 0.sp, PlaceholderVerticalAlign.TextCenter)) {}
     }
     return MarkdownInlineWidget(
@@ -282,7 +273,6 @@ private fun citationWidget(link: MarkdownInline.Link, onClick: (String) -> Unit)
     }
 }
 
-// 表格卡片（工具栏 + 表格）
 @Composable
 private fun TableCard(table: MarkdownBlock.Table) {
     val clipboardManager = LocalClipboard.current
@@ -290,7 +280,6 @@ private fun TableCard(table: MarkdownBlock.Table) {
     val context = LocalContext.current
 
     val tableCsv = remember(table) { buildTableCsv(table) }
-    // HTML 写出的表格没有 Markdown 源码，复制时退回到 CSV
     val tableText = table.source ?: tableCsv
 
     val createDocumentLauncher = rememberLauncherForActivityResult(
@@ -323,7 +312,7 @@ private fun TableCard(table: MarkdownBlock.Table) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "表格",
+                text = "جدول",
                 fontSize = 12.sp,
                 lineHeight = 12.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -378,7 +367,6 @@ private fun TableCard(table: MarkdownBlock.Table) {
     }
 }
 
-// 构建CSV内容，对包含逗号/引号/换行的字段进行转义
 private fun buildTableCsv(table: MarkdownBlock.Table): String {
     fun escape(field: String): String {
         return if (field.any { it == ',' || it == '"' || it == '\n' }) {

@@ -11,14 +11,14 @@ export interface MessageNode {
 }
 
 /**
- * 会话开始后固定在会话上的配置；会话开始前没有这份配置，聊天输入区的切换直接改助手
+ * الإعدادات المثبتة على الجلسة بعد البدء؛لا توجد هذه الإعدادات قبل بدء الجلسة،تبديل منطقة إدخال الدردشة يغيّر المساعد مباشرة
  * @see app/src/main/java/com/mhamad/nexora/data/model/ConversationConfig.kt - ConversationConfig
  */
 export interface ConversationConfig {
   chatModelId?: string | null;
   reasoningLevel?: string | null;
   enableWebSearch?: boolean;
-  /** 模型内置搜索，覆盖模型自身的开关 */
+  /** بحث مدمج في النموذج،مفتاح تجاوز إعدادات النموذج الافتراضية */
   builtInSearch?: boolean;
   mcpServers?: string[];
   workspaceId?: string | null;
@@ -42,7 +42,7 @@ export interface Conversation {
   config?: ConversationConfig | null;
   /** Absolute path inside the workspace rootfs */
   workspaceCwd?: string | null;
-  /** 所属文件夹（助手内分组），null 表示未归入任何文件夹 */
+  /** المجلد التابع(تجميع داخل المساعد)،null يُشير إلى عدم الانتماء لأي مجلد */
   folderId?: string | null;
   createAt: number;
   updateAt: number;

@@ -9,10 +9,6 @@ import androidx.compose.ui.res.stringResource
 import com.mhamad.nexora.R
 
 /**
- * 权限信息数据类
- * @param permission Android权限字符串 (如 android.permission.CAMERA)
- * @param usage 权限使用说明的Composable内容
- * @param required 是否为必需权限
  */
 data class PermissionInfo(
     val permission: String,
@@ -22,21 +18,15 @@ data class PermissionInfo(
 )
 
 /**
- * 权限状态枚举
  */
 enum class PermissionStatus {
-    /** 未请求 */
     NotRequested,
-    /** 已授权 */
     Granted,
-    /** 被拒绝但可以再次请求 */
     Denied,
-    /** 被拒绝且用户选择"不再询问" */
     DeniedPermanently
 }
 
 /**
- * 权限请求结果
  */
 data class PermissionResult(
     val permission: String,
@@ -45,7 +35,6 @@ data class PermissionResult(
 )
 
 /**
- * 多个权限的请求结果
  */
 data class MultiplePermissionResult(
     val results: Map<String, PermissionResult>,

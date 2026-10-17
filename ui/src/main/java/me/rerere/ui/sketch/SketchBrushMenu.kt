@@ -16,7 +16,6 @@ import me.rerere.hugeicons.HugeIcons
 import me.rerere.hugeicons.stroke.Tick02
 
 /**
- * 画笔按钮：显示当前的画笔，点开可以换一种。正在用别的工具时点它是切回画笔。
  */
 @Composable
 internal fun SketchBrushMenu(state: SketchState) {

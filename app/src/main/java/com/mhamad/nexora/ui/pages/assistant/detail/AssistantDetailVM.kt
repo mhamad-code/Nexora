@@ -127,7 +127,6 @@ class AssistantDetailVM(
             settingsStore.update { settings ->
                 val validTagIds = settings.assistantTags.map { it.id }.toSet()
 
-                // 清理 assistant 中的无效 tag id
                 val cleanedAssistants = settings.assistants.map { assistant ->
                     val validTags = assistant.tags.filter { tagId ->
                         validTagIds.contains(tagId)
@@ -139,15 +138,12 @@ class AssistantDetailVM(
                     }
                 }
 
-                // 获取清理后的 assistant 中使用的 tag id
                 val usedTagIds = cleanedAssistants.flatMap { it.tags }.toSet()
 
-                // 清理未使用的 tags
                 val cleanedTags = settings.assistantTags.filter { tag ->
                     usedTagIds.contains(tag.id)
                 }
 
-                // 检查是否需要更新
                 val needUpdateAssistants = cleanedAssistants != settings.assistants
                 val needUpdateTags = cleanedTags.size != settings.assistantTags.size
 
@@ -178,23 +174,20 @@ class AssistantDetailVM(
                     })
             }
             replaced?.let { old ->
-                checkAvatarDelete(old = old, new = assistant) // 删除旧头像
-                checkBackgroundDelete(old = old, new = assistant) // 删除旧背景
+                checkAvatarDelete(old = old, new = assistant)
+                checkBackgroundDelete(old = old, new = assistant)
             }
         }
     }
 
-    // 助手还没加载出来时 assistant 是个占位对象，记忆库要按页面拿到的 assistantId 来定位
     private fun memoryIdOf(assistant: Assistant) = if (assistant.useGlobalMemory) {
         MemoryRepository.GLOBAL_MEMORY_ID
     } else {
         assistantId.toString()
     }
 
-    /** 当前助手读写的记忆库 */
     val memoryId: String get() = memoryIdOf(assistant.value)
 
-    /** 整理所有待整理的对话，并把整个记忆库清理一遍 */
     fun organizeMemory() {
         memoryConsolidationScheduler.organize(memoryId)
     }

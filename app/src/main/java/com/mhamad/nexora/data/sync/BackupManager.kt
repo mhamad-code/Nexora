@@ -124,7 +124,7 @@ class BackupManager(
                     require(restoredEntries > 0) { "No selected data found in the backup" }
                     require(!stagedWal.exists() || stagedDatabase.exists()) { "Backup WAL has no matching database" }
                     if (stagedDatabase.exists()) {
-                        DatabaseBackup.normalize(context, stagedDatabase)
+                        DatabaseBackup.normalize(stagedDatabase)
                         // Reject unsupported schemas before publishing; run supported old migrations on the copy.
                         val room = AppDatabaseFactory.create(context, stagedDatabase.absolutePath)
                         try {
@@ -173,7 +173,6 @@ class BackupManager(
         /** Backed up with their subdirectories; the other folders only contain top-level files. */
         private val NESTED_ATTACHMENT_FOLDERS = setOf(FileFolders.SKILLS, FileFolders.MEDIA_CREATION)
 
-        // 启动次数不在 Settings 里，备份文件里仍放在 settings.json 的这个字段，和旧备份保持一致
         private const val LAUNCH_COUNT_KEY = "launchCount"
 
         private fun Json.encodeSettings(settings: Settings, launchCount: Int): String {
@@ -181,7 +180,6 @@ class BackupManager(
             return encodeToString(JsonObject(fields))
         }
 
-        // 更早的备份没有这个字段，按 0 恢复，和它还在 Settings 里时的默认值一致
         private fun Json.launchCountOf(settingsJson: String): Int =
             parseToJsonElement(settingsJson).jsonObject[LAUNCH_COUNT_KEY]?.jsonPrimitive?.intOrNull ?: 0
 

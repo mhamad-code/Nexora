@@ -45,7 +45,7 @@ class OpenAIMediaGenerationProviderTest {
             setting = setting,
             model = model,
             request = MediaGenerationRequest(
-                prompt = "一只猫",
+                prompt = "قط",
                 count = 2,
                 resolution = "2048x1152",
                 extraParameters = buildJsonObject {
@@ -56,7 +56,7 @@ class OpenAIMediaGenerationProviderTest {
         )
 
         assertEquals(JsonPrimitive("gpt-image-2"), body["model"])
-        assertEquals(JsonPrimitive("一只猫"), body["prompt"])
+        assertEquals(JsonPrimitive("قط"), body["prompt"])
         assertEquals(JsonPrimitive(2), body["n"])
         assertEquals(JsonPrimitive("2048x1152"), body["size"])
         assertEquals(JsonPrimitive("high"), body["quality"])
@@ -77,7 +77,6 @@ class OpenAIMediaGenerationProviderTest {
         )
         assertNull(grok["size"])
 
-        // 域名只是以 x.ai 结尾的中转不应被当成 Grok
         val relay = provider.buildGenerationBody(
             setting = setting.copy(baseUrl = "https://api.foo-max.ai/v1"),
             model = model,
@@ -168,7 +167,7 @@ class OpenAIMediaGenerationProviderTest {
             setting = setting,
             model = model,
             request = MediaGenerationRequest(
-                prompt = "换成夜景",
+                prompt = "غيّره إلى مشهد ليلي",
                 inputs = listOf(
                     MediaGenerationInput.Image(first.absolutePath),
                     MediaGenerationInput.Image("file://${second.absolutePath}"),
@@ -187,7 +186,7 @@ class OpenAIMediaGenerationProviderTest {
         assertTrue(body.contains("Content-Type: image/jpeg"))
         assertTrue(body.contains("png-bytes"))
         assertTrue(body.contains("name=\"prompt\""))
-        assertTrue(body.contains("换成夜景"))
+        assertTrue(body.contains("غيّره إلى مشهد ليلي"))
         assertTrue(body.contains("name=\"size\""))
         assertTrue(body.contains("name=\"input_fidelity\""))
         assertEquals("image/png", task.outputs.single().mimeType)

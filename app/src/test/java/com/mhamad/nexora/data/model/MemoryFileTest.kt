@@ -17,22 +17,22 @@ class MemoryFileTest {
     @Test
     fun `composed content uses the layout the memory format describes`() {
         val content = file("").contentWith(
-            title = "饮食",
-            description = "口味和忌口",
-            aliases = listOf("吃的", "food"),
-            body = "- [stated] 不吃香菜",
+            title = "نظام غذائي",
+            description = "تفضيلات ونواهي غذائية",
+            aliases = listOf("مأكولات", "food"),
+            body = "- [stated] لا يأكل الكزبرة",
         )
 
         assertEquals(
             """
             ---
             name: food
-            title: 饮食
-            description: 口味和忌口
-            aliases: [吃的, food]
+            title: نظام غذائي
+            description: تفضيلات ونواهي غذائية
+            aliases: [مأكولات, food]
             ---
 
-            - [stated] 不吃香菜
+            - [stated] لا يأكل الكزبرة
 
             """.trimIndent(),
             content,
@@ -57,10 +57,10 @@ class MemoryFileTest {
 
     @Test
     fun `line breaks in title and description are collapsed`() {
-        val edited = file("").edited(title = " 饮食\n", description = "第一行\n  第二行")
+        val edited = file("").edited(title = " نظام غذائي\n", description = "السطر الأول\n  السطر الثاني")
 
-        assertEquals("饮食", edited.title)
-        assertEquals("第一行 第二行", edited.description)
+        assertEquals("نظام غذائي", edited.title)
+        assertEquals("السطر الأول السطر الثاني", edited.description)
     }
 
     @Test
@@ -73,34 +73,34 @@ class MemoryFileTest {
 
     @Test
     fun `keys without an input field are kept`() {
-        val edited = file("---\nname: food\ntitle: Food\nsource: import\n---\n\nbody\n").edited(title = "饮食")
+        val edited = file("---\nname: food\ntitle: Food\nsource: import\n---\n\nbody\n").edited(title = "نظام غذائي")
 
-        assertEquals("---\nname: food\ntitle: 饮食\nsource: import\n---\n\nbody\n", edited.content)
+        assertEquals("---\nname: food\ntitle: نظام غذائي\nsource: import\n---\n\nbody\n", edited.content)
     }
 
     @Test
     fun `saving without changes keeps a well formed file as it is`() {
-        val original = file("---\nname: food\ntitle: 饮食\ndescription: 口味\naliases: [吃的]\n---\n\n- [stated] 不吃香菜\n")
+        val original = file("---\nname: food\ntitle: نظام غذائي\ndescription: ذوق\naliases: [مأكولات]\n---\n\n- [stated] لا يأكل الكزبرة\n")
 
         assertEquals(original.content, original.edited().content)
     }
 
     @Test
     fun `unreadable frontmatter stays visible in the body`() {
-        val broken = "---\nname: food\ndescription: Food: likes spicy\n---\n\n- [stated] 不吃香菜\n"
+        val broken = "---\nname: food\ndescription: Food: likes spicy\n---\n\n- [stated] لا يأكل الكزبرة\n"
         val original = file(broken)
 
         assertEquals(broken, original.editableBody)
-        val edited = original.edited(description = "口味")
-        assertEquals("口味", edited.description)
+        val edited = original.edited(description = "ذوق")
+        assertEquals("ذوق", edited.description)
         assertEquals(broken, edited.body)
     }
 
     @Test
     fun `aliases containing a comma stay whole when another one is added`() {
-        val original = file("---\nname: food\naliases: ['a, b', 吃的，喝的]\n---\n\nbody\n")
-        assertEquals(listOf("a, b", "吃的，喝的"), original.aliases)
+        val original = file("---\nname: food\naliases: ['a, b', مأكولات،مشروبات]\n---\n\nbody\n")
+        assertEquals(listOf("a, b", "مأكولات،مشروبات"), original.aliases)
 
-        assertEquals(listOf("a, b", "吃的，喝的", "c"), original.edited(aliases = original.aliases + "c").aliases)
+        assertEquals(listOf("a, b", "مأكولات،مشروبات", "c"), original.edited(aliases = original.aliases + "c").aliases)
     }
 }

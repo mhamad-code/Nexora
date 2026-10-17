@@ -23,15 +23,12 @@ class MemoryConsolidationSchedulerTest {
 
     private class Call(val conversationIds: Set<Uuid>, val fullReview: Boolean)
 
-    /** 扮演数据库和模型：[pending] 是还没整理的轮数，整理成功后清掉 */
     private inner class FakeWorker : MemoryConsolidationWorker {
         val pending = mutableMapOf<Uuid, Int>()
-        // 不在这里的对话都属于 memoryId
         val memoryIdOf = mutableMapOf<Uuid, String>()
         val calls = mutableListOf<Call>()
         var failure: Exception? = null
         var gate: CompletableDeferred<Unit>? = null
-        // 查完数据库、结果还没返回时停在这里
         var scanGate: CompletableDeferred<Unit>? = null
 
         private fun item(id: Uuid, turns: Int) = PendingMemoryConversation(id, memoryIdOf[id] ?: memoryId, turns)
@@ -134,7 +131,6 @@ class MemoryConsolidationSchedulerTest {
         runCurrent()
 
         assertEquals(1, worker.calls.size)
-        // 已经整理过，原来的定时器不该再触发一次
         advanceTimeBy(5.minutes)
         assertEquals(1, worker.calls.size)
     }
@@ -176,10 +172,8 @@ class MemoryConsolidationSchedulerTest {
         worker.gate = CompletableDeferred()
 
         scheduler.finishTurn(chat, pendingTurns = 1)
-        // 还没查出有没有待整理的内容就先占住保活
         assertEquals(1, activeHolds)
         advanceTimeBy(2.minutes - 1.seconds)
-        // 和在前台时一样等空闲，等的时候一直占着
         assertTrue(worker.calls.isEmpty())
         assertEquals(1, activeHolds)
 
@@ -201,7 +195,6 @@ class MemoryConsolidationSchedulerTest {
         advanceTimeBy(1.minutes)
         scheduler.finishTurn(chat, pendingTurns = 2)
         runCurrent()
-        // 前一次的保活随被顶掉的定时器放开，中间没有断过
         assertEquals(1, activeHolds)
         advanceTimeBy(2.minutes + 1.seconds)
 
@@ -259,13 +252,11 @@ class MemoryConsolidationSchedulerTest {
         assertEquals(3, status.pendingTurns)
         assertFalse(status.running)
 
-        // 切走应用、离开对话也不会再试
         scheduler.onAppHidden()
         scheduler.onConversationLeft(chat.id)
         runCurrent()
         assertEquals(1, worker.calls.size)
 
-        // 下一轮对话结束时连同之前的一起重试
         worker.failure = null
         scheduler.finishTurn(chat, pendingTurns = 4)
         runCurrent()
@@ -300,7 +291,6 @@ class MemoryConsolidationSchedulerTest {
 
         scheduler.finishTurn(chat, pendingTurns = 3)
         runCurrent()
-        // 整理完了，正在重新查数据库；这时另一个对话的一轮结束了，查询结果里没有它
         assertEquals(1, worker.calls.size)
         scheduler.finishTurn(otherChat, pendingTurns = 1)
         runCurrent()

@@ -60,8 +60,6 @@ import kotlin.math.abs
 import kotlin.math.sign
 
 /**
- * 直接画在调用处的布局里，不开新窗口，toast 以外的区域不拦截触摸。
- * 需要放在页面内容之上（例如根 Box 的最后一个子节点）。
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -77,7 +75,6 @@ fun Toaster(
             .widthIn(max = 480.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // 新的 toast 在最上面
         state.items.asReversed().forEach { item ->
             key(item.id) {
                 LaunchedEffect(item) {
@@ -130,7 +127,6 @@ private fun ToastContent(
                 translationX = offsetX.value
                 alpha = 1f - (abs(offsetX.value) / width.coerceAtLeast(1)).coerceIn(0f, 1f)
             }
-            // 左右滑动关闭
             .draggable(
                 state = draggableState,
                 orientation = Orientation.Horizontal,

@@ -124,7 +124,6 @@ class ExampleUnitTest {
         val root = "test-workspace"
         manager.ensureWorkspace(root)
 
-        // 不传 stdin 时子进程的 stdin 应立即 EOF; cat 会直接退出而不是等管道输入
         val result = manager.executeCommand(
             root = root,
             command = "cat",

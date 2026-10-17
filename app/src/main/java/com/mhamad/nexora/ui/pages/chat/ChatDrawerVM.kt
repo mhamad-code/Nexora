@@ -56,16 +56,13 @@ class ChatDrawerVM(
         .map { it.displaySetting.conversationSortOrder }
         .distinctUntilChanged()
 
-    // 当前选中的文件夹筛选，null 表示「未归类」视图
     private val _selectedFolderId = MutableStateFlow<Uuid?>(null)
     val selectedFolderId: StateFlow<Uuid?> = _selectedFolderId.asStateFlow()
 
-    // 当前助手的文件夹列表（Room Flow，增删改自动刷新）
     val folders: StateFlow<List<Folder>> = assistantIdFlow
         .flatMapLatest { folderRepo.getFoldersOfAssistant(it) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    // 当前助手的记忆库是否正在后台整理；没开记忆的助手即使共用的全局记忆库在整理也不显示
     val memoryDreaming: StateFlow<Boolean> = settingsStore.settingsFlow
         .map { settings -> settings.getCurrentAssistant().takeIf { it.enableMemory }?.memoryId }
         .distinctUntilChanged()
@@ -95,7 +92,6 @@ class ChatDrawerVM(
                                 }
 
                                 else -> {
-                                    // 日期分组跟随排序依据：按创建时间排序时以创建日期分组
                                     val afterDate = after.conversation.sortDate(sortOrder)
                                     val sameGroup = before != null &&
                                         !before.conversation.isPinned &&
@@ -120,8 +116,6 @@ class ChatDrawerVM(
     val scrollOffset: Int get() = savedStateHandle["scrollOffset"] ?: 0
 
     init {
-        // 助手切换时重置文件夹筛选，回到「聊天」视图，
-        // 避免继续显示上一个助手文件夹内的会话（文件夹是助手内分组）
         viewModelScope.launch {
             assistantIdFlow.collect {
                 _selectedFolderId.value = null
@@ -156,14 +150,12 @@ class ChatDrawerVM(
     }
 
     /**
-     * 删除文件夹。若文件夹内有正在生成回复的会话，拒绝删除并返回 false（UI 层据此提示用户）。
      */
     fun deleteFolder(folderId: Uuid): Boolean {
         if (chatService.hasGeneratingConversationInFolder(folderId)) {
             return false
         }
         viewModelScope.launch {
-            // 经 ChatService 删除：会同步清空活跃 session 内存态的 folderId，避免整对象保存写回已删文件夹
             chatService.deleteFolder(folderId)
             if (_selectedFolderId.value == folderId) {
                 _selectedFolderId.value = null
@@ -174,7 +166,6 @@ class ChatDrawerVM(
 
     fun moveConversationToFolder(conversationId: Uuid, folderId: Uuid?) {
         viewModelScope.launch {
-            // 经 ChatService 移动：活跃会话会先同步内存态，避免后续整对象保存覆盖 folder_id
             chatService.moveConversationToFolder(conversationId, folderId)
         }
     }

@@ -29,18 +29,18 @@ const SEARCH_TOOL_NAME = "search";
 const SEARCH_SERVICE_LABELS: Record<string, string> = {
   bing_local: "Bing",
   rikkahub: "RikkaHub",
-  zhipu: "智谱",
+  zhipu: "Zhipu",
   tavily: "Tavily",
   exa: "Exa",
   searxng: "SearXNG",
   linkup: "LinkUp",
   brave: "Brave",
-  metaso: "秘塔",
+  metaso: "Mita",
   ollama: "Ollama",
   perplexity: "Perplexity",
   firecrawl: "Firecrawl",
   jina: "Jina",
-  bocha: "博查",
+  bocha: "بو تشا",
 };
 
 export interface SearchPickerButtonProps {
@@ -113,7 +113,7 @@ export function SearchPickerButton({
   const canUse = Boolean(settings && currentAssistant && !disabled);
   const { error, setError, popoverProps } = usePickerPopover(canUse);
 
-  // 会话开始后以会话上固定的搜索方式为准
+  // بعد بدء الجلسة، اعتمد طريقة البحث المثبتة على الجلسة
   const builtInSearchEnabled = config
     ? config.builtInSearch === true
     : hasBuiltInSearch(currentModel?.tools);

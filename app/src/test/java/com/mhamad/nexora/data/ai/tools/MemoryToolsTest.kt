@@ -116,7 +116,7 @@ class MemoryToolsTest {
         }
         val id = call(MemoryToolNames.WRITE) {
             put("path", "/profile.md")
-            put("content", "- [stated] 身份证号11010519491231002X\n")
+            put("content", "- [stated] رقم الهوية11010519491231002X\n")
             put("if_version", "new")
         }
 

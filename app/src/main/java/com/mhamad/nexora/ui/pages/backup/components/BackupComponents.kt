@@ -75,7 +75,6 @@ import com.mhamad.nexora.utils.fileSizeToString
 import com.mhamad.nexora.utils.toLocalDateTime
 import java.time.Instant
 
-// 列表项开头的图标，操作进行中时换成进度圈
 @Composable
 internal fun BackupActionIcon(
     icon: ImageVector,
@@ -93,7 +92,6 @@ internal fun BackupActionIcon(
     }
 }
 
-// 「备份内容」多选项，本地、WebDAV、S3 共用
 internal fun <T> CardGroupScope.backupContentItem(
     options: List<T>,
     selected: List<T>,
@@ -117,7 +115,6 @@ internal fun <T> CardGroupScope.backupContentItem(
     }
 }
 
-// WebDAV / S3 页顶部的状态分组：上次备份时间，以及进入备份文件列表的入口
 @Composable
 internal fun RemoteBackupStatus(
     lastBackupTime: Long,
@@ -153,7 +150,6 @@ internal fun RemoteBackupStatus(
     }
 }
 
-// WebDAV / S3 页共用的外壳：可滚动的表单，底部悬浮着测试连接和立即备份
 @Composable
 internal fun RemoteBackupLayout(
     isBackingUp: Boolean,
@@ -177,13 +173,11 @@ internal fun RemoteBackupLayout(
                     onCollapse = { expanded = false },
                 )
                 .verticalScroll(rememberScrollState())
-                // 底部留出悬浮工具栏的位置
                 .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 128.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             content = content,
         )
 
-        // 键盘弹出时收起，不然会盖住正在输入的那一行
         AnimatedVisibility(
             visible = !WindowInsets.isImeVisible,
             modifier = Modifier
@@ -238,12 +232,10 @@ internal class BackupFileInfo(
     val lastModified: Instant,
 )
 
-// 远程备份文件列表，可以恢复或删除其中一份
 @Composable
 internal fun <T> BackupFilesSheet(
     title: String,
     state: UiState<List<T>>,
-    // 正在恢复的那份备份的文件名，恢复期间所有按钮都不可点
     restoringName: String?,
     info: (T) -> BackupFileInfo,
     onDelete: (T) -> Unit,

@@ -21,9 +21,9 @@ Material 3 look (cards with dividers, plain forms).
 ## Build, Test, and Development Commands
 
 ```bash
-./gradlew assembleDebug          # 构建 Debug APK
-./gradlew test                   # 运行所有模块的 JVM 单元测试
-./gradlew lint                   # 运行 Android Lint
+./gradlew assembleDebug          # بناء Debug APK
+./gradlew test                   # تشغيل جميع وحدات الـ JVM اختبار وحدة
+./gradlew lint                   # تشغيل Android Lint
 ```
 
 ## Module Structure

@@ -100,20 +100,16 @@ fun Float.toFixed(digits: Int = 0) = "%.${digits}f".format(this)
 fun Double.toFixed(digits: Int = 0) = "%.${digits}f".format(this)
 
 /**
- * 提取字符串中所有引号内的内容
- * 支持多种引号类型：英文双引号 "..."、英文单引号 '...'、中文双引号 "..."、中文单引号 '...'、直角引号「…」、白直角引号『…』
- * @return 所有引号内内容的列表
  */
 fun String.extractQuotedContent(): List<String> {
     val result = mutableListOf<String>()
-    // 匹配多种引号类型
     val patterns = listOf(
-        "\u201C([^\u201D]*?)\u201D",  // 中文双引号
-        "\u2018([^\u2019]*?)\u2019",  // 中文单引号
-        """"([^"]*?)"""",  // 英文双引号
-        """'([^']*?)'""",  // 英文单引号
-        """「([^」]*?)」""",           // 直角引号
-        """『([^』]*?)』""",           // 白直角引号
+        "\u201C([^\u201D]*?)\u201D",
+        "\u2018([^\u2019]*?)\u2019",
+        """"([^"]*?)"""",
+        """'([^']*?)'""",
+        """"([^"]*?)"""",
+        """『([^』]*?)』""",
     )
     for (pattern in patterns) {
         val regex = Regex(pattern)
@@ -128,9 +124,6 @@ fun String.extractQuotedContent(): List<String> {
 }
 
 /**
- * 提取字符串中所有引号内的内容并合并为一个字符串
- * @param separator 分隔符，默认为换行
- * @return 合并后的字符串，如果没有引号内容则返回 null
  */
 fun String.extractQuotedContentAsText(separator: String = "\n"): String? {
     val contents = extractQuotedContent()
@@ -142,12 +135,9 @@ fun String.extractQuotedContentAsText(separator: String = "\n"): String? {
 }
 
 /**
- * 移除字符串中所有括号内的内容
- * 支持英文括号 (...) 和中文括号（...）
- * @return 移除括号内容后的字符串，如果全被移除则返回 null
  */
 fun String.removeBracketedContent(): String? {
-    val pattern = """\([^)]*?\)|（[^）]*?）""".toRegex()
+    val pattern = """\([^)]*?\)|([^)]*?)""".toRegex()
     val result = pattern.replace(this, "").trim()
     return result.ifBlank { null }
 }

@@ -33,7 +33,6 @@ import me.rerere.hugeicons.stroke.AlertCircle
 import com.mhamad.nexora.R
 
 /**
- * 权限请求说明对话框
  */
 @Composable
 internal fun PermissionRationaleDialog(
@@ -62,7 +61,6 @@ internal fun PermissionRationaleDialog(
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 标题图标
                 Icon(
                     imageVector = HugeIcons.AlertCircle,
                     contentDescription = null,
@@ -72,7 +70,6 @@ internal fun PermissionRationaleDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 标题
                 val hasPermanentlyDenied = permanentlyDeniedPermissions.isNotEmpty()
                 Text(
                     text = stringResource(R.string.permission_diaog_title),
@@ -83,7 +80,6 @@ internal fun PermissionRationaleDialog(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // 说明文字
                 Text(
                     text = if (hasPermanentlyDenied) {
                         stringResource(R.string.permission_desc_goto_setting)
@@ -97,7 +93,6 @@ internal fun PermissionRationaleDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 权限列表
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -113,9 +108,7 @@ internal fun PermissionRationaleDialog(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // 按钮组
                 if (hasPermanentlyDenied) {
-                    // 有永久拒绝的权限，只显示前往设置和取消按钮
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -128,14 +121,13 @@ internal fun PermissionRationaleDialog(
                         }
 
                         Button(
-                            onClick = onProceed, // 这里会跳转到设置
+                            onClick = onProceed,
                             modifier = Modifier.weight(1f)
                         ) {
                             Text(stringResource(R.string.permission_go_to_settings))
                         }
                     }
                 } else {
-                    // 没有永久拒绝的权限，显示正常的授权按钮
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -161,7 +153,6 @@ internal fun PermissionRationaleDialog(
 }
 
 /**
- * 单个权限项组件
  */
 @Composable
 private fun PermissionItem(
@@ -181,7 +172,6 @@ private fun PermissionItem(
                 .fillMaxWidth()
                 .padding(12.dp)
         ) {
-            // 权限名称
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -230,7 +220,6 @@ private fun PermissionItem(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // 权限使用说明
             ProvideTextStyle(value = MaterialTheme.typography.bodySmall) {
                 permissionInfo.usage()
             }

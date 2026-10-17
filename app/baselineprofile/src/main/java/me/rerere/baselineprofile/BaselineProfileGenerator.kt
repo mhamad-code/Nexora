@@ -57,23 +57,21 @@ class BaselineProfileGenerator {
             pressHome()
             startActivityAndWait()
 
-            // 等待聊天输入框出现（testTag 通过 testTagsAsResourceId 暴露为 resource-id）
             device.wait(Until.hasObject(By.res("chat_input")), 5_000)
 
-            // 点击输入框并输入一条 Markdown 文本（覆盖 Markdown / 代码块渲染路径）
             val input = device.findObject(By.res("chat_input"))
             if (input != null) {
                 input.click()
                 input.text = """
                     # Hello RikkaHub
 
-                    这是一段 **Markdown** 文本，包含 *斜体*、`行内代码` 和列表：
+                    هذا نص تجريبي بصيغة **Markdown** يحتوي على *خط مائل* و `رمز برمجي` وقائمة:
 
-                    - 第一项
-                    - 第二项
-                    - [链接](https://github.com)
+                    - العنصر الأول
+                    - العنصر الثاني
+                    - [رابط](https://github.com)
 
-                    > 引用块示例
+                    > اقتباس توضيحي
 
                     ```kotlin
                     fun main() {
@@ -83,7 +81,6 @@ class BaselineProfileGenerator {
                 """.trimIndent()
                 device.waitForIdle()
 
-                // 等待发送按钮并点击
                 device.wait(Until.hasObject(By.res("chat_send_button")), 3_000)
                 device.findObject(By.res("chat_send_button"))?.click()
                 device.waitForIdle()

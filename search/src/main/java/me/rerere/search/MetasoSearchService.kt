@@ -28,7 +28,7 @@ object MetasoSearchService : SearchService<SearchServiceOptions.MetasoOptions> {
     @Composable
     override fun Description() {
         Text(buildAnnotatedString {
-            append("秘塔搜索: ")
+            append("بحث Mita: ")
             withLink(LinkAnnotation.Url("https://metaso.cn/")) {
                 append("https://metaso.cn/")
             }

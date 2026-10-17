@@ -112,7 +112,6 @@ fun SettingMcpPage(vm: SettingVM = koinViewModel()) {
                     }
                     IconButton(
                         onClick = {
-                            // 名称为空的配置不会连接，先加进列表，具体配置到详情页里填
                             val config = McpServerConfig.StreamableHTTPServer()
                             vm.updateSettings { latest ->
                                 latest.copy(mcpServers = latest.mcpServers + config)
@@ -331,7 +330,7 @@ private fun McpServerItem(
                 if (status == McpStatus.NeedsAuthorization) {
                     val context = LocalContext.current
                     Text(
-                        text = "需要 OAuth 授权",
+                        text = "مطلوب OAuth تفويض",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.error,
                     )
@@ -339,19 +338,19 @@ private fun McpServerItem(
                         onClick = { mcpManager.startAuthorization(item, context) },
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
                     ) {
-                        Text("OAuth 授权")
+                        Text("OAuth تفويض")
                     }
                 }
                 if (status == McpStatus.Authorizing) {
                     Text(
-                        text = "正在授权，请在浏览器中完成…",
+                        text = "جارٍ التفويض،يرجى الإكمال في المتصفح…",
                         style = MaterialTheme.typography.labelSmall,
                     )
                     TextButton(
                         onClick = { mcpManager.cancelAuthorization(item) },
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
                     ) {
-                        Text("取消授权")
+                        Text("إلغاءتفويض")
                     }
                 }
             }

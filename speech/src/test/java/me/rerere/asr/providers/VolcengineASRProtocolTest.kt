@@ -42,16 +42,16 @@ class VolcengineASRProtocolTest {
     }
 
     @Test fun `decodes compressed final response with sequence and extended header`() {
-        val data = serverFrame("""{"result":{"text":"你好"}}""", flags = 3, compressed = true, extended = true)
+        val data = serverFrame("""{"result":{"text":"مرحبًا"}}""", flags = 3, compressed = true, extended = true)
         val response = VolcengineASRProtocol.decode(data)
         assertTrue(response.isLast)
-        assertEquals("你好", response.result!!.getValue("text").jsonPrimitive.content)
+        assertEquals("مرحبًا", response.result!!.getValue("text").jsonPrimitive.content)
     }
 
     @Test fun `decodes intermediate response and optional event number`() {
-        val response = VolcengineASRProtocol.decode(serverFrame("""{"result":{"text":"中间"}}""", flags = 5))
+        val response = VolcengineASRProtocol.decode(serverFrame("""{"result":{"text":"وسط"}}""", flags = 5))
         assertFalse(response.isLast)
-        assertEquals("中间", response.result!!.getValue("text").jsonPrimitive.content)
+        assertEquals("وسط", response.result!!.getValue("text").jsonPrimitive.content)
     }
 
     @Test fun `compressed server errors retain code and message`() {
@@ -68,27 +68,27 @@ class VolcengineASRProtocolTest {
     }
 
     @Test fun `partial result waits for definite even if second pass adjusts timestamp`() {
-        val preview = Json.parseToJsonElement("""{"text":"你好","utterances":[{"start_time":120,"text":"你好","definite":false}]}""").jsonObject
+        val preview = Json.parseToJsonElement("""{"text":"مرحبًا","utterances":[{"start_time":120,"text":"مرحبًا","definite":false}]}""").jsonObject
         val initial = VolcengineASRProtocol.voiceTurn(ASRVoiceTurn(), preview)
         assertNotNull(initial.itemId)
         assertFalse(initial.isComplete)
-        val final = Json.parseToJsonElement("""{"text":"您好。","utterances":[{"start_time":100,"end_time":900,"text":"您好。","definite":true}]}""").jsonObject
+        val final = Json.parseToJsonElement("""{"text":"مرحبًا.","utterances":[{"start_time":100,"end_time":900,"text":"مرحبًا.","definite":true}]}""").jsonObject
         val completed = VolcengineASRProtocol.voiceTurn(initial, final)
         assertTrue(completed.isComplete)
         assertEquals(initial.itemId, completed.itemId)
-        assertEquals("您好。", completed.finalText)
+        assertEquals("مرحبًا.", completed.finalText)
     }
 
     @Test fun `cumulative and repeated results cannot replace an already finalized turn`() {
-        val result = Json.parseToJsonElement("""{"utterances":[{"text":"第一句","definite":true},{"text":"第二句","definite":true}]}""").jsonObject
+        val result = Json.parseToJsonElement("""{"utterances":[{"text":"الجملة الأولى","definite":true},{"text":"الجملة الثانية","definite":true}]}""").jsonObject
         val turn = VolcengineASRProtocol.voiceTurn(ASRVoiceTurn(), result)
-        assertEquals("第一句", turn.finalText)
+        assertEquals("الجملة الأولى", turn.finalText)
         assertEquals(turn, VolcengineASRProtocol.voiceTurn(turn, result))
-        assertEquals(turn, VolcengineASRProtocol.voiceTurn(turn, Json.parseToJsonElement("""{"utterances":[{"text":"其他","definite":true}]}""").jsonObject))
+        assertEquals(turn, VolcengineASRProtocol.voiceTurn(turn, Json.parseToJsonElement("""{"utterances":[{"text":"أخرى","definite":true}]}""").jsonObject))
     }
 
     @Test fun `preview without utterances marks active speech and empty definite completes`() {
-        val preview = Json.parseToJsonElement("""{"text":"你好"}""").jsonObject
+        val preview = Json.parseToJsonElement("""{"text":"مرحبًا"}""").jsonObject
         val turn = VolcengineASRProtocol.voiceTurn(ASRVoiceTurn(), preview)
         assertNotNull(turn.itemId)
         assertFalse(turn.isComplete)

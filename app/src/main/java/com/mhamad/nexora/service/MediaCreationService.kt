@@ -61,10 +61,7 @@ import kotlin.uuid.Uuid
 private const val TAG = "MediaCreationService"
 
 /**
- * 一次提交的内容。[assets] 可以指向任何已有的本地文件（草稿里的素材、别的记录的输入或输出），
- * 提交时会复制一份到新记录自己的目录下。
  *
- * [nodeId] 非空时新记录成为时间线上那一项的新版本，否则另起一项。
  */
 data class MediaCreationSubmission(
     val sessionId: Uuid,
@@ -77,11 +74,7 @@ data class MediaCreationSubmission(
 )
 
 /**
- * 媒体创作的生成任务。每条记录一个协程，互不阻塞；任务挂在应用级作用域上，离开页面后继续运行，
- * 并由 [MediaCreationForegroundService] 把进程留在前台。
  *
- * 一条记录的流程：上传素材（只有要求公网地址的接口需要）→ 提交 → 轮询到终态 → 把结果下载到本地。
- * 进度全部写进数据库，界面只需要观察记录。
  */
 class MediaCreationService(
     private val context: Application,
@@ -95,7 +88,6 @@ class MediaCreationService(
     private val jobs = ConcurrentHashMap<Uuid, Job>()
 
     /**
-     * 新建一条记录并开始生成。提交过程放在应用级作用域里，调用方中途被取消也不会留下半条记录。
      */
     suspend fun submit(submission: MediaCreationSubmission): MediaCreationRecord = inAppScope {
         val capabilities = submission.provider.capabilities(submission.model.kind)
@@ -114,7 +106,6 @@ class MediaCreationService(
             params = submission.params.supportedBy(capabilities),
             inputs = copyInputs(submission.sessionId, recordId, assets),
         )
-        // 先登记任务再写入记录：恢复逻辑把「进行中但没有任务」的记录当作被中断，不能让它看到这个空档
         val job = register(record.id, record.sessionId)
             ?: error(context.getString(R.string.media_creation_error_task_exists))
         try {
@@ -136,11 +127,9 @@ class MediaCreationService(
     }
 
     /**
-     * 重新执行失败或已取消的记录。服务端还有任务时接着查询，否则重新提交。
      */
     suspend fun retry(recordId: Uuid) = inAppScope {
         val sessionId = repository.getRecord(recordId)?.sessionId ?: return@inAppScope
-        // 和 submit 一样先登记任务，再把记录改成进行中
         val job = register(recordId, sessionId) ?: return@inAppScope
         var started = false
         try {
@@ -168,7 +157,6 @@ class MediaCreationService(
     }
 
     /**
-     * 停止等待一条记录。已经提交给服务端的任务无法撤回，[MediaCreationRecord.taskId] 会保留，之后可以重试接着查询。
      */
     suspend fun cancel(recordId: Uuid) = inAppScope {
         jobs[recordId]?.cancelAndJoin()
@@ -188,7 +176,6 @@ class MediaCreationService(
     }
 
     /**
-     * 进程启动后接管上次没跑完的记录：有任务 ID 的接着查询，其余的在提交前就被中断了，标记为失败。
      */
     fun resumePending() {
         appScope.launch {
@@ -212,7 +199,6 @@ class MediaCreationService(
         }
     }
 
-    // 记录已有任务在跑时返回 null
     private fun register(recordId: Uuid, sessionId: Uuid): Job? {
         val job = appScope.launch(start = CoroutineStart.LAZY) {
             val foreground = MediaCreationForegroundService.acquire(context, recordId, sessionId)
@@ -234,7 +220,6 @@ class MediaCreationService(
         try {
             generate(recordId)
         } catch (e: Throwable) {
-            // 被取消时记录的状态由取消方负责
             currentCoroutineContext().ensureActive()
             Log.e(TAG, "Generation $recordId failed", e)
             repository.updateRecord(recordId) {
@@ -258,7 +243,6 @@ class MediaCreationService(
             if (created.isTerminal) {
                 created
             } else {
-                // 任务已经在服务端跑起来了：就算此刻被取消也要把任务 ID 记下来，否则再也找不回它
                 withContext(NonCancellable) {
                     repository.updateRecord(record.id) {
                         it.copy(taskId = created.id, status = created.status.toCreationStatus(it.status))
@@ -270,7 +254,6 @@ class MediaCreationService(
         }
 
         if (task.status != MediaGenerationStatus.SUCCEEDED) {
-            // 服务端的任务已经结束，没有再查询的意义
             repository.updateRecord(record.id) {
                 it.copy(status = MediaCreationStatus.FAILED, taskId = null, error = task.failureMessage(context))
             }
@@ -315,11 +298,7 @@ class MediaCreationService(
     }
 
     /**
-     * 轮询到终态。网络抖动和服务端的临时错误不代表任务失败，退避后继续查询；
-     * 接口明确拒绝（4xx）、连续失败太多次或等待超时才放弃，此时记录仍保留任务 ID，可以重试。
      *
-     * 时限从 [since] 算起。接着查询已有任务时传记录最后一次变化的时间，而不是现在：
-     * 否则进程每重启一次时限就续一次，一个始终不结束的任务会被永远查下去。
      */
     private suspend fun awaitTask(
         setting: MediaGenerationProviderSetting,
@@ -375,7 +354,6 @@ class MediaCreationService(
         outputs: List<MediaGenerationOutput>,
     ): List<MediaCreationOutput> = withContext(Dispatchers.IO) {
         val dir = repository.recordDir(record.sessionId, record.id).apply { mkdirs() }
-        // 清掉上一次没下完的残留
         dir.listFiles { file -> file.name.startsWith(OUTPUT_PREFIX) }?.forEach { it.delete() }
 
         outputs.mapIndexedNotNull { index, output ->
@@ -392,7 +370,6 @@ class MediaCreationService(
             if (isVideo) {
                 val poster = File(dir, "$OUTPUT_PREFIX${index}_poster.jpg")
                     .takeIf { MediaCreationFiles.extractFrame(file, it, last = false) }
-                // 尾帧只是「续写」时的捷径，下载不到就等用的时候再从视频里抽
                 val lastFrame = output.lastFrameUrl?.let { lastFrameUrl ->
                     File(dir, "$OUTPUT_PREFIX${index}_last.${lastFrameUrl.urlExtension() ?: "jpg"}")
                         .takeIf { runCatching { download(setting, lastFrameUrl, it, attempts = 1) }.isSuccess }
@@ -425,7 +402,6 @@ class MediaCreationService(
         target: File,
         attempts: Int = DOWNLOAD_ATTEMPTS,
     ) {
-        // 个别厂商的结果地址没有签名，要带着密钥去取
         val request = Request.Builder().url(url).headers(setting.downloadHeaders(url).toHeaders()).build()
         var attempt = 0
         while (true) {
@@ -447,7 +423,6 @@ class MediaCreationService(
         val call = okHttpClient.newCall(request)
         try {
             coroutineScope {
-                // 断流时线程卡在 read() 里，走不到 ensureActive()：取消时关掉连接，让 read() 立刻抛出来
                 val canceller = launch(start = CoroutineStart.UNDISPATCHED) {
                     try {
                         awaitCancellation()
@@ -481,7 +456,6 @@ class MediaCreationService(
 
     private fun notifyFinished(record: MediaCreationRecord) {
         if (record.status != MediaCreationStatus.SUCCEEDED && record.status != MediaCreationStatus.FAILED) return
-        // 应用在前台时时间线上已经能看到结果
         if (ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) return
         val isVideo = record.kind == MediaKind.VIDEO
         val succeeded = record.status == MediaCreationStatus.SUCCEEDED
@@ -515,7 +489,6 @@ class MediaCreationService(
         private val MAX_POLL_INTERVAL = 60.seconds
         private val MAX_WAIT = 24.hours
 
-        // 查询成功时按固定间隔轮询，连续失败时逐步放慢
         private fun pollDelay(failures: Int): Duration =
             (POLL_INTERVAL * (1 shl failures.coerceIn(0, 4))).coerceAtMost(MAX_POLL_INTERVAL)
     }
@@ -524,12 +497,11 @@ class MediaCreationService(
 private fun MediaGenerationStatus.toCreationStatus(current: MediaCreationStatus): MediaCreationStatus = when (this) {
     MediaGenerationStatus.QUEUED -> MediaCreationStatus.QUEUED
     MediaGenerationStatus.RUNNING -> MediaCreationStatus.RUNNING
-    // 认不出的状态当作还在进行，保持界面上原来的显示
     else -> current.takeIf { it == MediaCreationStatus.QUEUED } ?: MediaCreationStatus.RUNNING
 }
 
 private fun MediaGenerationTask.failureMessage(context: Context): String {
-    val reason = error?.let { error -> listOfNotNull(error.code, error.message).joinToString("：") }
+    val reason = error?.let { error -> listOfNotNull(error.code, error.message).joinToString(":") }
     return reason?.takeIf(String::isNotBlank) ?: when (status) {
         MediaGenerationStatus.CANCELLED -> context.getString(R.string.media_creation_error_cancelled_remotely)
         MediaGenerationStatus.EXPIRED -> context.getString(R.string.media_creation_error_expired)
@@ -537,7 +509,6 @@ private fun MediaGenerationTask.failureMessage(context: Context): String {
     }
 }
 
-// 4xx 是接口明确拒绝（密钥错误、任务不存在等），重试没有意义；限流和超时除外
 private fun Throwable.isRetryable(): Boolean =
     this !is MediaGenerationApiException || statusCode !in 400..499 || statusCode == 408 || statusCode == 429
 
@@ -558,7 +529,6 @@ private fun MediaGenerationOutput.fileExtension(): String = when (mimeType.lower
     else -> url?.urlExtension() ?: if (mimeType.startsWith("video/")) "mp4" else "png"
 }
 
-// 结果地址通常带签名参数，扩展名在 path 末尾
 private fun String.urlExtension(): String? =
     substringBefore('?').substringAfterLast('/').substringAfterLast('.', "")
         .lowercase()

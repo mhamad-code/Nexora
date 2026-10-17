@@ -68,11 +68,7 @@ import org.koin.core.parameter.parametersOf
 import java.time.Instant
 
 /**
- * 记忆文件的详情页：查看时按「更新时间 / 摘要 / 别名 / 正文」分段展示，编辑时也是这几项各填各的，
- * 保存时再拼回带 frontmatter 的原文。
  *
- * @param memoryId 记忆库的 id（助手 id 或全局记忆库）
- * @param path 文件路径，为 null 时新建
  */
 @Composable
 fun MemoryFilePage(memoryId: String, path: String?) {
@@ -88,13 +84,11 @@ fun MemoryFilePage(memoryId: String, path: String?) {
 
     val isNew = path == null
     val file = (state as? MemoryFileState.Loaded)?.file
-    // 新文件没有内容可看，直接进编辑
     var editing by rememberSaveable { mutableStateOf(isNew) }
     var draftPath by rememberSaveable { mutableStateOf("") }
     var draftTitle by rememberSaveable { mutableStateOf("") }
     var draftDescription by rememberSaveable { mutableStateOf("") }
     var draftAliases by rememberSaveable { mutableStateOf(emptyList<String>()) }
-    // 别名输入框里还没加进列表的那个
     var draftAliasInput by rememberSaveable { mutableStateOf("") }
     var draftBody by rememberSaveable { mutableStateOf("") }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -103,16 +97,12 @@ fun MemoryFilePage(memoryId: String, path: String?) {
 
     val normalizedDraftPath = MemoryFile.normalizePath(draftPath)
     val draftPathValid = normalizedDraftPath != null
-    // 新建时还没有文件，拿路径造一个空的来拼内容
     val base = file ?: remember(normalizedDraftPath) {
         MemoryFile(path = normalizedDraftPath.orEmpty(), content = "", updatedAt = 0)
     }
-    // 输入框里打了字没点添加就保存的，也算一个别名，不然就悄悄丢了
     val draftContent = remember(base, draftTitle, draftDescription, draftAliases, draftAliasInput, draftBody) {
         base.contentWith(draftTitle, draftDescription, draftAliases.withAlias(draftAliasInput), draftBody)
     }
-    // 和没改过的各项拼出来的内容比，而不是和原文比：原文的 YAML 写法可能和这里拼的不一样，
-    // 直接比的话什么都没改也会显示成可以保存
     val unchangedContent = remember(file) {
         file?.run { contentWith(title, description, aliases, editableBody) }
     }
@@ -131,7 +121,6 @@ fun MemoryFilePage(memoryId: String, path: String?) {
         }
     }
 
-    // 编辑已有文件时，返回是放弃修改回到详情，而不是离开页面
     BackHandler(enabled = editing && !isNew) { editing = false }
 
     Scaffold(
@@ -300,7 +289,6 @@ private fun MemoryFileDetail(
             if (file.body.isNotBlank()) {
                 formItem {
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        // 和上面几项的 overline 保持一致
                         Text(
                             text = stringResource(R.string.memory_file_page_details),
                             style = MaterialTheme.typography.labelSmall,
@@ -320,10 +308,6 @@ private fun MemoryFileDetail(
 }
 
 /**
- * @param path 新建时要填的路径，编辑已有文件时为 null
- * @param titlePlaceholder 标题留空时界面上会显示的名字，从路径推出来
- * @param aliasInput 别名输入框里还没加进 [aliases] 的那个
- * @param contentValid 拼出来的整个文件是否没超过大小上限
  */
 @Composable
 private fun MemoryFileEditor(
@@ -348,16 +332,13 @@ private fun MemoryFileEditor(
         modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding)
-            // 导航栏那一段已经在 innerPadding 里了，不标成用掉的话 imePadding 会再留一次
             .consumeWindowInsets(innerPadding)
-            // 放在滚动外面：键盘弹出时可滚动的区域跟着变矮，正在输入的那一行才会被滚到键盘上方
             .imePadding()
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp)
             .padding(bottom = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        // 紧跟在顶栏的标题下面，左边和标题对齐
         Text(
             text = stringResource(R.string.memory_file_page_edit_warning),
             style = MaterialTheme.typography.bodySmall,
@@ -458,7 +439,6 @@ private fun MemoryFileEditor(
     }
 }
 
-// 把输入框里的 [input] 加进别名；空的或者已经有了就不加
 private fun List<String>.withAlias(input: String): List<String> {
     val alias = input.trim()
     return if (alias.isEmpty() || alias in this) this else this + alias

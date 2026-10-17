@@ -21,9 +21,7 @@ import com.mhamad.nexora.data.datastore.DisplaySetting
 import com.mhamad.nexora.ui.theme.LocalDarkMode
 
 /**
- * 输入框容器的背景效果（模糊或玻璃），未开启时原样返回。
  *
- * 开启后容器本身需要保持透明，[containerColor] 由效果负责铺底和着色。
  */
 @Composable
 internal fun Modifier.chatInputHaze(
@@ -64,8 +62,6 @@ internal fun Modifier.chatInputHaze(
     }
 }
 
-// Haze 按系统夜间模式选玻璃的明暗预设，应用内单独设置主题时会选错（深色主题下被提亮发白），
-// 所以按应用主题显式写入。深色数值对应库里 internal 的 GlassStyle.regularDark。
 private fun GlassStyleScope.appearanceResponse(dark: Boolean) {
     if (dark) {
         specularIntensity(0.38f)

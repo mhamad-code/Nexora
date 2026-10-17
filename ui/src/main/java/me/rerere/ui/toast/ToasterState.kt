@@ -38,7 +38,6 @@ class ToasterState internal constructor(
     ) {
         val item = ToastItem(id = nextId.getAndIncrement(), message = message, type = type)
         items.add(item)
-        // 超出可见数量时让最早的先退出
         items.filter { it.visibleState.targetState }
             .dropLast(maxVisibleToasts)
             .forEach { dismiss(it) }

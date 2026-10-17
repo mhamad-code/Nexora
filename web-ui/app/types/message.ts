@@ -3,7 +3,7 @@ import type { UIMessageAnnotation } from "./annotations";
 import type { UIMessagePart } from "./parts";
 
 /**
- * 消息上保存的模型名称快照，模型被删除后用它显示来源
+ * لقطة اسم النموذج المحفوظة على الرسالة،استخدمه لعرض المصدر بعد حذف النموذج
  * @see ai/src/main/java/me/rerere/ai/ui/Message.kt - ModelSnapshot
  */
 export interface ModelSnapshot {

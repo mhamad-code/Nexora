@@ -64,7 +64,6 @@ class MessageFtsManager(private val database: AppDatabase) {
     suspend fun search(
         keyword: String,
         sort: MessageSearchSort = MessageSearchSort.RELEVANCE,
-        // 只搜这些助手的对话，null 表示不限
         assistantIds: Collection<String>? = null,
     ): List<MessageSearchResult> = withContext(Dispatchers.IO) {
         val results = mutableListOf<MessageSearchResult>()
@@ -83,14 +82,14 @@ class MessageFtsManager(private val database: AppDatabase) {
         val cursor = db.query(
             """
             SELECT node_id, message_id, conversation_id, title, update_at,
-                   simple_snippet(message_fts, 0, '[', ']', '...', 30) AS snippet
+                   snippet(message_fts, 0, '[', ']', '...', 30) AS snippet
             FROM message_fts
-            WHERE text MATCH jieba_query(?)
+            WHERE text MATCH ?
             $assistantFilter
             ORDER BY ${sort.orderBy}
             LIMIT 50
             """.trimIndent(),
-            arrayOf(keyword, *assistantIds.orEmpty().toTypedArray())
+            arrayOf(keyword.toFtsQuery(), *assistantIds.orEmpty().toTypedArray())
         )
         Log.i(TAG, "search: $keyword")
         cursor.use {
@@ -115,3 +114,8 @@ private fun UIMessage.extractFtsText(): String =
     parts.filterIsInstance<UIMessagePart.Text>()
         .joinToString("\n") { it.text }
         .take(10_000)
+
+private fun String.toFtsQuery(): String = trim()
+    .split(Regex("\\s+"))
+    .filter(String::isNotBlank)
+    .joinToString(" AND ") { "\"${it.replace("\"", "\"\"")}\"" }

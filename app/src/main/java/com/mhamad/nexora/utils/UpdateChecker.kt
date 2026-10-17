@@ -67,25 +67,18 @@ class UpdateChecker(
     fun downloadUpdate(context: Context, download: UpdateDownload) {
         runCatching {
             val request = DownloadManager.Request(download.url.toUri()).apply {
-                // 设置下载时通知栏的标题和描述
                 setTitle(download.name)
-                setDescription("正在下载更新包...")
-                // 下载完成后通知栏可见
+                setDescription("جارٍ تنزيل حزمة التحديث...")
                 setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                // 允许在移动网络和WiFi下下载
                 setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
-                // 设置文件保存路径
                 setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, download.name)
-                // 允许下载的文件类型
                 setMimeType("application/vnd.android.package-archive")
             }
-            // 获取系统的DownloadManager
             val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
             dm.enqueue(request)
-            // 你可以保存返回的downloadId到本地，以便后续查询下载进度或状态
         }.onFailure {
             Toast.makeText(context, "Failed to update", Toast.LENGTH_SHORT).show()
-            context.openUrl(download.url) // 跳转到下载页面
+            context.openUrl(download.url)
         }
     }
 }
@@ -106,21 +99,13 @@ data class UpdateInfo(
 )
 
 /**
- * 版本号值类，封装版本号字符串并提供比较功能
  *
- * 支持完整的 SemVer 规范：MAJOR.MINOR.PATCH[-prerelease][+build]
- * - 预发布版本优先级低于正式版：1.0.0-alpha < 1.0.0
- * - 预发布标识符按段逐个比较：数字按数值比较，字符串按字典序比较
- * - 预发布标识符优先级：alpha < beta < rc（通过字典序自然满足）
- * - build metadata（+号后面的部分）不影响优先级比较
  */
 @JvmInline
 value class Version(val value: String) : Comparable<Version> {
 
     private fun parse(): ParsedVersion {
-        // 去掉 build metadata（+号后面的部分）
         val withoutBuild = value.split("+").first()
-        // 分离主版本号和预发布标识符
         val hyphenIndex = withoutBuild.indexOf('-')
         val (coreStr, prereleaseStr) = if (hyphenIndex >= 0) {
             withoutBuild.substring(0, hyphenIndex) to withoutBuild.substring(hyphenIndex + 1)
@@ -136,7 +121,6 @@ value class Version(val value: String) : Comparable<Version> {
         val a = this.parse()
         val b = other.parse()
 
-        // 先比较主版本号
         val maxLen = maxOf(a.core.size, b.core.size)
         for (i in 0 until maxLen) {
             val ap = if (i < a.core.size) a.core[i] else 0
@@ -144,8 +128,6 @@ value class Version(val value: String) : Comparable<Version> {
             if (ap != bp) return ap.compareTo(bp)
         }
 
-        // 主版本号相同时比较预发布标识符
-        // 有预发布标识符的版本优先级低于没有的：1.0.0-alpha < 1.0.0
         return when {
             a.prerelease == null && b.prerelease == null -> 0
             a.prerelease != null && b.prerelease == null -> -1
@@ -162,7 +144,6 @@ value class Version(val value: String) : Comparable<Version> {
         private fun comparePrerelease(a: List<String>, b: List<String>): Int {
             val maxLen = maxOf(a.size, b.size)
             for (i in 0 until maxLen) {
-                // 字段少的优先级更低：1.0.0-alpha < 1.0.0-alpha.1
                 if (i >= a.size) return -1
                 if (i >= b.size) return 1
 
@@ -170,12 +151,9 @@ value class Version(val value: String) : Comparable<Version> {
                 val bNum = b[i].toIntOrNull()
 
                 val cmp = when {
-                    // 都是字：按数值比较
                     aNum != null && bNum != null -> aNum.compareTo(bNum)
-                    // 数字优先级低于字符串
                     aNum != null -> -1
                     bNum != null -> 1
-                    // 都是字符串：按字典序比较
                     else -> a[i].compareTo(b[i])
                 }
                 if (cmp != 0) return cmp
@@ -190,6 +168,5 @@ private data class ParsedVersion(
     val prerelease: List<String>?,
 )
 
-// 扩展操作符函数，使比较更直观
 operator fun String.compareTo(other: Version): Int = Version(this).compareTo(other)
 operator fun Version.compareTo(other: String): Int = this.compareTo(Version(other))

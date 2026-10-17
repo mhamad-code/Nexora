@@ -14,7 +14,7 @@ class MemoryPromptTest {
             ---
             name: food
             description: What the user eats and avoids
-            aliases: [diet, 饮食]
+            aliases: [diet, نظام غذائي]
             ---
 
             - [stated] Allergic to peanuts
@@ -32,7 +32,7 @@ class MemoryPromptTest {
         assertEquals("- [stated] Name is Lin", prompt.block("profile"))
 
         val listing = prompt.block("memory_listing")
-        assertTrue(listing.startsWith("/topics/food.md | What the user eats and avoids | aliases: diet, 饮食 | updated: "))
+        assertTrue(listing.startsWith("/topics/food.md | What the user eats and avoids | aliases: diet, نظام غذائي | updated: "))
         assertFalse(listing.contains(MemoryFile.PROFILE_PATH))
         assertFalse(prompt.contains("Allergic to peanuts"))
     }
@@ -62,7 +62,6 @@ class MemoryPromptTest {
 
         assertEquals("- [stated] Name is Lin", input.block("profile"))
         assertTrue(input.block("memory_listing").startsWith("/topics/food.md"))
-        // 标题里的引号和尖括号不能破坏标签
         assertTrue(input.contains("<conversation id=\"c1\" title=\"Moving  to   Hangzhou\">"))
         assertEquals("(none)", input.block("recent_context"))
         assertEquals("[USER #4]: I moved to Hangzhou", input.block("new_turns"))

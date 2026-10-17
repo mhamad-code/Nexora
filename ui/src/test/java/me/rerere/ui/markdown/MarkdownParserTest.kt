@@ -149,9 +149,9 @@ class MarkdownParserTest {
         val table = single<Table>(
             """
             <table style="font-size: 12px">
-              <tr><th align="center">状态</th><th>数量</th></tr>
-              <tr align="right"><td style="color: red; font-weight: bold">异常</td><td style="text-align: left">3</td></tr>
-              <tr><td>正常</td><td>5</td></tr>
+              <tr><th align="center">الحالة</th><th>الكمية</th></tr>
+              <tr align="right"><td style="color: red; font-weight: bold">استثناء</td><td style="text-align: left">3</td></tr>
+              <tr><td>طبيعي</td><td>5</td></tr>
             </table>
             """
         )
@@ -159,13 +159,11 @@ class MarkdownParserTest {
         assertNull(table.source)
 
         val (error, count) = table.rows[0]
-        assertEquals("异常", error.content.plainText())
+        assertEquals("استثناء", error.content.plainText())
         assertEquals(Color.Red, error.style!!.color)
         assertEquals(FontWeight.Bold, error.style!!.fontWeight)
-        // 行上的对齐由单元格继承，单元格自己写了的以自己为准
         assertEquals(TextAlign.End, error.style!!.textAlign)
         assertEquals(TextAlign.Start, count.style!!.textAlign)
-        // 表格上的样式一直传到没有自己样式的单元格
         assertEquals(12f, table.rows[1][0].style!!.fontSize.value)
         assertEquals(TextAlign.Unspecified, table.rows[1][0].style!!.textAlign)
     }
@@ -225,7 +223,6 @@ class MarkdownParserTest {
             ).content,
         )
         assertEquals(listOf(Code("""\(a\)""")), single<Paragraph>("""`\(a\)`""").content)
-        // 未闭合的代码围栏里也不能替换
         assertEquals("""\[a\]""", single<CodeBlock>("```\n\\[a\\]").code)
     }
 
@@ -267,7 +264,6 @@ class MarkdownParserTest {
             """
         )
         assertEquals(TextAlign.Center, container.style.textAlign)
-        // 手写 HTML 里的缩进和换行折叠成空格，不产生换行
         assertEquals("Title sub", (container.children.single() as Paragraph).content.plainText())
     }
 

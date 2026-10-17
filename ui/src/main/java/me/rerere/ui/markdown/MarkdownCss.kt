@@ -14,8 +14,6 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
 
-// 这里只解析 HTML 行内样式里对文本渲染有意义的那一小部分 CSS。
-// 相对单位统一换算成 em，绝对单位按 1px = 1sp 处理，所以解析阶段不需要 Density 和基准字号。
 
 private val EMPTY_SPAN_STYLE = SpanStyle()
 
@@ -47,7 +45,6 @@ private fun parseSpanStyle(properties: Map<String, String>): SpanStyle? {
     return style.takeIf { it != EMPTY_SPAN_STYLE }
 }
 
-/** [align] 是 HTML 的 `align` 属性，优先级低于 CSS 的 `text-align` */
 internal fun parseBlockStyle(css: String, align: String? = null): TextStyle? {
     val properties = parseCssDeclarations(css)
     val spanStyle = parseSpanStyle(properties)
@@ -60,7 +57,6 @@ internal fun parseBlockStyle(css: String, align: String? = null): TextStyle? {
     ).merge(spanStyle ?: EMPTY_SPAN_STYLE)
 }
 
-/** 解析 `<font color size face>` 这类旧式属性 */
 internal fun parseFontTag(color: String, size: String, face: String): SpanStyle? {
     val style = SpanStyle(
         color = parseCssColor(color) ?: Color.Unspecified,
@@ -96,7 +92,6 @@ internal fun parseCssSize(value: String): TextUnit? {
     }
 }
 
-// 限制上限，避免 font-size: 9999px 这种内容把布局撑爆
 private fun parseFontSize(value: String): TextUnit? {
     val size = SIZE_KEYWORDS[value.trim().lowercase()]?.em ?: parseCssSize(value) ?: return null
     if (size.value <= 0f) return null
@@ -105,7 +100,6 @@ private fun parseFontSize(value: String): TextUnit? {
 
 private fun parseLineHeight(value: String): TextUnit? {
     val normalized = value.trim().lowercase()
-    // 无单位的数字是字号的倍数
     val size = normalized.toFloatOrNull()?.em ?: parseCssSize(normalized) ?: return null
     return size.takeIf { it.value > 0f }
 }
@@ -138,7 +132,6 @@ private fun parseFontFamily(value: String): FontFamily? {
     return when {
         family.isEmpty() -> null
         "mono" in family || "courier" in family || "consolas" in family || "menlo" in family -> FontFamily.Monospace
-        // sans-serif 里也带 serif，必须先判断
         "sans" in family || "arial" in family || "helvetica" in family -> FontFamily.SansSerif
         "serif" in family || "georgia" in family || "times" in family -> FontFamily.Serif
         "cursive" in family -> FontFamily.Cursive
@@ -176,7 +169,6 @@ internal fun parseCssColor(value: String): Color? {
     }
 }
 
-// 支持 #rgb、#rgba、#rrggbb、#rrggbbaa，CSS 的透明度在最后
 private fun parseHexColor(hex: String): Color? {
     if (hex.any { it !in '0'..'9' && it !in 'a'..'f' }) return null
     val full = when (hex.length) {
@@ -189,7 +181,6 @@ private fun parseHexColor(hex: String): Color? {
     return Color(red = rgb shr 16 and 0xFF, green = rgb shr 8 and 0xFF, blue = rgb and 0xFF, alpha = alpha)
 }
 
-// 支持 rgb(255, 0, 0)、rgba(255, 0, 0, 0.5) 以及空格分隔的 rgb(255 0 0 / 50%)
 private fun parseRgbColor(value: String): Color? {
     val parts = value.substringAfter('(', "").substringBefore(')')
         .split(',', '/', ' ')

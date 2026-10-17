@@ -129,7 +129,6 @@ class MediaCreationTest {
     fun `required params fall back to the given defaults`() {
         val defaults = MediaCreationParams(count = 1, resolution = "768P", aspectRatio = "16:9", durationSeconds = 5)
 
-        // MiniMax 要求分辨率、比例、时长；数量不是必填，不会被补上
         assertEquals(
             MediaCreationParams(resolution = "768P", aspectRatio = "16:9", durationSeconds = 5),
             MediaCreationParams().withRequired(miniMaxVideo, defaults),
@@ -145,14 +144,14 @@ class MediaCreationTest {
     @Test
     fun `request maps assets to inputs and drops unsupported params`() {
         val request = buildMediaGenerationRequest(
-            prompt = "镜头缓慢推近",
+            prompt = "تكبير الكاميرا ببطء",
             params = MediaCreationParams(count = 2, resolution = "1080p", durationSeconds = 5, promptEnhancement = true),
             assets = listOf(image("media/first.png", ImageRole.FIRST_FRAME), video("media/clip.mp4")),
             inputUrls = listOf("https://s3.example.com/first.png", "https://s3.example.com/clip.mp4"),
             capabilities = volcengineVideo,
         )
 
-        assertEquals("镜头缓慢推近", request.prompt)
+        assertEquals("تكبير الكاميرا ببطء", request.prompt)
         assertEquals(
             listOf(
                 MediaGenerationInput.Image(url = "https://s3.example.com/first.png", role = ImageRole.FIRST_FRAME),
@@ -162,7 +161,6 @@ class MediaCreationTest {
         )
         assertEquals("1080p", request.resolution)
         assertEquals(5, request.durationSeconds)
-        // 火山视频不接受数量和提示词优化
         assertNull(request.count)
         assertNull(request.promptEnhancement)
     }
@@ -182,7 +180,7 @@ class MediaCreationTest {
 
     @Test
     fun `title comes from the first non-blank line of the prompt`() {
-        assertEquals("雪山下的小木屋", deriveMediaCreationTitle("\n  雪山下的小木屋  \n黄昏，暖色灯光"))
+        assertEquals("كوخ صغير تحت الجبل الثلجي", deriveMediaCreationTitle("\n  كوخ صغير تحت الجبل الثلجي  \nالغسق،إضاءة دافئة"))
         assertEquals("a".repeat(24), deriveMediaCreationTitle("a".repeat(40)))
         assertEquals("", deriveMediaCreationTitle("   "))
     }

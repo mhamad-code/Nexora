@@ -75,7 +75,7 @@ export interface MessageDto {
   modelSnapshot?: ModelSnapshot | null;
   usage?: TokenUsage | null;
   translation?: string | null;
-  /** 压缩检查点：此消息是它之前全部历史的摘要，之前的消息不再发送给模型 */
+  /** نقطة فحص مضغوطة:هذه الرسالة ملخص لكل تاريخه السابق،الرسائل السابقة لم تعد تُرسل إلى النموذج */
   isContextCheckpoint?: boolean;
 }
 

@@ -39,7 +39,6 @@ fun ASRProviderConfigure(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
         CardGroup {
-            // 类型在新建时选定，之后不能改
             item(
                 headlineContent = { Text(stringResource(R.string.setting_asr_configure_provider_type)) },
                 supportingContent = { Text(stringResource(R.string.setting_asr_configure_provider_type_desc)) },
@@ -525,7 +524,6 @@ private fun CardGroupScope.stepASRItems(
         supportingContent = { Text(stringResource(R.string.setting_asr_configure_step_hotwords_desc)) }
     ) {
         OutlinedTextField(
-            // 用逗号分隔展示, 输入时按逗号 split 回 List
             value = setting.hotwords.joinToString(","),
             onValueChange = { text ->
                 val list = text.split(",")
@@ -534,7 +532,7 @@ private fun CardGroupScope.stepASRItems(
                 onValueChange(setting.copy(hotwords = list))
             },
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("热词1, 热词2, 热词3") }
+            placeholder = { Text("كلمة1, كلمة2, كلمة3") }
         )
     }
 }

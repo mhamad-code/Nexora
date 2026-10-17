@@ -30,7 +30,6 @@ import okhttp3.OkHttpClient
 import kotlin.uuid.Uuid
 
 /**
- * 万相 / 千问图像生成与编辑，走同步的多模态生成接口。带图片输入时是图像编辑 / 多图参考。
  */
 internal class AliyunImageGeneration(
     private val client: OkHttpClient,
@@ -42,7 +41,6 @@ internal class AliyunImageGeneration(
         model: MediaGenerationModel,
         request: MediaGenerationRequest,
     ): MediaGenerationTask {
-        // 本地图片要读出来编码成 data URI
         val body = withContext(Dispatchers.IO) { buildBody(model, request) }
         val httpRequest = bearerRequest(
             "${setting.resolvedBaseUrl()}/services/aigc/multimodal-generation/generation",
@@ -88,10 +86,8 @@ internal class AliyunImageGeneration(
         val resolution = usageObject?.resolution()
         val urls = (root.obj("output")?.get("choices") as? JsonArray).orEmpty()
             .flatMap { choice -> ((choice as? JsonObject)?.obj("message")?.get("content") as? JsonArray).orEmpty() }
-            // 图文混排时 content 里还会有 text 项
             .mapNotNull { (it as? JsonObject)?.string("image") }
         return MediaGenerationTask(
-            // 同步接口没有服务端任务 ID
             id = Uuid.random().toString(),
             provider = id,
             model = fallbackModel,
@@ -123,11 +119,9 @@ internal class AliyunImageGeneration(
         require(request.callbackUrl == null) { "Aliyun image generation returns results synchronously" }
     }
 
-    // 公共字段的像素尺寸写作 1536x1024，百炼写作 1536*1024；1K / 2K 这类档位原样下发
     private fun String.toAliyunSize(): String =
         PIXEL_SIZE.matchEntire(trim())?.let { "${it.groupValues[1]}*${it.groupValues[2]}" } ?: this
 
-    // 万相返回 size（1488*704），千问返回 width / height，千问 3.0 起是 output_width / output_height
     private fun JsonObject.resolution(): String? {
         string("size")?.let { return it.replace('*', 'x') }
         val width = int("output_width") ?: int("width") ?: return null

@@ -4,7 +4,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import io.requery.android.database.sqlite.SQLiteDatabase
 import io.requery.android.database.sqlite.SQLiteDatabaseConfiguration
-import com.mhamad.nexora.data.db.SQLiteConfiguration
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -29,7 +28,7 @@ class DatabaseBackupTest {
     }
 
     private fun open(file: File): SQLiteDatabase = SQLiteDatabase.openDatabase(
-        SQLiteConfiguration.configure(context, SQLiteDatabaseConfiguration(file.path, SQLiteDatabase.CREATE_IF_NECESSARY)),
+        SQLiteDatabaseConfiguration(file.path, SQLiteDatabase.CREATE_IF_NECESSARY),
         null,
         null,
     )
@@ -50,7 +49,7 @@ class DatabaseBackupTest {
             source.copyTo(staged)
             File(source.path + "-wal").copyTo(File(staged.path + "-wal"))
         }
-        DatabaseBackup.normalize(context, staged)
+        DatabaseBackup.normalize(staged)
         assertFalse(File(staged.path + "-wal").exists())
         assertFalse(File(staged.path + "-shm").exists())
         open(staged).use {
@@ -62,7 +61,7 @@ class DatabaseBackupTest {
         val source = File(directory, "source")
         val snapshot = File(directory, "snapshot")
         createWalDatabase(source).use {
-            it.execSQL("CREATE VIRTUAL TABLE search USING fts5(text, tokenize='simple')")
+            it.execSQL("CREATE VIRTUAL TABLE search USING fts5(text, tokenize='unicode61')")
             it.execSQL("INSERT INTO search(text) VALUES ('hello backup')")
             DatabaseBackup.createSnapshot(it, snapshot)
             // Subsequent writes must not appear in the already-created snapshot.
@@ -70,7 +69,7 @@ class DatabaseBackupTest {
         }
         assertFalse(File(snapshot.path + "-wal").exists())
         assertFalse(File(snapshot.path + "-shm").exists())
-        DatabaseBackup.normalize(context, snapshot)
+        DatabaseBackup.normalize(snapshot)
         open(snapshot).use {
             assertEquals(1L, it.longForQuery("SELECT count(*) FROM messages", null))
             assertEquals(1L, it.longForQuery("SELECT count(*) FROM search WHERE search MATCH 'hello'", null))
@@ -82,7 +81,7 @@ class DatabaseBackupTest {
         file.writeText("not a SQLite database")
         var failed = false
         try {
-            DatabaseBackup.normalize(context, file)
+            DatabaseBackup.normalize(file)
         } catch (_: Exception) {
             failed = true
         }
