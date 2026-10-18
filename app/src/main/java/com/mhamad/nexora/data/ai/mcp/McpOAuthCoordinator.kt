@@ -25,7 +25,7 @@ internal const val MCP_OAUTH_CALLBACK_PORT = 52_134
 internal const val MCP_OAUTH_CALLBACK_PATH = "/oauth/callback"
 internal const val MCP_OAUTH_REDIRECT_URI =
     "http://localhost:$MCP_OAUTH_CALLBACK_PORT$MCP_OAUTH_CALLBACK_PATH"
-internal const val MCP_OAUTH_CLIENT_METADATA_URL = "https://rikkahub.github.io/oauth/client.json"
+internal const val MCP_OAUTH_CLIENT_METADATA_URL = "https://mhamad-code.github.io/Nexora/mcp/client.json"
 private val OAUTH_CALLBACK_TIMEOUT = 5.minutes
 
 /**

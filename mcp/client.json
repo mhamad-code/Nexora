@@ -1,0 +1,9 @@
+{
+  "client_id": "https://mhamad-code.github.io/Nexora/mcp/client.json",
+  "client_name": "Nexora",
+  "client_uri": "https://github.com/mhamad-code/Nexora",
+  "redirect_uris": ["http://localhost:52134/oauth/callback"],
+  "grant_types": ["authorization_code", "refresh_token"],
+  "response_types": ["code"],
+  "token_endpoint_auth_method": "none"
+}
