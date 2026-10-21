@@ -1,7 +1,7 @@
 {
-  "version": "2.0.1",
-  "publishedAt": "2026-10-18T00:00:00Z",
-  "changelog": "تحسين رسالة الترحيب وإصلاحات عامة",
+  "version": "2.0.2",
+  "publishedAt": "2026-10-21T00:00:00Z",
+  "changelog": "تغيير الاسم إلى Nexora وأيقونة جديدة",
   "downloads": [
     {
       "name": "app-arm64-v8a-release.apk",
