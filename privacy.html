@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>سياسة الخصوصية — Nexora | Privacy Policy</title>
+<meta name="description" content="سياسة الخصوصية لتطبيق Nexora، تطبيق دردشة ذكاء اصطناعي مفتوح المصدر لأندرويد. Privacy policy for the Nexora Android app.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#FFB23E">
+<link rel="canonical" href="https://mhamad-code.github.io/Nexora/privacy.html">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
+<link rel="apple-touch-icon" href="favicon-192.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="سياسة الخصوصية — Nexora | Privacy Policy">
+<meta property="og:description" content="سياسة الخصوصية لتطبيق Nexora، تطبيق دردشة ذكاء اصطناعي مفتوح المصدر لأندرويد. Privacy policy for the Nexora Android app.">
+<meta property="og:url" content="https://mhamad-code.github.io/Nexora/privacy.html">
+<meta property="og:image" content="https://mhamad-code.github.io/Nexora/logo-512.png">
+<meta name="twitter:card" content="summary">
+<style>
+:root{
+  --amber:#FFB23E;--lilac:#B892FF;--teal:#5EEAD4;--ink:#1B1230;--plum:#221533;
+  --mut:rgba(27,18,48,.74);
+  --glass:rgba(255,255,255,.55);--edge:rgba(255,255,255,.8);
+  --r-sm:4px;--r-md:8px;--r-lg:16px;
+  --s1:1rem;--s2:2rem;--s3:4rem;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;color:var(--ink);overflow-x:hidden;
+  font:400 1rem/1.8 system-ui,-apple-system,"Segoe UI",Tahoma,Roboto,sans-serif;
+  background:linear-gradient(160deg,#fff7ea 0%,#f4ecff 52%,#e4faf6 100%) fixed}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px;border-radius:var(--r-sm)}
+
+/* ambient liquid light */
+.ambient{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.ambient i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.6;mix-blend-mode:multiply}
+.ambient i:nth-child(1){width:48vmax;height:48vmax;background:var(--amber);top:-14vmax;right:-12vmax;animation:drift1 22s ease-in-out infinite alternate}
+.ambient i:nth-child(2){width:44vmax;height:44vmax;background:var(--lilac);top:28vh;left:-16vmax;animation:drift2 26s ease-in-out infinite alternate}
+.ambient i:nth-child(3){width:38vmax;height:38vmax;background:var(--teal);bottom:-16vmax;right:8vw;animation:drift3 24s ease-in-out infinite alternate}
+@keyframes drift1{to{transform:translate(-9vmax,8vmax) scale(1.18)}}
+@keyframes drift2{to{transform:translate(10vmax,-6vmax) scale(1.12)}}
+@keyframes drift3{to{transform:translate(-8vmax,-9vmax) scale(1.2)}}
+
+/* glass */
+.glass{background:var(--glass);border:1px solid var(--edge);border-radius:var(--r-lg);
+  -webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);
+  box-shadow:0 10px 40px rgba(27,18,48,.12),inset 0 1px 0 rgba(255,255,255,.9)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.glass{background:rgba(255,255,255,.9)}}
+
+/* header */
+.bar{max-width:980px;margin:var(--s1) auto 0;padding:.6rem 1.1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;width:calc(100% - 2rem)}
+.brand{display:flex;align-items:center;gap:.6rem;font-weight:700;text-decoration:none;font-size:1.1rem}
+.brand img{width:30px;height:30px;border-radius:var(--r-sm);display:block}
+.bar nav{display:flex;gap:1.2rem;flex-wrap:wrap;font-size:.95rem}
+.bar nav a{text-decoration:none;padding:.2rem 0;border-bottom:2px solid transparent;transition:border-color .2s}
+.bar nav a:hover{border-bottom-color:var(--amber)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:.75rem 1.4rem;border-radius:var(--r-md);
+  font-weight:600;text-decoration:none;transition:transform .2s,box-shadow .25s,background .2s}
+.btn.main{background:var(--plum);color:#fff;
+  box-shadow:0 8px 24px rgba(34,21,51,.35),inset 0 1px 0 rgba(255,255,255,.2),inset 0 -2px 6px rgba(0,0,0,.25)}
+.btn.main:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(255,178,62,.55),inset 0 1px 0 rgba(255,255,255,.25),inset 0 -2px 6px rgba(0,0,0,.25)}
+.btn.ghost{background:rgba(255,255,255,.5);border:1px solid var(--edge);color:var(--ink)}
+.btn.ghost:hover{background:rgba(255,255,255,.85);transform:translateY(-2px)}
+.actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:var(--s2)}
+
+/* hero */
+.hero{max-width:980px;margin:var(--s2) auto var(--s3);padding:0 1rem;display:grid;grid-template-columns:1.1fr .9fr;gap:var(--s2);align-items:center}
+.panel{padding:var(--s2)}
+.app{width:68px;aspect-ratio:1;border-radius:var(--r-lg);display:block;box-shadow:0 10px 28px rgba(27,18,48,.3),0 0 0 1px rgba(255,255,255,.6)}
+h1{font-size:2.5rem;font-weight:700;line-height:1.15;margin:1.1rem 0 .6rem;text-shadow:0 2px 28px rgba(255,178,62,.65)}
+.lead{margin:0;color:var(--mut);max-width:34rem}
+.stage{position:relative;display:grid;place-items:center;aspect-ratio:1;min-height:260px;perspective:900px}
+.halo{position:absolute;inset:2%;border-radius:50%;
+  background:radial-gradient(circle,rgba(184,146,255,.6),rgba(94,234,212,.3) 52%,transparent 70%);
+  filter:blur(18px);-webkit-mask-image:radial-gradient(circle,#000 52%,transparent 74%);mask-image:radial-gradient(circle,#000 52%,transparent 74%)}
+.orb{position:relative;width:72%;aspect-ratio:1;overflow:hidden;border-radius:60% 40% 55% 45%/55% 45% 60% 40%;
+  animation:morph 14s ease-in-out infinite;transform:rotateX(8deg) rotateY(-10deg);transition:transform .7s ease;
+  box-shadow:inset -18px -28px 50px rgba(27,18,48,.38),inset 14px 18px 40px rgba(255,255,255,.9),0 30px 60px rgba(184,146,255,.4)}
+.orb::before{content:"";position:absolute;inset:-35%;
+  background:conic-gradient(from 0deg,#FFB23E,#fff3d6,#B892FF,#5EEAD4,#fff,#FFB23E);
+  filter:saturate(1.35) contrast(1.05);animation:spin 18s linear infinite}
+.orb::after{content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse at 30% 22%,rgba(255,255,255,.95) 0 7%,rgba(255,255,255,0) 30%),
+             linear-gradient(160deg,rgba(255,255,255,.4),transparent 42%,rgba(27,18,48,.22) 100%)}
+.stage:hover .orb{transform:rotateX(2deg) rotateY(7deg) scale(1.04)}
+@keyframes morph{
+  0%,100%{border-radius:60% 40% 55% 45%/55% 45% 60% 40%}
+  33%{border-radius:42% 58% 38% 62%/60% 40% 55% 45%}
+  66%{border-radius:55% 45% 62% 38%/42% 58% 44% 56%}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* sections */
+.wrap{max-width:980px;margin:0 auto var(--s3);padding:0 1rem}
+.wrap>h2{font-size:1.4rem;font-weight:700;margin:0 0 var(--s1)}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:1rem}
+.tile{padding:1.25rem 1.4rem;transition:transform .25s,border-color .25s}
+.tile:hover{transform:translateY(-3px);border-color:#fff}
+.tile h3{margin:0 0 .3rem;font-size:1.05rem;font-weight:600}
+.tile p{margin:0;color:var(--mut);font-size:.95rem}
+.s2{grid-column:span 2}.s3{grid-column:span 3}.s4{grid-column:span 4}
+.steps{list-style:none;margin:0;padding:var(--s2);display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2);counter-reset:n}
+.steps li{counter-increment:n;position:relative;padding-top:2.9rem}
+.steps li::before{content:counter(n);position:absolute;top:0;inset-inline-start:0;width:2.2rem;height:2.2rem;border-radius:var(--r-md);
+  display:grid;place-items:center;font-weight:700;background:var(--amber);box-shadow:0 6px 18px rgba(255,178,62,.55)}
+
+/* footer */
+.foot{max-width:980px;margin:0 auto var(--s2);width:calc(100% - 2rem);padding:1.25rem 1.5rem;border-radius:var(--r-lg);
+  background:rgba(34,21,51,.93);color:#f4eefc;display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem 2rem;font-size:.95rem}
+.foot nav{display:flex;flex-wrap:wrap;gap:.6rem 1.4rem}
+.foot a{text-decoration:underline;text-underline-offset:3px;transition:color .2s}
+.foot a:hover{color:var(--amber)}
+.foot p{margin:0;color:#d9cdea}
+
+/* article (privacy) */
+.doc{max-width:760px;margin:var(--s2) auto var(--s3);width:calc(100% - 2rem);padding:var(--s2)}
+.doc h1{font-size:2.5rem;margin-top:0}
+.doc h2{font-size:1.15rem;font-weight:700;margin:1.8rem 0 .3rem}
+.doc p,.doc li{max-width:68ch}
+.doc ul{padding-inline-start:1.4rem}
+.note{background:rgba(255,255,255,.6);border:1px solid var(--edge);border-radius:var(--r-md);padding:.9rem 1.1rem;margin:1rem 0}
+.mut{color:var(--mut);font-size:.95rem}
+.lang{display:inline-block;padding:.25rem .9rem;border-radius:var(--r-md);background:var(--plum);color:#fff;text-decoration:none;font-weight:600;font-size:.9rem}
+.doc hr{border:0;border-top:1px solid rgba(27,18,48,.15);margin:var(--s3) 0}
+
+@media(max-width:760px){
+  .hero{grid-template-columns:1fr}
+  .stage{order:-1;min-height:0;max-width:300px;width:100%;margin-inline:auto}
+  .grid{grid-template-columns:1fr}.s2,.s3,.s4{grid-column:auto}
+  .steps{grid-template-columns:1fr}
+  .bar{flex-direction:column;align-items:flex-start}
+  h1,.doc h1{font-size:2.5rem}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<div class="ambient" aria-hidden="true"><i></i><i></i><i></i></div>
+<header class="bar glass">
+  <a class="brand" href="./"><img src="favicon-192.png" alt="" width="30" height="30">Nexora</a>
+  <nav aria-label="التنقل">
+    <a href="https://mhamad-code.github.io/Nexora-docs/">الدليل</a>
+    <a href="https://github.com/mhamad-code/Nexora/releases/tag/latest">التحميل</a>
+    <a href="https://github.com/mhamad-code/Nexora">GitHub</a>
+    <a href="privacy.html">الخصوصية</a>
+  </nav>
+</header>
+
+<main>
+<article class="doc glass">
+
+<section id="ar" lang="ar" dir="rtl">
+<h1>سياسة الخصوصية</h1>
+<p class="mut">آخر تحديث: 22 أكتوبر 2026 &nbsp; <a class="lang" href="#en">English</a></p>
+<div class="note"><strong>الملخص:</strong> Nexora تطبيق دردشة ذكاء اصطناعي مفتوح المصدر لأندرويد. لا يوجد حساب داخل التطبيق، ولا يشغّل المطوّر خادماً يستقبل محادثاتك.</div>
+
+<h2>1) ما يُخزَّن على جهازك</h2>
+<p>المحادثات والإعدادات ومفاتيح API التي تضيفها والذاكرة والملفات التي تُرفقها والنسخ الاحتياطية. تبقى على جهازك ولا تغادره إلا في الحالات الموضحة أدناه.</p>
+<h2>2) ما يُرسل إلى جهات تختارها أنت</h2>
+<p>عند إرسال رسالة تذهب مباشرة من جهازك إلى المزود الذي أضفته (مثل OpenAI أو Gemini أو أي رابط متوافق)، مع المرفقات إن وُجدت. وكذلك خدمات البحث وخوادم MCP وخدمات الصوت وتوليد الصور التي تفعّلها. هذه الجهات تخضع لسياسات الخصوصية الخاصة بها، والمفاتيح التي تضيفها مسؤوليتك.</p>
+<h2>3) الإحصاءات وتقارير الأعطال</h2>
+<p>يستخدم Nexora خدمتي Firebase Analytics وCrashlytics من Google. الأحداث التي يرسلها التطبيق عدّادات استخدام (مثل إرسال رسالة أو إعادة توليد رد) ولا تتضمن نص رسائلك. وتقارير الأعطال قد تتضمن معلومات عن الجهاز والإصدار وسجل الخطأ. تفاصيل ما تجمعه Google في <a href="https://firebase.google.com/support/privacy">صفحة خصوصية Firebase</a>.</p>
+<h2>4) فحص التحديثات</h2>
+<p>يتصل التطبيق بملف على GitHub لمعرفة وجود إصدار جديد، فيرى GitHub عنوان IP الخاص بك، كأي موقع تزوره.</p>
+<h2>5) النسخ الاحتياطي والمزامنة</h2>
+<p>النسخة الاحتياطية ملف على جهازك. وإذا فعّلت تخزيناً سحابياً (مثل تخزين متوافق مع S3) تُرسل النسخ إلى حسابك أنت هناك.</p>
+<h2>6) خادم الويب المدمج (اختياري)</h2>
+<p>عند تفعيله يعمل خادم داخل التطبيق على شبكتك المحلية. فعّله على شبكات تثق بها ولا تعرّضه للإنترنت العام.</p>
+<h2>7) الأذونات</h2>
+<p>يطلب أندرويد الأذونات بحسب الميزة التي تستعملها، ويمكنك مراجعتها وسحبها من إعدادات التطبيق في جهازك.</p>
+<h2>8) خياراتك</h2>
+<ul>
+<li>احذف المحادثات من داخل التطبيق.</li>
+<li>امسح بيانات التطبيق أو احذفه لإزالة كل ما على جهازك.</li>
+<li>ألغِ مفاتيحك من لوحة مزودك إذا أردت قطع الوصول.</li>
+</ul>
+<p>لأن Nexora لا يحتفظ بمحادثاتك على خادم، لا توجد نسخة منها عند المطوّر لحذفها.</p>
+<h2>9) الأطفال</h2>
+<p>التطبيق غير موجّه للأطفال دون 13 عاماً.</p>
+<h2>10) المصدر المفتوح</h2>
+<p>الكود على <a href="https://github.com/mhamad-code/Nexora">GitHub</a> برخصة AGPL-3.0، والتطبيق مبني على <a href="https://github.com/rikkahub/rikkahub">RikkaHub</a>.</p>
+<h2>11) التغييرات والتواصل</h2>
+<p>أي تعديل يُنشر في هذه الصفحة مع تاريخ التحديث. للتواصل: <a href="mailto:mhamra148@gmail.com">mhamra148@gmail.com</a></p>
+</section>
+
+<hr>
+
+<section id="en" lang="en" dir="ltr">
+<h1>Privacy Policy</h1>
+<p class="mut">Last updated: October 22, 2026 &nbsp; <a class="lang" href="#ar">العربية</a></p>
+<div class="note"><strong>Summary:</strong> Nexora is an open-source AI chat app for Android. There is no account inside the app, and the developer does not run a server that receives your conversations.</div>
+
+<h2>1) What is stored on your device</h2>
+<p>Conversations, settings, the API keys you add, memories, files you attach, and backups. They stay on your device and leave it only in the cases described below.</p>
+<h2>2) What is sent to services you choose</h2>
+<p>When you send a message, it goes directly from your device to the provider you added (for example OpenAI, Gemini, or any compatible endpoint), together with any attachments. The same applies to search services, MCP servers, and speech or image services you enable. Those services are governed by their own privacy policies, and the keys you add are your responsibility.</p>
+<h2>3) Analytics and crash reports</h2>
+<p>Nexora uses Google's Firebase Analytics and Crashlytics. The events the app sends are usage counters (such as sending a message or regenerating a reply) and do not include the text of your messages. Crash reports may include device information, app version, and the error log. See <a href="https://firebase.google.com/support/privacy">Firebase's privacy page</a> for what Google collects.</p>
+<h2>4) Update checks</h2>
+<p>The app fetches a file hosted on GitHub to see whether a new version exists, so GitHub can see your IP address, as with any site you visit.</p>
+<h2>5) Backup and sync</h2>
+<p>A backup is a file on your device. If you enable cloud storage (for example S3-compatible storage), backups are sent to your own account there.</p>
+<h2>6) Built-in web server (optional)</h2>
+<p>When enabled, a server inside the app runs on your local network. Enable it only on networks you trust and do not expose it to the public internet.</p>
+<h2>7) Permissions</h2>
+<p>Android asks for permissions based on the features you use. You can review and revoke them in your device's app settings.</p>
+<h2>8) Your choices</h2>
+<ul>
+<li>Delete conversations from inside the app.</li>
+<li>Clear the app's data or uninstall it to remove everything on your device.</li>
+<li>Revoke your keys in your provider's dashboard to cut off access.</li>
+</ul>
+<p>Because Nexora does not keep your conversations on a server, the developer has no copy of them to delete.</p>
+<h2>9) Children</h2>
+<p>The app is not directed at children under 13.</p>
+<h2>10) Open source</h2>
+<p>The code is on <a href="https://github.com/mhamad-code/Nexora">GitHub</a> under AGPL-3.0, and the app is based on <a href="https://github.com/rikkahub/rikkahub">RikkaHub</a>.</p>
+<h2>11) Changes and contact</h2>
+<p>Any change is published on this page with a new date. Contact: <a href="mailto:mhamra148@gmail.com">mhamra148@gmail.com</a></p>
+</section>
+
+</article>
+</main>
+
+<footer class="foot">
+  <nav aria-label="روابط">
+    <a href="https://github.com/mhamad-code/Nexora">الكود على GitHub</a>
+    <a href="https://mhamad-code.github.io/Nexora-docs/">الدليل</a>
+    <a href="privacy.html">سياسة الخصوصية</a>
+    <a href="https://mohamed-hamra-portfolio--hamramohammed24.replit.app/">الموقع الشخصي</a>
+  </nav>
+  <p>تطوير محمد حمرة. Nexora مبني على <a href="https://github.com/rikkahub/rikkahub">RikkaHub</a> ومرخّص بـ AGPL-3.0.</p>
+</footer>
+</body>
+</html>
