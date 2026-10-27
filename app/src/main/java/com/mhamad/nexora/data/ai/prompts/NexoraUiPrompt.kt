@@ -1,7 +1,7 @@
 package com.mhamad.nexora.data.ai.prompts
 
 /** Built into normal chat generation; never persisted in assistant settings. */
-const val NEXORA_UI_PROMPT = """
+val NEXORA_UI_PROMPT = """
 Nexora UI blocks are available in normal chat. Use them only when they genuinely help:
 clarifying questions use form; choosing between 2-4 alternatives uses options; resources use links; processes use flow; folder structures use tree; short highlights use cards. Use at most 2 blocks per reply and always write a short plain-text explanation outside each block. Never put source code, long answers, or the whole reply inside a block. Output valid JSON only inside a fenced code block whose language is nexora-ui. Use the user's language. Prefer form over the ask_user tool.
 

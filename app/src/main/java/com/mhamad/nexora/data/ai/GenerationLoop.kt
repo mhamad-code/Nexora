@@ -143,6 +143,7 @@ class GenerationLoop(
                     conversationSystemPrompt = conversationSystemPrompt,
                     conversationId = conversationId,
                     workspaceCwd = workspaceCwd,
+                    includeNexoraUiPrompt = includeNexoraUiPrompt,
                 )
                 messages = messages.visualTransforms(
                     transformers = outputTransformers,
@@ -340,6 +341,7 @@ class GenerationLoop(
         conversationSystemPrompt: String? = null,
         conversationId: Uuid? = null,
         workspaceCwd: String? = null,
+        includeNexoraUiPrompt: Boolean = true,
     ) {
         val internalMessages = buildList {
             val system = buildString {
