@@ -106,6 +106,9 @@ fun HighlightCodeBlock(
     val context = LocalContext.current
     val settings = LocalSettings.current
     val normalizedLanguage = remember(language) { language.lowercase() }
+    val nexoraUi = remember(code, normalizedLanguage, completeCodeBlock) {
+        if (normalizedLanguage == "nexora-ui" && completeCodeBlock) parseNexoraUi(code)?.firstOrNull() else null
+    }
     val canInlinePreview = completeCodeBlock && normalizedLanguage in PREVIEWABLE_LANGUAGES
     var previewMode by remember(canInlinePreview, code, normalizedLanguage) {
         mutableStateOf(false)
@@ -164,6 +167,12 @@ fun HighlightCodeBlock(
             modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp)
         ) {
             when {
+                normalizedLanguage == "nexora-ui" && !completeCodeBlock -> {
+                    NexoraUiSkeleton(Modifier.fillMaxWidth())
+                }
+                normalizedLanguage == "nexora-ui" && nexoraUi != null -> {
+                    NexoraUiView(nexoraUi, Modifier.fillMaxWidth())
+                }
                 canInlinePreview && previewMode -> {
                     CodeBlockPreview(
                         code = code,

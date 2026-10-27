@@ -22,6 +22,7 @@ import me.rerere.tts.model.TTSResponse
 import me.rerere.tts.provider.TTSManager
 import me.rerere.tts.provider.TTSProviderSetting
 import me.rerere.tts.controller.TtsController
+import com.mhamad.nexora.ui.components.richtext.stripNexoraUiBlocks
 import org.koin.compose.koinInject
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -143,7 +144,7 @@ private class CustomTtsStateImpl(
     }
 
     override fun speak(text: String, flushCalled: Boolean) {
-        val processed = text.stripMarkdown()
+        val processed = stripNexoraUiBlocks(text).stripMarkdown()
         controller.speak(processed, flushCalled)
     }
 

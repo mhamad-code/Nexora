@@ -467,6 +467,9 @@ private fun ChatPageContent(
                 onToolAnswer = { toolCallId, answer ->
                     vm.handleToolAnswer(toolCallId, answer)
                 },
+                onNexoraUiSend = { text ->
+                    vm.handleMessageSend(listOf(UIMessagePart.Text(text)))
+                },
                 onToggleFavorite = { node ->
                     vm.toggleMessageFavorite(node)
                 },

@@ -26,6 +26,7 @@ import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -73,6 +74,8 @@ import com.mhamad.nexora.data.model.AssistantAffectScope
 import com.mhamad.nexora.data.model.MessageNode
 import com.mhamad.nexora.data.model.replaceRegexes
 import com.mhamad.nexora.ui.components.richtext.MarkdownBlock
+import com.mhamad.nexora.ui.components.richtext.LocalNexoraUiBridge
+import com.mhamad.nexora.ui.components.richtext.NexoraUiBridge
 import com.mhamad.nexora.ui.components.richtext.ZoomableAsyncImage
 import com.mhamad.nexora.ui.components.richtext.buildMarkdownPreviewHtml
 import com.mhamad.nexora.ui.components.ui.ChainOfThought
@@ -112,6 +115,7 @@ fun ChatMessage(
     onClearTranslation: (UIMessage) -> Unit = {},
     onToolApproval: ((toolCallId: String, approved: Boolean, reason: String) -> Unit)? = null,
     onToolAnswer: ((toolCallId: String, answer: String) -> Unit)? = null,
+    onNexoraUiSend: (String) -> Unit = {},
 ) {
     val message = node.messages[node.selectIndex]
     if (message.isContextCheckpoint) {
@@ -163,6 +167,7 @@ fun ChatMessage(
             }
         }
         ProvideTextStyle(textStyle) {
+            CompositionLocalProvider(LocalNexoraUiBridge provides NexoraUiBridge(onNexoraUiSend, canInteract = lastMessage && message.role == MessageRole.ASSISTANT)) {
             MessagePartsBlock(
                 assistant = assistant,
                 role = message.role,
@@ -174,6 +179,7 @@ fun ChatMessage(
                 onToolAnswer = onToolAnswer,
                 onUserMessageClick = if (message.role == MessageRole.USER) onEdit else null,
             )
+            }
 
             message.translation?.let { translation ->
                 CollapsibleTranslationText(

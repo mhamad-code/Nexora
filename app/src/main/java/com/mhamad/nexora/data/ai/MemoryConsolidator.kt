@@ -163,6 +163,7 @@ class MemoryConsolidator(
             tools = tools,
             maxSteps = MAX_STEPS,
             conversationId = Uuid.random(),
+            includeNexoraUiPrompt = false,
         ).collect { chunk ->
             when (chunk) {
                 is GenerationChunk.Messages -> messages = chunk.messages

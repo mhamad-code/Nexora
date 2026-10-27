@@ -32,6 +32,7 @@ import me.rerere.ai.ui.handleTextGenerationResult
 import me.rerere.ai.ui.limitContext
 import com.mhamad.nexora.R
 import com.mhamad.nexora.data.ai.prompts.buildMemoryPrompt
+import com.mhamad.nexora.data.ai.prompts.NEXORA_UI_PROMPT
 import com.mhamad.nexora.data.ai.transformers.InputMessageTransformer
 import com.mhamad.nexora.data.ai.transformers.MessageTransformer
 import com.mhamad.nexora.data.ai.transformers.OutputMessageTransformer
@@ -88,6 +89,7 @@ class GenerationLoop(
         conversationSystemPrompt: String? = null,
         conversationId: Uuid? = null,
         workspaceCwd: String? = null,
+        includeNexoraUiPrompt: Boolean = true,
     ): Flow<GenerationChunk> = flow {
         val provider = model.findProvider(settings.providers) ?: error("Provider not found")
         val providerImpl = providerManager.getProviderByType(provider)
@@ -354,6 +356,10 @@ class GenerationLoop(
                 if (assistant.enableMemory) {
                     appendLine()
                     append(buildMemoryPrompt(memories))
+                }
+                if (includeNexoraUiPrompt && !effectiveSystemPrompt.contains("nexora-ui", ignoreCase = true)) {
+                    appendLine()
+                    append(NEXORA_UI_PROMPT)
                 }
                 tools.forEach { tool ->
                     appendLine()
