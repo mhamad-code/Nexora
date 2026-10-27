@@ -95,6 +95,12 @@ fun ChatPage(id: Uuid, text: String?, files: List<Uri>, nodeId: Uuid? = null) {
             parametersOf(id.toString())
         }
     )
+    androidx.compose.runtime.DisposableEffect(vm) {
+        com.mhamad.nexora.ui.components.richtext.NexoraUiBridge.sendText = { text ->
+            vm.handleMessageSend(listOf(me.rerere.ai.ui.UIMessagePart.Text(text)))
+        }
+        onDispose { com.mhamad.nexora.ui.components.richtext.NexoraUiBridge.sendText = null }
+    }
     val filesManager: FilesManager = koinInject()
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
